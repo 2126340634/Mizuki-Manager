@@ -17,6 +17,7 @@ app.use('/post', routes.post)
 app.use('/project', routes.project)
 app.use('/skill', routes.skill)
 app.use('/timeline', routes.timeline)
+app.use('/builder', routes.builder)
 
 // 404
 app.use('/{*file}', (req, res) => {
@@ -32,8 +33,8 @@ app.listen(config.PORT, () => {
 	console.log(`
     ┌──────────────────────────────────────────────────┐
     │                                                  │
-    │   MIZUKI ADMIN SERVER • ONLINE                   │
-    │   MIZUKI 后台服务器   • \t在线                   │
+    │   Mizuki Manager Server • Online                 │
+    │   Mizuki 后台服务器   • \t在线                   │
     │                                                  │
     │   > 端口: ${config.PORT.toString().padEnd(38)} │
     │   > 环境: ${(process.env.NODE_ENV || 'development').padEnd(38)} │

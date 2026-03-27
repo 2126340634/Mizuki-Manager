@@ -1,11 +1,11 @@
 const config = require('../config')
 const BaseManager = require('./BaseManager')
-const bm = new BaseManager()
 const path = require('path')
 const { isImage, isObject } = require('../utils/Util')
 
-class DiaryManager {
+class DiaryManager extends BaseManager {
 	constructor() {
+		super()
 		this.dataDir = path.resolve(config.DATA_DIR) // data配置目录
 		this.configFilename = 'diary.ts'
 		this.diariesDir = path.resolve(config.DIARIES_DIR) // diary图片目录
@@ -13,13 +13,13 @@ class DiaryManager {
 	}
 	// 上传日记图片(支持批量)
 	async uploadImages(files) {
-		return await bm.uploadFiles(this.diariesDir, files, (file) => isImage(file.originalname))
+		return await this.uploadFiles(this.diariesDir, files, (file) => isImage(file.originalname))
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
 		if (!isObject(data) || !Object.keys(data).length) return { code: 400, success: false, message: '请传入data' }
 		const configImagePaths = this._getImagePaths(data)
-		return await bm.clearOldImages(configImagePaths, this.diariesDir)
+		return await this.clearOldImages(configImagePaths, this.diariesDir)
 	}
 	// 提取diary.ts内所有图片完整路径
 	_getImagePaths(data) {
@@ -38,11 +38,11 @@ class DiaryManager {
 	}
 	// 解析ast树获取关键字段数据
 	async getConfigData() {
-		return await bm.getConfigData(this.dataDir, this.configFilename)
+		return await this.getConfigData(this.dataDir, this.configFilename)
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await bm.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await this.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldImages(data) })
 	}
 }
 

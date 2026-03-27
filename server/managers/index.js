@@ -12,5 +12,6 @@ module.exports = {
 	PostManager: require('./PostManager.js'),
 	ProjectManager: require('./ProjectManager.js'),
 	SkillManager: require('./SkillManager.js'),
-	TimelineManager: require('./TimelineManager.js')
+	TimelineManager: require('./TimelineManager.js'),
+	BuildManager: require('./BuildManager.js')
 }

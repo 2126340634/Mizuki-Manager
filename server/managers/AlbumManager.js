@@ -3,10 +3,10 @@ const fs = require('fs')
 const { readFile, writeFile, isImage } = require('../utils/Util')
 const path = require('path')
 const BaseManager = require('./BaseManager')
-const bm = new BaseManager()
 
-class AlbumManager {
+class AlbumManager extends BaseManager {
 	constructor() {
+		super()
 		this.albumsDir = path.resolve(config.ALBUMS_DIR)
 		this.infoFilename = 'info.json'
 	}
@@ -36,7 +36,7 @@ class AlbumManager {
 	async uploadFiles(folderPath, files) {
 		if (typeof folderPath !== 'string' || !folderPath.length) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 		const absolutePath = path.resolve(folderPath)
-		await bm.uploadFiles(absolutePath, files, (file) => isImage(file.originalname))
+		await this.uploadFiles(absolutePath, files, (file) => isImage(file.originalname))
 	}
 	// 删除相册文件(支持批量)
 	async deleteFiles(filePaths) {
@@ -68,7 +68,7 @@ class AlbumManager {
 		try {
 			if (typeof folderPath !== 'string' || !folderPath.length) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 			const absolutePath = path.resolve(folderPath)
-			await fs.promises.rm(absolutePath, { recursive: true })
+			await fs.promises.rm(absolutePath, { recursive: true, force: true })
 			return { code: 200, success: true }
 		} catch (err) {
 			return { code: 500, success: false, message: '删除失败', error: err }

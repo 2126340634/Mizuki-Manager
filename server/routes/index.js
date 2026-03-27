@@ -12,5 +12,6 @@ module.exports = {
 	post: require('./post.js'),
 	project: require('./project.js'),
 	skill: require('./skill.js'),
-	timeline: require('./timeline.js')
+	timeline: require('./timeline.js'),
+	builder: require('./builder.js')
 }

@@ -1,13 +1,16 @@
 const path = require('path')
 
-const BASE_PATH = 'C:/Users/Administrator/Desktop/Mizuki-master'
+// 项目根目录
+const BASE_PATH = path.resolve('C:/Users/Administrator/Desktop/Mizuki-master')
+// 项目部署路径
+const DEPLOY_DIR = path.resolve('C:/Users/Administrator/Desktop/Mizuki-master/dist')
+// public目录
 const PUBLIC_DIR = path.join(BASE_PATH, 'public')
 
 module.exports = {
-	// 项目根目录
 	BASE_PATH,
-	// public目录
 	PUBLIC_DIR,
+	DEPLOY_DIR,
 	// .md文章目录
 	POSTS_DIR: (() => path.join(BASE_PATH, 'src/content/posts'))(),
 	// about.md目录
@@ -28,6 +31,10 @@ module.exports = {
 	PROJECTS_DIR: (() => path.join(PUBLIC_DIR, 'images/project'))(),
 	// 动画封面图片目录
 	ANIMES_DIR: (() => path.join(PUBLIC_DIR, 'assets/anime'))(),
+	// dist打包目录
+	DIST_DIR: (() => path.join(BASE_PATH, 'dist'))(),
+	// 包管理工具 可选: pnpm | npm | yarn
+	PACKAGE_TOOL: 'pnpm',
 	// 单个文件限制10MB
 	MAX_FILE_SIZE: 10 * 1024 * 1024,
 	// 运行端口

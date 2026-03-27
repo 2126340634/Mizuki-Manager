@@ -3,10 +3,10 @@ const config = require('../config.js')
 const { readFile, fileExists, writeFile, deleteFile } = require('../utils/Util.js')
 const path = require('path')
 const BaseManager = require('./BaseManager.js')
-const bm = new BaseManager()
 
-class PostManager {
+class PostManager extends BaseManager {
 	constructor() {
+		super()
 		this.postsDir = path.resolve(config.POSTS_DIR)
 	}
 	// 获取全部文章.md文件名列表
@@ -60,7 +60,7 @@ class PostManager {
 	// 上传文章
 	async upload(file) {
 		try {
-			await bm.uploadFiles(this.postsDir, [file], (cbFile) => cbFile.originalname.endsWith('.md'))
+			await this.uploadFiles(this.postsDir, [file], (cbFile) => cbFile.originalname.endsWith('.md'))
 			return { code: 200, success: true }
 		} catch (err) {
 			return { code: 500, success: false, message: '上传失败', error: err }
