@@ -26,7 +26,7 @@ class PostManager {
 	// 获取单个文章内容
 	async getContent(filename) {
 		try {
-			if (typeof filename !== 'string' || !filename) return { code: 400, success: false, message: '请传入正确的文件名' }
+			if (typeof filename !== 'string' || !filename.length) return { code: 400, success: false, message: '请传入正确的文件名' }
 			const content = await readFile(this.postsDir, filename)
 			return { code: 200, success: true, data: content }
 		} catch (err) {
@@ -36,7 +36,7 @@ class PostManager {
 	// 更新文章
 	async update(filename, content) {
 		try {
-			if (typeof filename !== 'string' || !filename) return { code: 400, success: false, message: '请传入正确的文件名' }
+			if (typeof filename !== 'string' || !filename.length) return { code: 400, success: false, message: '请传入正确的文件名' }
 			if (!content) return { code: 400, success: false, message: '新内容不能为空' }
 			if (!(await fileExists(this.postsDir, filename))) return { code: 404, success: false, message: '文件不存在' }
 			await writeFile(this.postsDir, filename, content)
@@ -48,7 +48,7 @@ class PostManager {
 	// 创建文章
 	async create(filename, content) {
 		try {
-			if (typeof filename !== 'string' || !filename) return { code: 400, success: false, message: '请传入正确的文件名' }
+			if (typeof filename !== 'string' || !filename.length) return { code: 400, success: false, message: '请传入正确的文件名' }
 			if (!content) return { code: 400, success: false, message: '新内容不能为空' }
 			if (await fileExists(this.postsDir, file.originalname)) return { code: 400, success: false, message: '当前名称的文件已存在' }
 			await writeFile(this.postsDir, filename, content)
