@@ -12,6 +12,7 @@ class ConfigManager {
 	// 替换Config文件
 	async replace(file) {
 		try {
+			if (!file) return { code: 400, success: false, message: '请上传文件' }
 			if (!file.originalname.endsWith('.ts')) return { code: 400, success: false, message: '请上传.ts格式文件' }
 			await writeFile(this.configDir, this.configFilename, file.buffer)
 			return { code: 200, success: true }

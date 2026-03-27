@@ -17,6 +17,7 @@ class DiaryManager {
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
+		if (!isObject(data) || !Object.keys(data).length) return { code: 400, success: false, message: '请传入data' }
 		const configImagePaths = this._getImagePaths(data)
 		return await bm.clearOldImages(configImagePaths, this.diariesDir)
 	}

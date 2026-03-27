@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 
 // 更新about
 router.post('/update', async (req, res) => {
-	const { content } = req.body
+	const { content } = req.body || ''
 	const result = await am.update(content)
 	res.status(result.code).json(result)
 })

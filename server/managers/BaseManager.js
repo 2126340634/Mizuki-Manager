@@ -20,6 +20,7 @@ class BaseManager {
 	// 上传文件(支持批量)
 	async uploadFiles(directory, files, conditionFunc) {
 		try {
+			if (!files || (Array.isArray(files) && !files.length)) return { code: 400, success: false, message: '请上传文件' }
 			const tasks = files.map(async (file) => {
 				const filename = file.originalname
 				if (!conditionFunc(file)) {
@@ -70,6 +71,8 @@ class BaseManager {
 	// 解析ast树获取关键字段数据
 	async getConfigData(directory, filename, astParseOptions = defaultAstParseOptions) {
 		try {
+			if (typeof directory !== 'string' || !directory.length) return { code: 400, success: false, message: '请传入directory' }
+			if (typeof filename !== 'string' || !filename.length) return { code: 400, success: false, message: '请传入filename' }
 			const code = await readFile(directory, filename, 'utf8')
 			const ast = recast.parse(code, astParseOptions)
 			const ctx = this
@@ -91,8 +94,10 @@ class BaseManager {
 	}
 	// data转换为config
 	async dataToConfig(directory, filename, data, astParseOptions = defaultAstParseOptions, options = { beforeWrite: () => {}, writed: () => {} }) {
-		if (!isObject(data) || !Object.keys(data).length) return
 		try {
+			if (typeof directory !== 'string' || !directory.length) return { code: 400, success: false, message: '请传入directory' }
+			if (typeof filename !== 'string' || !filename.length) return { code: 400, success: false, message: '请传入filename' }
+			if (!isObject(data) || !Object.keys(data).length) return { code: 400, success: false, message: '请传入data' }
 			const code = await readFile(directory, filename, 'utf8')
 			const ast = recast.parse(code, astParseOptions)
 			const ctx = this

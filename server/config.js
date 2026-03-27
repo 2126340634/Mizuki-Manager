@@ -1,6 +1,6 @@
 const path = require('path')
 
-const BASE_PATH = 'C:/Users/Administrator/Desktop/Mizuki-manager'
+const BASE_PATH = 'C:/Users/Administrator/Desktop/Mizuki-master'
 const PUBLIC_DIR = path.join(BASE_PATH, 'public')
 
 module.exports = {
@@ -31,7 +31,5 @@ module.exports = {
 	// 单个文件限制10MB
 	MAX_FILE_SIZE: 10 * 1024 * 1024,
 	// 运行端口
-	PORT: 3000,
-	// mizuki项目部署的baseURL
-	FRONTEND_URL: 'http://localhost:4321'
+	PORT: 3000
 }

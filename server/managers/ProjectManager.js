@@ -22,7 +22,7 @@ class ProjectManager {
 	}
 	// 提取projects.ts内所有图片完整路径
 	_getImagePaths(data) {
-		if (!isObject(data)) return
+		if (!isObject(data)) return []
 		const imagePaths = []
 		const projects = data?.projectsData || []
 		projects.forEach((p) => {

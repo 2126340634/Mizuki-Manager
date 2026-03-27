@@ -34,12 +34,14 @@ class AlbumManager {
 	}
 	// 上传相册文件(支持批量)
 	async uploadFiles(folderPath, files) {
+		if (typeof folderPath !== 'string' || !folderPath.length) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 		const absolutePath = path.resolve(folderPath)
 		await bm.uploadFiles(absolutePath, files, (file) => isImage(file.originalname))
 	}
 	// 删除相册文件(支持批量)
 	async deleteFiles(filePaths) {
 		try {
+			if (!filePaths || (Array.isArray(filePaths) && !filePaths.length)) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 			for (const filePath of filePaths) {
 				const absolutePath = path.resolve(filePath)
 				await fs.promises.unlink(absolutePath)
@@ -52,6 +54,7 @@ class AlbumManager {
 	// 创建相册文件夹
 	async createFolder(folderName) {
 		try {
+			if (typeof folderName !== 'string' || !folderName.length) return { code: 400, success: false, message: '请传入正确的文件夹名' }
 			const folderPath = path.join(this.albumsDir, folderName)
 			// 创建相册配置文件info.json
 			await writeFile(folderPath, this.infoFilename, '')
@@ -63,6 +66,7 @@ class AlbumManager {
 	// 删除相册文件夹
 	async deleteFolder(folderPath) {
 		try {
+			if (typeof folderPath !== 'string' || !folderPath.length) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 			const absolutePath = path.resolve(folderPath)
 			await fs.promises.rm(absolutePath, { recursive: true })
 			return { code: 200, success: true }
@@ -73,6 +77,8 @@ class AlbumManager {
 	// 更新相册配置文件info.json
 	async updateInfo(folderPath, content) {
 		try {
+			if (typeof folderPath !== 'string' || !folderPath.length) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
+			if (!content) return { code: 400, success: false, message: '新内容不能为空' }
 			const absolutePath = path.resolve(folderPath)
 			await writeFile(absolutePath, this.infoFilename, content)
 			return { code: 200, success: true }
