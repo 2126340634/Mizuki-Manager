@@ -7,14 +7,18 @@
 	"type": "commonjs",
 	"main": "index.js",
 	"scripts": {
-		"start": "node ./server/app.js"
+		"start": "cross-env NODE_ENV=production node ./server/app.js",
+		"dev": "cross-env NODE_ENV=development nodemon ./server/app.js"
 	},
 	"devDependencies": {
+		"cross-env": "^10.1.0",
+		"nodemon": "^3.1.14",
 		"prettier": "3.8.1"
 	},
 	"dependencies": {
 		"@babel/parser": "^7.29.2",
 		"express": "^5.2.1",
+		"multer": "^2.1.1",
 		"recast": "^0.23.11"
 	}
 }

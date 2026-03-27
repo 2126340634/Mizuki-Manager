@@ -13,12 +13,12 @@ class DiaryManager {
 	}
 	// 上传日记图片(支持批量)
 	async uploadImages(files) {
-		await bm.uploadFiles(this.diariesDir, files, (file) => isImage(file.originalname))
+		return await bm.uploadFiles(this.diariesDir, files, (file) => isImage(file.originalname))
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
 		const configImagePaths = this._getImagePaths(data)
-		await bm.clearOldImages(configImagePaths, this.diariesDir)
+		return await bm.clearOldImages(configImagePaths, this.diariesDir)
 	}
 	// 提取diary.ts内所有图片完整路径
 	_getImagePaths(data) {

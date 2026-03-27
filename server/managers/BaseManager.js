@@ -1,10 +1,7 @@
 const fs = require('fs')
 const config = require('../config')
-const fs = require('fs')
 const recast = require('recast')
 const parser = require('@babel/parser')
-const config = require('../config')
-const BaseManager = require('./BaseManager')
 const { isObject, writeFile, isImage } = require('../utils/Util')
 const path = require('path')
 const b = recast.types.builders
@@ -49,20 +46,25 @@ class BaseManager {
 	}
 	// 清除旧图片
 	async clearOldImages(configImagePaths, directory) {
-		// 配置中需要的图片
-		const imagePathSet = new Set(configImagePaths)
-		// 当前目录下存在的图片
-		const existImages = (await fs.promises.readdir(directory)).filter((filename) => isImage(filename)).map((filename) => path.resolve(path.join(directory, filename)))
-		// 需要删除的图片
-		const oldImages = existImages.filter((existPath) => !imagePathSet.has(existPath))
-		const tasks = oldImages.map(async (oldPath) => {
-			await fs.promises.unlink(oldPath)
-		})
-		const result = await Promise.allSettled(tasks)
-		const errors = result.map((res, index) => ({ res, path: oldImages[index] })).filter(({ res }) => res.status === 'rejected')
-		if (errors.length) {
-			const failedPaths = errors.map((err) => err.path)
-			throw { code: 500, success: false, message: `旧图片清理失败: ${failedPaths.join('、')}`, error: err }
+		try {
+			// 配置中需要的图片
+			const imagePathSet = new Set(configImagePaths)
+			// 当前目录下存在的图片
+			const existImages = (await fs.promises.readdir(directory)).filter((filename) => isImage(filename)).map((filename) => path.resolve(path.join(directory, filename)))
+			// 需要删除的图片
+			const oldImages = existImages.filter((existPath) => !imagePathSet.has(existPath))
+			const tasks = oldImages.map(async (oldPath) => {
+				await fs.promises.unlink(oldPath)
+			})
+			const result = await Promise.allSettled(tasks)
+			const errors = result.map((res, index) => ({ res, path: oldImages[index] })).filter(({ res }) => res.status === 'rejected')
+			if (errors.length) {
+				const failedPaths = errors.map((err) => err.path)
+				return { code: 500, success: false, message: `旧图片清理失败: ${failedPaths.join('、')}`, error: err }
+			}
+			return { code: 300, success: true }
+		} catch (err) {
+			return { code: 500, success: false, message: `旧图片清理失败`, error: err }
 		}
 	}
 	// 解析ast树获取关键字段数据

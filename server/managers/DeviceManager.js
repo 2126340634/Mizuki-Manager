@@ -13,12 +13,12 @@ class DeviceManager {
 	}
 	// 上传设备图片(支持批量)
 	async uploadImages(files) {
-		await bm.uploadFiles(this.devicesDir, files, (file) => isImage(file.originalname))
+		return await bm.uploadFiles(this.devicesDir, files, (file) => isImage(file.originalname))
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
 		const configImagePaths = this._getImagePaths(data)
-		await bm.clearOldImages(configImagePaths, this.devicesDir)
+		return await bm.clearOldImages(configImagePaths, this.devicesDir)
 	}
 	// 提取devices.ts内所有图片完整路径
 	_getImagePaths(data) {

@@ -61,7 +61,7 @@ class PostManager {
 			return { code: 500, success: false, message: '上传失败', error: err }
 		}
 	}
-	// 删除文件
+	// 删除文章
 	async delete(filename) {
 		try {
 			if (!filename.length || filename.endsWith('.md')) return { code: 400, success: false, message: '请使用正确的文件名' }

@@ -13,12 +13,12 @@ class AnimeManager {
 	}
 	// 上传动画图片(支持批量)
 	async uploadImages(files) {
-		await bm.uploadFiles(this.animesDir, files, (file) => isImage(file.originalname))
+		return await bm.uploadFiles(this.animesDir, files, (file) => isImage(file.originalname))
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
 		const configImagePaths = this._getImagePaths(data)
-		await bm.clearOldImages(configImagePaths, this.animesDir)
+		return await bm.clearOldImages(configImagePaths, this.animesDir)
 	}
 	// 提取anime.ts内所有图片完整路径
 	_getImagePaths(data) {

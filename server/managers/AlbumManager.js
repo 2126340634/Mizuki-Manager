@@ -1,6 +1,6 @@
 const config = require('../config')
 const fs = require('fs')
-const { readFile, fileExists, writeFile, isImage } = require('../utils/Util')
+const { readFile, writeFile, isImage } = require('../utils/Util')
 const path = require('path')
 const BaseManager = require('./BaseManager')
 const bm = new BaseManager()
@@ -25,7 +25,7 @@ class AlbumManager {
 					const file = await readFile(albumFolderPath, filename)
 					folder.push({ file, filePath: path.join(albumFolderPath, filename) })
 				}
-				albums.push({ folderPath: albumFolderPath, data: albums })
+				albums.push({ folderPath: albumFolderPath, data: folder })
 			}
 			return { code: 200, success: true, data: albums }
 		} catch (err) {
