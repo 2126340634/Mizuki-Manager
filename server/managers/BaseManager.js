@@ -1,0 +1,156 @@
+const fs = require('fs')
+const config = require('../config')
+const fs = require('fs')
+const recast = require('recast')
+const parser = require('@babel/parser')
+const config = require('../config')
+const BaseManager = require('./BaseManager')
+const { isObject, writeFile, isImage } = require('../utils/Util')
+const path = require('path')
+const b = recast.types.builders
+const defaultAstParseOptions = {
+	parser: {
+		parse: (source) =>
+			parser.parse(source, {
+				sourceType: 'module',
+				plugins: ['typescript']
+			})
+	}
+}
+
+class BaseManager {
+	constructor() {}
+	// 上传文件(支持批量)
+	async uploadFiles(directory, files, conditionFunc) {
+		try {
+			const tasks = files.map(async (file) => {
+				const filename = file.originalname
+				if (!conditionFunc(file)) {
+					throw { code: 400, success: false, message: `请上传正确的文件格式: ${filename}` }
+				}
+				if (file.size > config.MAX_FILE_SIZE) {
+					throw { code: 400, success: false, message: `文件大小不能超过 ${(config.MAX_FILE_SIZE / 1024 / 1024).toFixed(0)}MB` }
+				}
+				if (await fileExists(directory, filename)) {
+					throw { code: 400, success: false, message: `名为 ${filename} 的文件已存在` }
+				}
+				await writeFile(directory, filename, file.buffer)
+			})
+			const result = await Promise.allSettled(tasks)
+			const errors = result.map((res, index) => ({ res, filename: files[index].originalname })).filter(({ res }) => res.status === 'rejected')
+			if (errors.length) {
+				const failedPaths = errors.map((err) => err.filename)
+				return { code: 500, success: false, message: `上传失败: ${failedPaths.join('、')}`, error: errors }
+			}
+			return { code: 200, success: true }
+		} catch (err) {
+			return { code: err.code || 500, success: false, message: err.message || '上传失败', error: err }
+		}
+	}
+	// 清除旧图片
+	async clearOldImages(configImagePaths, directory) {
+		// 配置中需要的图片
+		const imagePathSet = new Set(configImagePaths)
+		// 当前目录下存在的图片
+		const existImages = (await fs.promises.readdir(directory)).filter((filename) => isImage(filename)).map((filename) => path.resolve(path.join(directory, filename)))
+		// 需要删除的图片
+		const oldImages = existImages.filter((existPath) => !imagePathSet.has(existPath))
+		const tasks = oldImages.map(async (oldPath) => {
+			await fs.promises.unlink(oldPath)
+		})
+		const result = await Promise.allSettled(tasks)
+		const errors = result.map((res, index) => ({ res, path: oldImages[index] })).filter(({ res }) => res.status === 'rejected')
+		if (errors.length) {
+			const failedPaths = errors.map((err) => err.path)
+			throw { code: 500, success: false, message: `旧图片清理失败: ${failedPaths.join('、')}`, error: err }
+		}
+	}
+	// 解析ast树获取关键字段数据
+	async getConfigData(directory, filename, astParseOptions = defaultAstParseOptions) {
+		try {
+			const code = await readFile(directory, filename, 'utf8')
+			const ast = recast.parse(code, astParseOptions)
+			const ctx = this
+			const data = {}
+			recast.visit(ast, {
+				visitVariableDeclarator(path) {
+					const node = path.node
+					const varName = node.id.name
+					if (node.init) {
+						data[varName] = ctx._astToValue(node.init)
+					}
+					return false
+				}
+			})
+			return { code: 200, success: true, data }
+		} catch (err) {
+			return { code: 500, success: false, message: '获取配置文件失败', error: err }
+		}
+	}
+	// data转换为config
+	async dataToConfig(directory, filename, data, astParseOptions = defaultAstParseOptions, options = { beforeWrite: () => {}, writed: () => {} }) {
+		if (!isObject(data) || !Object.keys(data).length) return
+		try {
+			const code = await readFile(directory, filename, 'utf8')
+			const ast = recast.parse(code, astParseOptions)
+			const ctx = this
+			recast.visit(ast, {
+				visitVariableDeclarator(path) {
+					const varName = path.node.id.name
+					if (data.hasOwnProperty(varName)) {
+						path.get('init').replace(ctx._valueToAst(data[varName]))
+					}
+					return false
+				}
+			})
+			const output = recast.print(ast).code
+			const buffer = Buffer.from(output, 'utf8')
+			options.beforeWrite()
+			await writeFile(directory, filename, buffer)
+			options.writed()
+			return { code: 200, success: true }
+		} catch (err) {
+			return { code: 500, success: false, message: '配置更新失败', error: err }
+		}
+	}
+	// 递归解析ast树
+	_astToValue(node) {
+		if (!node) return undefined
+		const type = node.type
+		const ctx = this
+		if (type === 'StringLiteral' || type === 'NumericLiteral' || type === 'BooleanLiteral') {
+			return node.value
+		}
+		if (type === 'ObjectExpression') {
+			const obj = {}
+			node.properties.forEach((prop) => {
+				if (prop.type === 'ObjectProperty') {
+					obj[prop.key.name] = ctx._astToValue(prop.value)
+				}
+			})
+			return obj
+		}
+		if (type === 'ArrayExpression') {
+			return node.elements.map((el) => this._astToValue(el))
+		}
+		return undefined
+	}
+	// config数据转回变量
+	_valueToAst(val) {
+		if (val === null) return b.nullLiteral()
+		const type = typeof val
+		if (type === 'string') return b.stringLiteral(val)
+		if (type === 'number') return b.numericLiteral(val)
+		if (type === 'boolean') return b.booleanLiteral(val)
+		if (Array.isArray(val)) return b.arrayExpression(val.map((item) => this._valueToAst(item)))
+		if (type === 'object') {
+			const props = Object.entries(val).map(([key, value]) => {
+				return b.objectProperty(b.identifier(key), this._valueToAst(value))
+			})
+			return b.objectExpression(props)
+		}
+		return b.identifier('undefined')
+	}
+}
+
+module.exports = BaseManager

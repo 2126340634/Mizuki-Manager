@@ -1,0 +1,20 @@
+{
+	"name": "mizuki-manager",
+	"version": "1.0.0",
+	"description": "",
+	"license": "ISC",
+	"author": "CHEEMS",
+	"type": "commonjs",
+	"main": "index.js",
+	"scripts": {
+		"start": "node ./server/app.js"
+	},
+	"devDependencies": {
+		"prettier": "3.8.1"
+	},
+	"dependencies": {
+		"@babel/parser": "^7.29.2",
+		"express": "^5.2.1",
+		"recast": "^0.23.11"
+	}
+}
