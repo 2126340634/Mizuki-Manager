@@ -1,6 +1,8 @@
+# Dependencies
 node_modules/
 dist/
+build/
 
+# Logs
 *.log
-
-.env
+pnpm-debug.log*

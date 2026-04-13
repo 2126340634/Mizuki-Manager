@@ -1,0 +1,60 @@
+.container {
+	padding: 24px 8px 24px 8px;
+	min-height: 100vh;
+	background-color: #f0f0f0;
+
+	.title {
+		text-align: center;
+		margin: 0;
+		position: relative;
+
+		.color-picker {
+			position: relative;
+			left: 8px;
+		}
+	}
+
+	.subtitle {
+		text-align: center;
+		color: #888;
+		font-weight: 300;
+		margin-bottom: 16px;
+	}
+
+	.card {
+		text-align: center;
+
+		&-icon {
+			font-size: 32px;
+			margin-bottom: 8px;
+		}
+
+		&-title {
+			font-weight: 500;
+			color: #555;
+			font-size: 16px;
+		}
+
+		&-subtitle {
+			color: #888;
+			font-size: 14px;
+		}
+	}
+}
+
+// PC
+@media (min-width: 768px) {
+	.container {
+		padding: 32px;
+
+		.title {
+			.color-picker {
+				position: absolute;
+				top: 50%;
+				right: 0;
+				left: auto;
+				transform: translateY(-50%);
+			}
+		}
+	}
+}
