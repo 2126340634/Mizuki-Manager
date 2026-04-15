@@ -14,14 +14,14 @@ router.get('/', async (req, res) => {
 
 // 更新about
 router.post('/update', async (req, res) => {
-	const { content } = req.body || ''
+	const { content } = req?.body || {}
 	const result = await am.update(content)
 	res.status(result.code).json(result)
 })
 
 // 替换about
 router.post('/upload', upload.single('file'), async (req, res) => {
-	const result = await am.replace(req.file)
+	const result = await am.replace(req?.file)
 	res.status(result.code).json(result)
 })
 

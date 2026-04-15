@@ -10,52 +10,31 @@ class AlbumManager extends BaseManager {
 		this.albumsDir = path.resolve(config.ALBUMS_DIR)
 		this.infoFilename = 'info.json'
 	}
+
+	/**
+	 * @description 相册文件夹
+	 */
+
 	// 获取相册文件夹列表
-	async getAll() {
+	async getAllFolders() {
 		try {
-			const albums = []
-			const albumFolderNames = await fs.promises.readdir(this.albumsDir) // 读取到albums目录下所有的相册文件夹名
-			for (const albumFolderName of albumFolderNames) {
-				const albumFolderPath = path.join(this.albumsDir, albumFolderName) // 每个相册文件夹路径
-				const filenames = await fs.promises.readdir(albumFolderPath)
-				const folder = []
-				for (const filename of filenames) {
-					// 存入相册文件和info.json
-					if (!this._isAlbumFile) continue
-					const file = await readFile(albumFolderPath, filename)
-					folder.push({ file, filePath: path.join(albumFolderPath, filename) })
-				}
-				albums.push({ folderPath: albumFolderPath, data: folder })
+			const folders = []
+			const folderNames = await fs.promises.readdir(this.albumsDir) // 读取到albums目录下所有的相册文件夹名
+			for (const folderName of folderNames) {
+				const folderPath = path.resolve(this.albumsDir, folderName) // 每个相册文件夹路径
+				if (!(await fs.promises.stat(folderPath)).isDirectory()) continue // 跳过非文件夹
+				folders.push({ folderName, folderPath })
 			}
-			return { code: 200, success: true, data: albums }
+			return { code: 200, success: true, data: folders }
 		} catch (err) {
-			return { code: 500, success: false, message: '获取相册列表失败', error: err }
-		}
-	}
-	// 上传相册文件(支持批量)
-	async uploadFiles(folderPath, files) {
-		if (typeof folderPath !== 'string' || !folderPath.length) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
-		const absolutePath = path.resolve(folderPath)
-		await this.uploadFiles(absolutePath, files, (file) => isImage(file.originalname))
-	}
-	// 删除相册文件(支持批量)
-	async deleteFiles(filePaths) {
-		try {
-			if (!filePaths || (Array.isArray(filePaths) && !filePaths.length)) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
-			for (const filePath of filePaths) {
-				const absolutePath = path.resolve(filePath)
-				await fs.promises.unlink(absolutePath)
-			}
-			return { code: 200, success: true }
-		} catch (err) {
-			return { code: 500, success: false, message: '删除失败', error: err }
+			return { code: 500, success: false, message: '获取相册文件夹列表失败', error: err }
 		}
 	}
 	// 创建相册文件夹
 	async createFolder(folderName) {
 		try {
-			if (typeof folderName !== 'string' || !folderName.length) return { code: 400, success: false, message: '请传入正确的文件夹名' }
-			const folderPath = path.join(this.albumsDir, folderName)
+			if (typeof folderName !== 'string' || !folderName) return { code: 400, success: false, message: '请传入正确的文件夹名' }
+			const folderPath = path.resolve(this.albumsDir, folderName)
 			// 创建相册配置文件info.json
 			await writeFile(folderPath, this.infoFilename, '')
 			return { code: 200, success: true }
@@ -66,7 +45,7 @@ class AlbumManager extends BaseManager {
 	// 删除相册文件夹
 	async deleteFolder(folderPath) {
 		try {
-			if (typeof folderPath !== 'string' || !folderPath.length) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
+			if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 			const absolutePath = path.resolve(folderPath)
 			await fs.promises.rm(absolutePath, { recursive: true, force: true })
 			return { code: 200, success: true }
@@ -74,10 +53,75 @@ class AlbumManager extends BaseManager {
 			return { code: 500, success: false, message: '删除失败', error: err }
 		}
 	}
+
+	/**
+	 * @description 相册文件
+	 */
+
+	// 获取相册内所有图片
+	async getFolderFiles(folderPath) {
+		try {
+			if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
+			const files = []
+			const filenames = await fs.promises.readdir(folderPath)
+			for (const filename of filenames) {
+				const filePath = path.resolve(folderPath, filename)
+				if (!isImage(filename)) continue
+				files.push({ filename, filePath })
+			}
+			return { code: 200, success: true, data: files }
+		} catch (err) {
+			return { code: 500, success: false, message: '获取相册图片列表失败', error: err }
+		}
+	}
+	// 上传相册文件(支持批量)
+	async uploadFiles(folderPath, files) {
+		if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
+		const absolutePath = path.resolve(folderPath)
+		await super.uploadFiles(absolutePath, files, (file) => isImage(file.originalname))
+	}
+	// 删除相册文件(支持批量)
+	async deleteFiles(filePaths) {
+		try {
+			if (!filePaths || (Array.isArray(filePaths) && !filePaths.length)) return { code: 400, success: false, message: '请传入正确的文件路径' }
+			for (const filePath of filePaths) {
+				const absolutePath = path.resolve(filePath)
+				await fs.promises.unlink(absolutePath)
+			}
+			return { code: 200, success: true }
+		} catch (err) {
+			return { code: 500, success: false, message: '删除失败', error: err }
+		}
+	}
+
+	/**
+	 * @description 相册配置
+	 */
+
+	// 获取相册配置文件info.json内容
+	async getInfoContent(folderPath) {
+		try {
+			if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
+			const absolutePath = path.resolve(folderPath)
+			try {
+				const content = await readFile(absolutePath, this.infoFilename, 'utf8')
+				return { code: 200, success: true, data: content }
+			} catch (err) {
+				if (err.code === 'ENOENT') {
+					// 文件不存在时主动创建
+					await writeFile(folderPath, this.infoFilename, '')
+					return { code: 200, success: true, data: '', message: '文件不存在, 已自动创建' }
+				}
+				throw err
+			}
+		} catch (err) {
+			return { code: 500, success: false, message: '文件读取失败', error: err }
+		}
+	}
 	// 更新相册配置文件info.json
 	async updateInfo(folderPath, content) {
 		try {
-			if (typeof folderPath !== 'string' || !folderPath.length) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
+			if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 			if (!content) return { code: 400, success: false, message: '新内容不能为空' }
 			const absolutePath = path.resolve(folderPath)
 			await writeFile(absolutePath, this.infoFilename, content)
@@ -85,10 +129,6 @@ class AlbumManager extends BaseManager {
 		} catch (err) {
 			return { code: 500, success: false, message: '修改失败', error: err }
 		}
-	}
-	// 是否为图片且不为info.json
-	_isAlbumFile(filename) {
-		return isImage(filename) && filename !== this.infoFilename
 	}
 }
 

@@ -13,5 +13,7 @@ module.exports = {
 	ProjectManager: require('./ProjectManager.js'),
 	SkillManager: require('./SkillManager.js'),
 	TimelineManager: require('./TimelineManager.js'),
-	BuildManager: require('./BuildManager.js')
+	MusicManager: require('./MusicManager.js'),
+	BuildManager: require('./BuildManager.js'),
+	AuthManager: require('./AuthManager.js')
 }

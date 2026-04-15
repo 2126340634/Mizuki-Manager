@@ -8,7 +8,7 @@ const upload = multer({ storage: multer.memoryStorage, limits: config.MAX_FILE_S
 
 // 上传图片(支持批量)
 router.post('/upload', upload.array('files'), async (req, res) => {
-	const result = await dm.uploadImages(req.files)
+	const result = await dm.uploadImages(req?.files)
 	res.status(result.code).json(result)
 })
 
@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 
 // 写入新配置数据
 router.post('/write', async (req, res) => {
-	const { data } = req.body
+	const { data } = req?.body || {}
 	const result = await dm.writeConfig(data)
 	res.status(result.code).json(result)
 })

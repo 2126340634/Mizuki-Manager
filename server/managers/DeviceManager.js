@@ -13,12 +13,12 @@ class DeviceManager extends BaseManager {
 	}
 	// 上传设备图片(支持批量)
 	async uploadImages(files) {
-		return await this.uploadFiles(this.devicesDir, files, (file) => isImage(file.originalname))
+		return await super.uploadFiles(this.devicesDir, files, (file) => isImage(file.originalname))
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
 		const configImagePaths = this._getImagePaths(data)
-		return await this.clearOldImages(configImagePaths, this.devicesDir)
+		return await super.clearOldImages(configImagePaths, this.devicesDir)
 	}
 	// 提取devices.ts内所有图片完整路径
 	_getImagePaths(data) {
@@ -30,7 +30,7 @@ class DeviceManager extends BaseManager {
 			device.forEach((d) => {
 				const imagePath = d?.image || '' // 格式为"/images/device/xxx.png"
 				if (!isImage(imagePath)) return
-				const filePath = path.resolve(path.join(this.publicDir, imagePath))
+				const filePath = path.resolve(this.publicDir, imagePath)
 				imagePaths.push(filePath)
 			})
 		})
@@ -38,11 +38,11 @@ class DeviceManager extends BaseManager {
 	}
 	// 解析ast树获取关键字段数据
 	async getConfigData() {
-		return await this.getConfigData(this.dataDir, this.configFilename)
+		return await super.getConfigData(this.dataDir, this.configFilename)
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await this.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldImages(data) })
 	}
 }
 

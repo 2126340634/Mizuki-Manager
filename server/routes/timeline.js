@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
 
 // 写入新配置数据
 router.post('/write', async (req, res) => {
-	const { data } = req.body
+	const { data } = req?.body || {}
 	const result = await tm.writeConfig(data)
 	res.status(result.code).json(result)
 })

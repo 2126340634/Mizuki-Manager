@@ -60,7 +60,7 @@ class PostManager extends BaseManager {
 	// 上传文章
 	async upload(file) {
 		try {
-			await this.uploadFiles(this.postsDir, [file], (cbFile) => cbFile.originalname.endsWith('.md'))
+			await super.uploadFiles(this.postsDir, [file], (cbFile) => cbFile.originalname.endsWith('.md'))
 			return { code: 200, success: true }
 		} catch (err) {
 			return { code: 500, success: false, message: '上传失败', error: err }

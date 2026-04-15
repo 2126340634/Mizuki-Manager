@@ -14,34 +14,34 @@ router.get('/', async (req, res) => {
 
 // 获取单个文章内容
 router.get('/content', async (req, res) => {
-	const { filename } = req.query
+	const { filename } = req?.query || {}
 	const result = await pm.getContent(filename)
 	res.status(result.code).json(result)
 })
 
 // 更新文章
 router.post('/update', async (req, res) => {
-	const { filename, content } = req.body
+	const { filename, content } = req?.body || {}
 	const result = await pm.update(filename, content)
 	res.status(result.code).json(result)
 })
 
 // 创建文章
 router.post('/create', async (req, res) => {
-	const { filename, content } = req.body
+	const { filename, content } = req?.body || {}
 	const result = await pm.create(filename, content)
 	res.status(result.code).json(result)
 })
 
 // 上传文章
 router.post('/upload', upload.single('file'), async (req, res) => {
-	const result = await pm.upload(req.file)
+	const result = await pm.upload(req?.file)
 	res.status(result.code).json(result)
 })
 
 // 删除文章
 router.delete('/', async (req, res) => {
-	const { filename } = req.query
+	const { filename } = req?.query || {}
 	const result = await pm.delete(filename)
 	res.status(result.code).json(result)
 })

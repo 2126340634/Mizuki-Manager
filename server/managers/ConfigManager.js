@@ -22,11 +22,11 @@ class ConfigManager extends BaseManager {
 	}
 	// 解析ast树获取关键字段数据
 	async getConfigData() {
-		return await this.getConfigData(this.configDir, this.configFilename)
+		return await super.getConfigData(this.configDir, this.configFilename)
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await this.dataToConfig(this.configDir, this.configFilename, data)
+		return await super.dataToConfig(this.configDir, this.configFilename, data)
 	}
 }
 

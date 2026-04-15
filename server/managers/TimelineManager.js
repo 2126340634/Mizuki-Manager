@@ -10,11 +10,11 @@ class TimelineManager extends BaseManager {
 	}
 	// 解析ast树获取关键字段数据
 	async getConfigData() {
-		return await this.getConfigData(this.dataDir, this.configFilename)
+		return await super.getConfigData(this.dataDir, this.configFilename)
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await this.dataToConfig(this.dataDir, this.configFilename, data)
+		return await super.dataToConfig(this.dataDir, this.configFilename, data)
 	}
 }
 

@@ -2,7 +2,7 @@ const fs = require('fs')
 const config = require('../config')
 const recast = require('recast')
 const parser = require('@babel/parser')
-const { isObject, writeFile, isImage, readFile } = require('../utils/Util')
+const { isObject, writeFile, isImage, readFile, fileExists, isMusic } = require('../utils/Util')
 const path = require('path')
 const b = recast.types.builders
 const defaultAstParseOptions = {
@@ -16,14 +16,13 @@ const defaultAstParseOptions = {
 }
 
 class BaseManager {
-	constructor() {}
 	// 上传文件(支持批量)
 	async uploadFiles(directory, files, conditionFunc) {
 		try {
 			if (!files || (Array.isArray(files) && !files.length)) return { code: 400, success: false, message: '请上传文件' }
-			const tasks = files.map(async (file) => {
+			const tasks = files.map(async (file, index) => {
 				const filename = file.originalname
-				if (!conditionFunc(file)) {
+				if (!conditionFunc(file, index)) {
 					throw { code: 400, success: false, message: `请上传正确的文件格式: ${filename}` }
 				}
 				if (file.size > config.MAX_FILE_SIZE) {
@@ -34,36 +33,44 @@ class BaseManager {
 				}
 				await writeFile(directory, filename, file.buffer)
 			})
-			const result = await Promise.allSettled(tasks)
-			const errors = result.map((res, index) => ({ res, filename: files[index].originalname })).filter(({ res }) => res.status === 'rejected')
+			const result = (await Promise.allSettled(tasks)).map((res, index) => ({ res, filename: files[index].originalname, path: path.join(directory, files[index].originalname) }))
+			const errors = result.filter(({ res }) => res.status === 'rejected')
 			if (errors.length) {
 				const failedPaths = errors.map((err) => err.filename)
 				return { code: 500, success: false, message: `上传失败: ${failedPaths.join('、')}`, error: errors }
 			}
-			return { code: 200, success: true }
+			return { code: 200, success: true, data: result }
 		} catch (err) {
 			return { code: err.code || 500, success: false, message: err.message || '上传失败', error: err }
 		}
 	}
 	// 清除旧图片
-	async clearOldImages(configImagePaths, directory) {
+	async clearOldImages(imagePathsInConfig, directory) {
+		return await this._clearOldFiles(imagePathsInConfig, directory, (filename) => isImage(filename))
+	}
+	// 清除旧音频
+	async clearOldMusic(musicPathsInConfig, directory) {
+		return await this._clearOldFiles(musicPathsInConfig, directory, (filename) => isMusic(filename))
+	}
+	// 清理旧文件
+	async _clearOldFiles(pathsInConfig, directory, conditionFunc) {
 		try {
-			// 配置中需要的图片
-			const imagePathSet = new Set(configImagePaths)
-			// 当前目录下存在的图片
-			const existImages = (await fs.promises.readdir(directory)).filter((filename) => isImage(filename)).map((filename) => path.resolve(path.join(directory, filename)))
-			// 需要删除的图片
-			const oldImages = existImages.filter((existPath) => !imagePathSet.has(existPath))
-			const tasks = oldImages.map(async (oldPath) => {
+			// 配置中需要的
+			const pathSet = new Set(pathsInConfig)
+			// 当前目录下存在的
+			const exists = (await fs.promises.readdir(directory)).filter((filename) => conditionFunc(filename)).map((filename) => path.resolve(directory, filename))
+			// 需要删除的
+			const olds = exists.filter((existPath) => !pathSet.has(existPath))
+			const tasks = olds.map(async (oldPath) => {
 				await fs.promises.unlink(oldPath)
 			})
 			const result = await Promise.allSettled(tasks)
-			const errors = result.map((res, index) => ({ res, path: oldImages[index] })).filter(({ res }) => res.status === 'rejected')
+			const errors = result.map((res, index) => ({ res, path: olds[index] })).filter(({ res }) => res.status === 'rejected')
 			if (errors.length) {
 				const failedPaths = errors.map((err) => err.path)
 				return { code: 500, success: false, message: `旧图片清理失败: ${failedPaths.join('、')}`, error: err }
 			}
-			return { code: 300, success: true }
+			return { code: 200, success: true }
 		} catch (err) {
 			return { code: 500, success: false, message: `旧图片清理失败`, error: err }
 		}
@@ -112,9 +119,9 @@ class BaseManager {
 			})
 			const output = recast.print(ast).code
 			const buffer = Buffer.from(output, 'utf8')
-			options.beforeWrite()
+			await Promise.resolve(options.beforeWrite())
 			await writeFile(directory, filename, buffer)
-			options.writed()
+			await Promise.resolve(options.writed())
 			return { code: 200, success: true }
 		} catch (err) {
 			return { code: 500, success: false, message: '配置更新失败', error: err }

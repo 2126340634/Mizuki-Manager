@@ -1,6 +1,7 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 import Index from '../pages'
+import About from '../pages/about'
 export default [
 	{
 		path: '/',
@@ -9,6 +10,10 @@ export default [
 	{
 		path: '/index',
 		element: <Index />
+	},
+	{
+		path: '/about',
+		element: <About />
 	},
 	{
 		path: '*',

@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+	HomeOutlined,
 	SettingOutlined,
 	BuildOutlined,
 	PictureOutlined,
@@ -15,7 +16,8 @@ import {
 } from '@ant-design/icons'
 
 export const managerList = [
-	{ title: '关于', subtitle: 'About', icon: <InfoCircleOutlined /> },
+	{ title: '首页', subtitle: 'Home', icon: <HomeOutlined />, path: '/index', hidden: true },
+	{ title: '关于', subtitle: 'About', icon: <InfoCircleOutlined />, path: '/about' },
 	{ title: '相册 ', subtitle: 'Album', icon: <PictureOutlined /> },
 	{ title: '追番', subtitle: 'Anime', icon: <PlayCircleOutlined /> },
 	{ title: '构建部署', subtitle: 'Build', icon: <BuildOutlined /> },

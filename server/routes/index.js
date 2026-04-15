@@ -13,5 +13,7 @@ module.exports = {
 	project: require('./project.js'),
 	skill: require('./skill.js'),
 	timeline: require('./timeline.js'),
-	builder: require('./builder.js')
+	music: require('./music.js'),
+	builder: require('./builder.js'),
+	auth: require('./auth.js')
 }

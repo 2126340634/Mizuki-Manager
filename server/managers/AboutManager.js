@@ -10,7 +10,7 @@ class AboutManager {
 	// 获取about内容
 	async getContent() {
 		try {
-			const content = await readFile(this.aboutDir, this.aboutFilename)
+			const content = await readFile(this.aboutDir, this.aboutFilename, 'utf8')
 			return { code: 200, success: true, data: content }
 		} catch (err) {
 			return { code: 500, success: false, message: '文件读取失败', error: err }

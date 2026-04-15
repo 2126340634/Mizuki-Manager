@@ -2,31 +2,41 @@ const express = require('express')
 const app = express()
 const routes = require('./routes/index.js')
 const config = require('./config')
+const { verifyToken } = require('./middlewares/auth.js')
 
 app.use(express.json()) // 解析json
 app.use(express.urlencoded({ extended: true })) // 解析url参数
 
-app.use('/about', routes.about)
-app.use('/album', routes.album)
-app.use('/anime', routes.anime)
-app.use('/config', routes.config)
-app.use('/device', routes.device)
-app.use('/diary', routes.diary)
-app.use('/friend', routes.friend)
-app.use('/post', routes.post)
-app.use('/project', routes.project)
-app.use('/skill', routes.skill)
-app.use('/timeline', routes.timeline)
-app.use('/builder', routes.builder)
+const mizukiRouter = express.Router()
+// 登录模块
+mizukiRouter.use('/auth', routes.auth)
+
+// 令牌验证
+mizukiRouter.use(verifyToken)
+mizukiRouter.use('/about', routes.about)
+mizukiRouter.use('/album', routes.album)
+mizukiRouter.use('/anime', routes.anime)
+mizukiRouter.use('/config', routes.config)
+mizukiRouter.use('/device', routes.device)
+mizukiRouter.use('/diary', routes.diary)
+mizukiRouter.use('/friend', routes.friend)
+mizukiRouter.use('/post', routes.post)
+mizukiRouter.use('/project', routes.project)
+mizukiRouter.use('/skill', routes.skill)
+mizukiRouter.use('/timeline', routes.timeline)
+mizukiRouter.use('/music', routes.music)
+mizukiRouter.use('/builder', routes.builder)
 
 // 404
-app.use('/{*file}', (req, res) => {
-	res.status(404).json({ success: false, message: '无效的资源路径', error: 'Route not found' })
+mizukiRouter.use('/{*file}', (req, res) => {
+	res.status(404).json({ code: 404, success: false, message: '无效的资源路径', error: 'Route not found' })
 })
+
+app.use('/mizuki', mizukiRouter)
 
 app.use((err, req, res, next) => {
 	console.error(err)
-	res.status(500).json({ success: false, message: '服务器内部错误', error: 'Internal Server Error' })
+	res.status(500).json({ code: 500, success: false, message: '服务器内部错误', error: 'Internal Server Error' })
 })
 
 app.listen(config.PORT, () => {

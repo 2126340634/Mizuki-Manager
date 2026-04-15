@@ -8,7 +8,7 @@ const upload = multer({ storage: multer.memoryStorage, limits: config.MAX_FILE_S
 
 // 替换配置文件
 router.post('/replace', upload.single('file'), async (req, res) => {
-	const result = await cm.replace(req.file)
+	const result = await cm.replace(req?.file)
 	res.status(result.code).json(result)
 })
 
@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 
 // 写入新配置数据
 router.post('/write', async (req, res) => {
-	const { data } = req.body
+	const { data } = req?.body || {}
 	const result = await cm.writeConfig(data)
 	res.status(result.code).json(result)
 })
