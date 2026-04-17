@@ -4,7 +4,7 @@ const { DiaryManager } = require('../managers/index.js')
 const dm = new DiaryManager()
 const multer = require('multer')
 const config = require('../config.js')
-const upload = multer({ storage: multer.memoryStorage, limits: config.MAX_FILE_SIZE })
+const upload = multer({ storage: multer.memoryStorage(), limits: config.MAX_FILE_SIZE })
 
 // 上传图片(支持批量)
 router.post('/upload', upload.array('files'), async (req, res) => {

@@ -1,74 +1,82 @@
-import React, { useState } from 'react'
-import { Card, Input, Button, Upload, message, Space, Typography, Divider } from 'antd'
+import React, { useState, useEffect, useCallback } from 'react'
+import { Card, Input, Button, Upload, message, Space, Typography, Spin } from 'antd'
 import { SaveOutlined, UploadOutlined, FileTextOutlined } from '@ant-design/icons'
-
-const { TextArea } = Input
+import { getAboutContent, updateAboutContent, replaceAboutFile } from '../services/about'
 
 export default function About() {
 	const [content, setContent] = useState('')
-	const [saving, setSaving] = useState(false)
+	const [loading, setLoading] = useState(false)
 
-	const uploadProps = {
-		name: 'file',
-		accept: '.md',
-		beforeUpload: (file: File) => {
-			const reader = new FileReader()
-			reader.onload = (e) => {
-				const text = e.target?.result as string
-				setContent(text)
-				message.success('文件上传成功')
-			}
-			reader.readAsText(file)
-			return false
-		}
-	}
-
-	const handleUpdate = async () => {
-		setSaving(true)
+	// 获取内容
+	const getContent = useCallback(async () => {
 		try {
-			// Add your API call here to save the content
-			message.success('保存成功')
-		} catch (error) {
-			message.error('保存失败')
+			setLoading(true)
+			const res = await getAboutContent()
+			const data = res.data
+			if (data) setContent(data)
+			else throw new Error('未从响应中获取到About内容')
+		} catch {
 		} finally {
-			setSaving(false)
+			setLoading(false)
 		}
-	}
+	}, [])
+
+	useEffect(() => {
+		getContent()
+	}, [])
+
+	// 更新内容
+	const handleUpdate = useCallback(async () => {
+		try {
+			setLoading(true)
+			const res = await updateAboutContent(content)
+			if (res.success) message.success('保存成功')
+		} catch {
+		} finally {
+			setLoading(false)
+		}
+	}, [])
+
+	// 替换文件
+	const handleReplace = useCallback(async (file: File) => {
+		try {
+			setLoading(true)
+			const res = await replaceAboutFile(file)
+			if (res.success) message.success('替换成功')
+			await getContent()
+		} catch {
+		} finally {
+			setLoading(false)
+		}
+	}, [])
+
 	return (
 		<Card
 			title={
 				<span>
-					<FileTextOutlined /> 关于页面管理
+					<FileTextOutlined /> 编辑关于页面
 				</span>
 			}
-			loading={true}
+			style={{ width: '100%' }}
 			extra={
-				<Space>
-					<Upload {...uploadProps}>
-						<Button icon={<UploadOutlined />}>上传并替换 MD</Button>
+				<Space style={{ marginLeft: 10 }}>
+					<Upload showUploadList={false} beforeUpload={handleReplace}>
+						<Button loading={loading} icon={<UploadOutlined />}>
+							上传替换
+						</Button>
 					</Upload>
-					<Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={handleUpdate}>
-						保存修改
+					<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={handleUpdate}>
+						保存
 					</Button>
 				</Space>
 			}
 		>
-			<Typography.Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
-				编辑下方 Markdown 内容直接更新，或通过上方按钮上传现有的 about.md 文件。
-			</Typography.Text>
-
-			<TextArea
-				value={content}
-				onChange={(e) => setContent(e.target.value)}
-				placeholder="在此输入 Markdown 内容..."
-				autoSize={{ minRows: 15, maxRows: 25 }}
-				style={{ fontFamily: 'monospace', fontSize: '14px' }}
-			/>
-
-			<Divider>预览提示</Divider>
-			<div style={{ padding: '10px', background: '#f5f5f5', borderRadius: '4px' }}>
-				<Typography.Text italic>内容已支持实时编辑，点击右上角保存即可同步至服务器。</Typography.Text>
-			</div>
+			<Spin spinning={loading}>
+				<Typography.Text type="secondary" style={{ marginBottom: 12, display: 'block' }}>
+					编辑 Markdown 源码或上传文件覆盖：
+				</Typography.Text>
+				<Input.TextArea value={content} onChange={(e) => setContent(e.target.value)} autoSize={{ minRows: 15 }} style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 139px)' }} />
+			</Spin>
 		</Card>
 	)
 }

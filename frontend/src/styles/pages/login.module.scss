@@ -1,0 +1,37 @@
+@use '../utils/_mixins.scss' as mix;
+
+.loginContainer {
+	@include mix.flex-center;
+	min-height: 100vh;
+	width: 100%;
+	background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.loginCard {
+	width: calc(100% - 20px);
+	max-width: 400px;
+	border-radius: 12px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+	text-align: center;
+	margin-bottom: 32px;
+
+	h2 {
+		margin-bottom: 8px !important;
+	}
+}
+
+.options {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.submitBtn {
+	height: 44px;
+	font-size: 16px;
+	border-radius: 6px;
+	margin-top: 8px;
+}

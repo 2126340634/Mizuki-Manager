@@ -4,7 +4,7 @@ const { ConfigManager } = require('../managers/index.js')
 const cm = new ConfigManager()
 const multer = require('multer')
 const config = require('../config.js')
-const upload = multer({ storage: multer.memoryStorage, limits: config.MAX_FILE_SIZE })
+const upload = multer({ storage: multer.memoryStorage(), limits: config.MAX_FILE_SIZE })
 
 // 替换配置文件
 router.post('/replace', upload.single('file'), async (req, res) => {

@@ -51,6 +51,8 @@ module.exports = {
 	IMAGE_FORMATS: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.bmp', '.tiff', '.tif'],
 	// 音乐文件格式
 	MUSIC_FORMATS: ['.mp3'],
+	// Markdown文档格式
+	MARKDOWN_FORMATS: ['.md'],
 	// 包管理工具 可选: pnpm | npm | yarn
 	PACKAGE_TOOL: 'pnpm',
 	// 单个文件限制20MB

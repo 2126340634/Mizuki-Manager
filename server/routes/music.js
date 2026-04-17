@@ -4,7 +4,7 @@ const { MusicManager } = require('../managers/index.js')
 const mm = new MusicManager()
 const multer = require('multer')
 const config = require('../config.js')
-const upload = multer({ storage: multer.memoryStorage, limits: config.MAX_FILE_SIZE })
+const upload = multer({ storage: multer.memoryStorage(), limits: config.MAX_FILE_SIZE })
 
 // 上传音乐(封面,音频文件)
 router.post(

@@ -5,9 +5,10 @@ import styles from '../styles/pages/index.module.scss'
 import { managerList } from '../configs/managerConfig'
 import { useDispatch } from 'react-redux'
 import { AppDispatch, updateSelect } from '../stores'
+import { defaultTheme } from '../configs/styleConfig'
 
 export default function Index() {
-	const [color, setColor] = useState('#1890ff')
+	const [color, setColor] = useState(defaultTheme)
 	const nav = useNavigate()
 	const dispatch = useDispatch<AppDispatch>()
 	useEffect(() => {
@@ -24,7 +25,7 @@ export default function Index() {
 		<div className={styles.container}>
 			<Typography.Title level={1} className={styles.title}>
 				MIZUKI MANAGER
-				<ColorPicker className={styles['color-picker']} size="small" format="rgb" value={color || '#1890ff'} disabledAlpha disabledFormat onChangeComplete={updateColor} />
+				<ColorPicker className={styles['color-picker']} size="small" format="rgb" value={color || defaultTheme} disabledAlpha disabledFormat onChangeComplete={updateColor} />
 			</Typography.Title>
 			<Typography.Title level={5} className={styles.subtitle}>
 				Mizuki 博客后台管理

@@ -36,7 +36,7 @@ class BaseManager {
 			const result = (await Promise.allSettled(tasks)).map((res, index) => ({ res, filename: files[index].originalname, path: path.join(directory, files[index].originalname) }))
 			const errors = result.filter(({ res }) => res.status === 'rejected')
 			if (errors.length) {
-				const failedPaths = errors.map((err) => err.filename)
+				const failedPaths = errors.map((err) => err?.res?.reason?.message || err.filename)
 				return { code: 500, success: false, message: `上传失败: ${failedPaths.join('、')}`, error: errors }
 			}
 			return { code: 200, success: true, data: result }

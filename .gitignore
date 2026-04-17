@@ -4,6 +4,7 @@ dist/
 build/
 
 # Logs
+logs/
 *.log
 pnpm-debug.log*
 

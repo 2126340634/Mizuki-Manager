@@ -58,27 +58,29 @@ class AlbumManager extends BaseManager {
 	 * @description 相册文件
 	 */
 
-	// 获取相册内所有图片
-	async getFolderFiles(folderPath) {
+	// 获取相册内所有图片(分页)
+	async getFolderFiles(folderPath, pageNum = 1, pageSize = 10) {
 		try {
 			if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 			const files = []
-			const filenames = await fs.promises.readdir(folderPath)
-			for (const filename of filenames) {
+			const allFilenames = await fs.promises.readdir(folderPath) // 所有文件
+			const filenames = allFilenames.filter(isImage) // 筛选图片文件
+			const slicedFilenames = filenames.slice((pageNum - 1) * pageSize, pageNum * pageSize) // 分页文件
+			for (const filename of slicedFilenames) {
 				const filePath = path.resolve(folderPath, filename)
-				if (!isImage(filename)) continue
-				files.push({ filename, filePath })
+				const url = `/public${filePath.split('public', 2)[1].replaceAll('\\', '/')}`
+				files.push({ filename, filePath, url })
 			}
-			return { code: 200, success: true, data: files }
+			return { code: 200, success: true, data: { files, total: filenames.length } }
 		} catch (err) {
 			return { code: 500, success: false, message: '获取相册图片列表失败', error: err }
 		}
 	}
 	// 上传相册文件(支持批量)
 	async uploadFiles(folderPath, files) {
-		if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
+		if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: `请传入正确的文件夹路径` }
 		const absolutePath = path.resolve(folderPath)
-		await super.uploadFiles(absolutePath, files, (file) => isImage(file.originalname))
+		return await super.uploadFiles(absolutePath, files, (file) => isImage(file.originalname))
 	}
 	// 删除相册文件(支持批量)
 	async deleteFiles(filePaths) {

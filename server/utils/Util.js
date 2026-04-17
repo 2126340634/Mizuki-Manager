@@ -51,5 +51,10 @@ function isMusic(filename) {
 	if (typeof filename !== 'string' || !filename) return false
 	return config.MUSIC_FORMATS.some((format) => filename.endsWith(format))
 }
+// 判断为Markdown文档
+function isMarkdown(filename) {
+	if (typeof filename !== 'string' || !filename) return false
+	return config.MARKDOWN_FORMATS.some((format) => filename.endsWith(format))
+}
 
-module.exports = { fileExists, ensureDirExist, readFile, deleteFile, writeFile, isObject, isImage, isMusic }
+module.exports = { fileExists, ensureDirExist, readFile, deleteFile, writeFile, isObject, isImage, isMusic, isMarkdown }

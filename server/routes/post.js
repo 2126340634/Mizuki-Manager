@@ -4,7 +4,7 @@ const { PostManager } = require('../managers/index.js')
 const pm = new PostManager()
 const multer = require('multer')
 const config = require('../config.js')
-const upload = multer({ storage: multer.memoryStorage, limits: config.MAX_FILE_SIZE })
+const upload = multer({ storage: multer.memoryStorage(), limits: config.MAX_FILE_SIZE })
 
 // 获取全部文章
 router.get('/', async (req, res) => {
@@ -41,7 +41,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
 // 删除文章
 router.delete('/', async (req, res) => {
-	const { filename } = req?.query || {}
+	const { filename } = req?.body || {}
 	const result = await pm.delete(filename)
 	res.status(result.code).json(result)
 })

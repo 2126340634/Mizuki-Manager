@@ -3,6 +3,9 @@ const app = express()
 const routes = require('./routes/index.js')
 const config = require('./config')
 const { verifyToken } = require('./middlewares/auth.js')
+const path = require('node:path')
+
+const isProd = process.env.NODE_ENV === 'production'
 
 app.use(express.json()) // 解析json
 app.use(express.urlencoded({ extended: true })) // 解析url参数
@@ -28,14 +31,28 @@ mizukiRouter.use('/music', routes.music)
 mizukiRouter.use('/builder', routes.builder)
 
 // 404
-mizukiRouter.use('/{*file}', (req, res) => {
+mizukiRouter.use((req, res) => {
 	res.status(404).json({ code: 404, success: false, message: '无效的资源路径', error: 'Route not found' })
 })
 
 app.use('/mizuki', mizukiRouter)
 
+// 提供静态文件访问路径
+app.use('/public', express.static(path.resolve(config.PUBLIC_DIR)))
+
+// 生产环境下使用构建文件
+if (isProd) {
+	const distDir = path.resolve(__dirname, '../frontend/build')
+	app.use(express.static(distDir))
+	app.use((req, res) => {
+		res.sendFile(path.resolve(distDir, 'index.html'), (err) => {
+			if (err) console.error(err)
+		})
+	})
+}
+
 app.use((err, req, res, next) => {
-	console.error(err)
+	if (err) console.error(err)
 	res.status(500).json({ code: 500, success: false, message: '服务器内部错误', error: 'Internal Server Error' })
 })
 
@@ -53,4 +70,5 @@ app.listen(config.PORT, () => {
     │                                                  │
     └──────────────────────────────────────────────────┘
     `)
+	isProd && console.log(`注意: 生产环境下使用后台端口${config.PORT}访问应用`)
 })
