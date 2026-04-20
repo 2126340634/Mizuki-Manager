@@ -16,8 +16,10 @@ async function fileExists(directory, filename) {
 async function ensureDirExist(directory) {
 	try {
 		await fs.promises.access(directory)
+		return true
 	} catch {
 		await fs.promises.mkdir(directory, { recursive: true })
+		return false
 	}
 }
 // 读取文件
@@ -32,7 +34,7 @@ async function deleteFile(directory, filename) {
 }
 // 写入文件
 async function writeFile(directory, filename, content, encoding = 'utf8') {
-	ensureDirExist(directory)
+	await ensureDirExist(directory)
 	const filePath = path.resolve(directory, filename)
 	if (Buffer.isBuffer(content)) await fs.promises.writeFile(filePath, content)
 	else await fs.promises.writeFile(filePath, content, encoding)

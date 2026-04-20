@@ -25,7 +25,7 @@ export default function App() {
 		}
 	}, [location.pathname, token])
 	return (
-		<div className="App" style={{ maxWidth: location.pathname !== '/login' ? '1200px' : '', margin: '0 auto' }}>
+		<div className="App" style={{ maxWidth: location.pathname !== '/login' ? '1600px' : '', margin: '0 auto' }}>
 			{/* PC侧边栏 */}
 			{location.pathname !== '/login' &&
 				(screens.md ? (

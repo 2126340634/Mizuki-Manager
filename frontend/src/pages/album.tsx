@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
 	Layout,
 	Menu,
@@ -21,11 +21,13 @@ import {
 	CheckboxProps,
 	CheckboxChangeEvent,
 	Popconfirm,
-	Pagination
+	Pagination,
+	Dropdown,
+	MenuProps
 } from 'antd'
-import { FolderOutlined, UploadOutlined, EditOutlined, PlusOutlined, FolderOpenOutlined, DeleteOutlined } from '@ant-design/icons'
+import { FolderOutlined, UploadOutlined, EditOutlined, PlusOutlined, FolderOpenOutlined, DeleteOutlined, EllipsisOutlined } from '@ant-design/icons'
 import styles from '../styles/pages/album.module.scss'
-import { getFolders, createFolder, deleteFolder, getFolderFiles, uploadAlbumFiles, deleteFiles, getInfo, updateInfo } from '../services/album'
+import { getFolders, createFolder, deleteFolder, getFolderFiles, uploadAlbumFiles, deleteFiles, getInfo, updateInfo, renameFolder } from '../services/album'
 
 const { Sider, Content } = Layout
 const { useBreakpoint } = Grid
@@ -39,37 +41,60 @@ interface FileItem {
 	filePath: string
 	url: string
 }
+const dropdownOpts: MenuProps['items'] = [
+	{
+		label: '重命名',
+		key: 'rename'
+	},
+	{
+		label: '删除',
+		key: 'delete'
+	}
+]
 
 export default function Album() {
 	const screens = useBreakpoint()
 	const [loading, setLoading] = useState(false)
 	const [folders, setFolders] = useState<FolderItem[]>([]) // 所有文件夹
+	const [folderLimit, setFolderLimit] = useState(50) // 限制初始加载数量
 	const [files, setFiles] = useState<FileItem[]>([]) // 当前文件夹下所有文件(分页)
-	const [curFolderPath, setCurrentFolder] = useState<string>('') // 当前选中的文件夹路径
+	const [curFolderPath, setCurFolderPath] = useState<string>('') // 当前选中的文件夹路径
 	const [drawerVisible, setDrawerVisible] = useState(false) // 移动端侧边抽屉
 	const [isModalOpen, setIsModalOpen] = useState(false) // 配置编辑窗口
 	const [infoContent, setInfoContent] = useState('') // 配置内容
-	const [checkedPaths, setCheckedPaths] = useState<string[]>([]) // 选中对象的路径数组
+	const [checkedPaths, setCheckedPaths] = useState<Set<string>>(new Set()) // 选中对象的路径数组
 	const [pageNum, setPageNum] = useState(1) // 当前页数
-	const [pageSize, setPageSize] = useState(10) // 每页数量
+	const [pageSize, setPageSize] = useState(12) // 每页数量
 	const [pageTotal, setPageTotal] = useState(0) // 相册图片总量
 
 	// 点击全选
-	const onCheckAllChange: CheckboxProps['onChange'] = useCallback(
-		(e) => {
-			setCheckedPaths(e.target.checked ? files.map((file) => file.filePath) : [])
-		},
-		[files]
-	)
+	const onCheckAllChange: CheckboxProps['onChange'] = (e) => {
+		setCheckedPaths(e.target.checked ? new Set(files.map((file) => file.filePath)) : new Set())
+	}
 
-	// 处理勾选
-	const onCheckChange = useCallback(
-		(e: CheckboxChangeEvent, filePath: string) => {
-			if (e.target.checked) setCheckedPaths([filePath, ...checkedPaths])
-			else setCheckedPaths(checkedPaths.filter((path) => path !== filePath))
-		},
-		[checkedPaths]
-	)
+	const _handleCheck = useCallback((needCheck: boolean, filePath: string) => {
+		setCheckedPaths((prev) => {
+			const next = new Set(prev)
+			if (needCheck) {
+				next.add(filePath)
+			} else {
+				next.delete(filePath)
+			}
+			return next
+		})
+	}, [])
+
+	// 复选框勾选
+	const onCheckChange = (e: CheckboxChangeEvent, filePath: string) => {
+		e.stopPropagation()
+		_handleCheck(e?.target?.checked, filePath)
+	}
+
+	// 切换复选框勾选
+	const toggleCheck = (filePath: string) => {
+		const needCheck = !checkedPaths.has(filePath)
+		_handleCheck(needCheck, filePath)
+	}
 
 	// 获取所有文件夹
 	const getAllFolders = useCallback(async () => {
@@ -86,7 +111,7 @@ export default function Album() {
 	}, [])
 
 	// 获取所有文件(分页)
-	const getAllFiles = useCallback(async (folderPath: string, num: number, size: number) => {
+	const getAllFiles = async (folderPath: string, num: number, size: number) => {
 		if (!folderPath) return
 		try {
 			setLoading(true)
@@ -99,85 +124,169 @@ export default function Album() {
 		} finally {
 			setLoading(false)
 		}
+	}
+
+	// 选中目录
+	const selectFolder = useCallback(async (folderPath: string) => {
+		if (!folderPath) return
+		setCurFolderPath(folderPath) // 更新选中文件夹
+		setCheckedPaths(new Set()) // 清空全选
+		setPageNum(1)
+		setPageSize(12)
+		await getAllFiles(folderPath, 1, 12)
 	}, [])
 
-	// 上传相册图片(批量)
-	const uploadFiles = useCallback(
-		async (file: File, fileList: File[]) => {
-			if (file !== fileList[fileList.length - 1]) return // 只执行一次上传
-			try {
-				setLoading(true)
-				const res = await uploadAlbumFiles(curFolderPath, fileList)
-				if (res.success) message.success('上传成功')
-			} catch {
-			} finally {
-				await getAllFiles(curFolderPath, pageNum, pageSize)
-				setLoading(false)
-			}
-			return false
-		},
-		[curFolderPath, pageNum, pageSize, getAllFiles]
-	)
-
-	// 删除相册图片(批量)
-	const removeFiles = useCallback(async () => {
+	// 创建文件夹
+	const addFolder = async () => {
 		try {
 			setLoading(true)
-			const res = await deleteFiles(checkedPaths)
-			if (res.success) message.success('删除成功')
-			setCheckedPaths([])
+			const folderName = prompt('输入创建的目录名称')
+			if (folderName === null) return
+			if (!folderName?.trim()) {
+				message.warning('目录名称不能为空')
+				return
+			}
+			const res = await createFolder(folderName.trim())
+			if (res.success) {
+				message.success('创建成功')
+				const { folderPath } = res.data || {}
+				await getAllFolders()
+				await selectFolder(folderPath)
+			}
+		} catch {
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	// 上传相册图片(批量)
+	const uploadFiles = async (file: File, fileList: File[]) => {
+		if (file !== fileList[fileList.length - 1]) return // 只执行一次上传
+		try {
+			setLoading(true)
+			const res = await uploadAlbumFiles(curFolderPath, fileList)
+			if (res.success) message.success('上传成功')
 		} catch {
 		} finally {
 			await getAllFiles(curFolderPath, pageNum, pageSize)
 			setLoading(false)
 		}
-	}, [checkedPaths, curFolderPath, pageNum, pageSize, getAllFiles])
+		return false
+	}
+
+	// 删除相册图片(批量)
+	const removeFiles = async () => {
+		try {
+			setLoading(true)
+			const res = await deleteFiles(Array.from(checkedPaths))
+			if (res.success) message.success('删除成功')
+			setCheckedPaths(new Set())
+		} catch {
+		} finally {
+			await getAllFiles(curFolderPath, pageNum, pageSize)
+			setLoading(false)
+		}
+	}
 
 	// 保存配置修改
-	const handleSaveInfo = useCallback(() => {
+	const handleSaveInfo = () => {
 		setIsModalOpen(false)
-	}, [])
+	}
 
 	useEffect(() => {
 		getAllFolders()
 	}, [])
 
 	// 分页改变
-	const onPageChange = useCallback(
-		async (page: number, pageSize: number) => {
-			setPageNum(page)
-			setPageSize(pageSize)
-			setCheckedPaths([])
-			await getAllFiles(curFolderPath, page, pageSize)
+	const onPageChange = async (page: number, pageSize: number) => {
+		setPageNum(page)
+		setPageSize(pageSize)
+		setCheckedPaths(new Set())
+		await getAllFiles(curFolderPath, page, pageSize)
+	}
+
+	// 重命名文件夹
+	const modifyFolderName = useCallback(async () => {
+		try {
+			setLoading(true)
+			const newName = prompt('输入新名称')
+			if (newName === null) return
+			if (!newName?.trim()) {
+				message.warning('新名称不能为空')
+				return
+			}
+			const res = await renameFolder(curFolderPath, newName.trim())
+			if (res.success) {
+				message.success('重命名成功')
+				const { folderPath } = res.data || {}
+				await getAllFolders()
+				await selectFolder(folderPath)
+			}
+		} catch {
+		} finally {
+			setLoading(false)
+		}
+	}, [curFolderPath, getAllFolders, selectFolder])
+
+	// 删除文件夹
+	const removeFolder = () => {
+		try {
+			setLoading(true)
+			Modal.confirm({
+				centered: true,
+				content: '确定删除?',
+				onOk: async () => {
+					const res = await deleteFolder(curFolderPath)
+					if (res.success) {
+						message.success('删除成功')
+						setCurFolderPath('')
+						await getAllFolders()
+					}
+				}
+			})
+		} catch {
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	// 更多选项点击
+	const dropdownClick = useCallback(
+		(e: { key: string }) => {
+			const func: Record<string, Function> = {
+				rename: modifyFolderName,
+				delete: removeFolder
+			}
+			func[e.key]()
 		},
-		[getAllFiles, curFolderPath]
+		[modifyFolderName, removeFolder]
 	)
 
-	// 文件夹列表菜单
-	const FolderMenu = useCallback(
-		() => (
-			<>
-				<div style={{ padding: '16px' }}>
-					<Button type="dashed" block icon={<PlusOutlined />}>
-						新建目录
-					</Button>
+	const menuItems = useMemo(() => {
+		return folders.map((folder) => ({
+			key: folder.folderPath,
+			icon: <FolderOutlined />,
+			label: folder.folderName,
+			extra: curFolderPath === folder.folderPath && (
+				<div onClick={(e) => e.stopPropagation()}>
+					<Dropdown menu={{ items: dropdownOpts, onClick: dropdownClick }} trigger={['click']}>
+						{<Button icon={<EllipsisOutlined />} type="text" />}
+					</Dropdown>
 				</div>
-				<Menu
-					mode="inline"
-					selectedKeys={[curFolderPath]}
-					onClick={async ({ key }) => {
-						setCurrentFolder(key) // 更新选中文件夹
-						setCheckedPaths([]) // 清空全选
-						setDrawerVisible(false)
-						setPageNum(1)
-						setPageSize(10)
-						await getAllFiles(key, 1, 10)
-					}}
-					items={folders.map((folder) => ({ key: folder.folderPath, icon: <FolderOutlined />, label: folder.folderName }))}
-				/>
-			</>
-		),
-		[folders, curFolderPath, getAllFiles]
+			)
+		}))
+	}, [folders, curFolderPath, dropdownClick])
+
+	// 文件夹列表
+	const FolderMenu: React.FC = () => (
+		<>
+			<div style={{ padding: '16px' }}>
+				<Button type="dashed" block icon={<PlusOutlined />} onClick={addFolder}>
+					新建目录
+				</Button>
+			</div>
+			<Menu mode="inline" selectedKeys={[curFolderPath]} onClick={({ key }) => selectFolder(key)} items={menuItems} style={{ maxHeight: 'calc(100vh - 64px)', overflowY: 'auto' }} />
+		</>
 	)
 
 	return (
@@ -185,7 +294,7 @@ export default function Album() {
 			{/* PC侧边栏 */}
 			{screens.lg ? (
 				<Sider width={280} theme="light" style={{ borderRight: '1px solid #f0f0f0' }}>
-					<FolderMenu />
+					{<FolderMenu />}
 				</Sider>
 			) : (
 				/* 移动端 */
@@ -208,15 +317,15 @@ export default function Album() {
 									<Checkbox
 										style={{ whiteSpace: 'nowrap' }}
 										onChange={onCheckAllChange}
-										indeterminate={checkedPaths.length > 0 && checkedPaths.length < files.length}
-										checked={checkedPaths.length === files.length}
+										indeterminate={checkedPaths.size > 0 && checkedPaths.size < files.length}
+										checked={checkedPaths.size === files.length}
 									>
 										全选
 									</Checkbox>
 								) : (
 									''
 								)}
-								{checkedPaths.length > 0 ? (
+								{checkedPaths.size > 0 ? (
 									<Popconfirm title="确定删除?" okText="确定" cancelText="取消" onConfirm={removeFiles} placement="bottom">
 										<Button icon={<DeleteOutlined />}>删除</Button>
 									</Popconfirm>
@@ -245,11 +354,12 @@ export default function Album() {
 											hoverable
 											size="small"
 											cover={
-												<div className={styles.card}>
+												<div className={styles.card} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
 													<Image loading="lazy" height="100%" alt={file.filename} src={file.url} />
 												</div>
 											}
-											actions={[<Checkbox checked={checkedPaths.includes(file.filePath)} onChange={(e) => onCheckChange(e, file.filePath)} />]}
+											actions={[<Checkbox checked={checkedPaths.has(file.filePath)} onChange={(e) => onCheckChange(e, file.filePath)} />]}
+											onClick={() => toggleCheck(file.filePath)}
 										>
 											<Card.Meta
 												title={
@@ -271,6 +381,7 @@ export default function Album() {
 									pageSize={pageSize}
 									total={pageTotal}
 									onChange={onPageChange}
+									pageSizeOptions={[12, 24, 48, 96]}
 									style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
 								/>
 							</Row>

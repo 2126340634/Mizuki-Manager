@@ -29,7 +29,7 @@ class BaseManager {
 					throw { code: 400, success: false, message: `文件大小不能超过 ${(config.MAX_FILE_SIZE / 1024 / 1024).toFixed(0)}MB` }
 				}
 				if (await fileExists(directory, filename)) {
-					throw { code: 400, success: false, message: `名为 ${filename} 的文件已存在` }
+					throw { code: 409, success: false, message: `名为 ${filename} 的文件已存在` }
 				}
 				await writeFile(directory, filename, file.buffer)
 			})

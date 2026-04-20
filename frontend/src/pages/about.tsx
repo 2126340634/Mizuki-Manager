@@ -8,7 +8,7 @@ export default function About() {
 	const [loading, setLoading] = useState(false)
 
 	// 获取内容
-	const getContent = useCallback(async () => {
+	const getContent = async () => {
 		try {
 			setLoading(true)
 			const res = await getAboutContent()
@@ -19,36 +19,41 @@ export default function About() {
 		} finally {
 			setLoading(false)
 		}
-	}, [])
+	}
 
 	useEffect(() => {
 		getContent()
 	}, [])
 
 	// 更新内容
-	const handleUpdate = useCallback(async () => {
+	const handleUpdate = async () => {
 		try {
 			setLoading(true)
 			const res = await updateAboutContent(content)
-			if (res.success) message.success('保存成功')
+			if (res.success) {
+				message.success('保存成功')
+				await getContent()
+			}
 		} catch {
 		} finally {
 			setLoading(false)
 		}
-	}, [])
+	}
 
 	// 替换文件
-	const handleReplace = useCallback(async (file: File) => {
+	const handleReplace = async (file: File) => {
 		try {
 			setLoading(true)
 			const res = await replaceAboutFile(file)
-			if (res.success) message.success('替换成功')
-			await getContent()
+			if (res.success) {
+				message.success('替换成功')
+				await getContent()
+			}
 		} catch {
 		} finally {
 			setLoading(false)
 		}
-	}, [])
+	}
 
 	return (
 		<Card

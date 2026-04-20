@@ -30,7 +30,7 @@ class AboutManager {
 	// 更新about
 	async update(content) {
 		try {
-			if (!content) return { code: 400, success: false, message: '新内容不能为空' }
+			if (typeof content !== 'string' || !content) return { code: 400, success: false, message: '请正确输入新内容' }
 			if (!(await fileExists(this.aboutDir, this.aboutFilename))) return { code: 404, success: false, message: '文件不存在' }
 			await writeFile(this.aboutDir, this.aboutFilename, content)
 			return { code: 200, success: true }
