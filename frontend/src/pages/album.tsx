@@ -250,7 +250,7 @@ export default function Album() {
 		} finally {
 			setLoading(false)
 		}
-	}, [getAllFolders, selectFolder])
+	}, [getAllFolders, selectFolder, curFolderPath])
 
 	// 删除文件夹
 	const removeFolder = useCallback(() => {
