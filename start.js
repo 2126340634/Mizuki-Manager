@@ -6,7 +6,7 @@ const isProd = process.argv.includes('--prod')
 
 if (!isProd) {
 	// 开发环境下启动前端
-	const frontend = spawn('pnpm', ['start'], { stdio: 'inherit', shell: true, cwd: './frontend' })
+	const frontend = spawn('pnpm', ['start'], { stdio: 'inherit', shell: true, cwd: './frontend', env: { ...process.env, NODE_ENV: 'development' } })
 	// 启动后端
 	const server = spawn('nodemon', ['--watch', './server', './server/app.js'], {
 		stdio: 'inherit',
@@ -23,7 +23,7 @@ if (!isProd) {
 	process.on('SIGTERM', killAll)
 } else {
 	// 生产环境依赖构建文件
-	const buildRes = spawnSync('pnpm', ['build'], { stdio: 'inherit', shell: true, cwd: './frontend' })
+	const buildRes = spawnSync('pnpm', ['build'], { stdio: 'inherit', shell: true, cwd: './frontend', env: { ...process.env, NODE_ENV: 'production' } })
 	if (buildRes.status !== 0) {
 		console.error('前端构建失败, 停止启动服务')
 		process.exit(1)

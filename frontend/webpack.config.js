@@ -2,6 +2,7 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { EsbuildPlugin } = require('esbuild-loader')
+const webpack = require('webpack')
 const fs = require('fs')
 
 const envPath = path.resolve(__dirname, '../.env')
@@ -24,7 +25,8 @@ module.exports = {
 				loader: 'esbuild-loader',
 				options: {
 					loader: 'tsx',
-					target: 'esnext'
+					target: 'esnext',
+					sourcemap: !isProd
 				}
 			},
 			{
@@ -39,12 +41,24 @@ module.exports = {
 	optimization: {
 		minimize: isProd,
 		minimizer: [
-			new EsbuildPlugin({
-				target: 'esnext',
-				css: true,
-				jsx: 'automatic',
-				drop: ['console', 'debugger']
-			})
+			new EsbuildPlugin(
+				isProd
+					? {
+							target: 'esnext',
+							css: true,
+							jsx: 'automatic',
+							minify: true,
+							minifyWhitespace: true,
+							minifyIdentifiers: true,
+							minifySyntax: true,
+							drop: ['console', 'debugger'],
+							dropLabels: ['unused'],
+							ignoreAnnotations: true,
+							legalComments: 'none',
+							treeShaking: true
+						}
+					: {}
+			)
 		],
 		splitChunks: { chunks: 'all', minSize: 30000, maxSize: 244000 }
 	},
@@ -54,6 +68,9 @@ module.exports = {
 		clean: true
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+			'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development')
+		}),
 		new HtmlWebpackPlugin({
 			template: './public/index.html',
 			filename: 'index.html',
