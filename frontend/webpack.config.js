@@ -14,6 +14,7 @@ require('dotenv').config({ path: envPath })
 const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
+	mode: isProd ? 'production' : 'development',
 	entry: './src/index.tsx',
 	module: {
 		rules: [
