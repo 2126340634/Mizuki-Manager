@@ -1,9 +1,18 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import { Navigate } from 'react-router-dom'
-import Login from '../pages/login'
-import Index from '../pages'
-import About from '../pages/about'
-import Album from '../pages/album'
+const Login = lazy(() => import('../pages/login'))
+const Index = lazy(() => import('../pages/index'))
+const About = lazy(() => import('../pages/about'))
+const Album = lazy(() => import('../pages/album'))
+
+const lazyLoad = (Component: React.LazyExoticComponent<React.ComponentType<any>>) => {
+	return (
+		<Suspense fallback={<div>加载中...</div>}>
+			<Component></Component>
+		</Suspense>
+	)
+}
+
 export default [
 	{
 		path: '/',
@@ -11,19 +20,19 @@ export default [
 	},
 	{
 		path: '/login',
-		element: <Login />
+		element: lazyLoad(Login)
 	},
 	{
 		path: '/index',
-		element: <Index />
+		element: lazyLoad(Index)
 	},
 	{
 		path: '/about',
-		element: <About />
+		element: lazyLoad(About)
 	},
 	{
 		path: '/album',
-		element: <Album />
+		element: lazyLoad(Album)
 	},
 	{
 		path: '*',

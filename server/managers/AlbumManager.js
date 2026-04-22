@@ -38,7 +38,7 @@ class AlbumManager extends BaseManager {
 			if (await ensureDirExist(folderPath)) {
 				return { code: 409, success: false, message: '该目录已存在' }
 			}
-			await writeFile(folderPath, this.infoFilename, '')
+			await writeFile(folderPath, this.infoFilename, JSON.stringify(config.ALBUM_DEFAULT_INFO, null, 2))
 			return { code: 200, success: true, data: { folderPath } }
 		} catch (err) {
 			return { code: 500, success: false, message: '创建失败', error: err }

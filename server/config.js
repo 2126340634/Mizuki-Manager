@@ -1,5 +1,12 @@
 const path = require('path')
-require('dotenv').config()
+const fs = require('fs')
+
+const envPath = path.resolve(__dirname, '../.env')
+if (!fs.existsSync(envPath)) {
+	console.error('\n==================== .env 文件不存在, 请创建 .env 文件并添加必要的环境变量配置 ====================\n')
+	process.exit(1)
+}
+require('dotenv').config({ path: envPath })
 
 // 项目根目录
 const BASE_PATH = path.resolve(process.env.BASE_PATH)
@@ -47,6 +54,21 @@ module.exports = {
 	MUSIC_DATA_DIR: (() => path.join(BASE_PATH, 'src/components/widgets/music-player'))(),
 	// dist打包目录
 	DIST_DIR: (() => path.join(BASE_PATH, 'dist'))(),
+	// 新建相册配置文件默认内容
+	ALBUM_DEFAULT_INFO: {
+		mode: '', // external外链模式 | 默认本地模式为空
+		title: '未命名相册',
+		hidden: false,
+		description: '',
+		date: '',
+		location: '',
+		tags: [],
+		layout: 'grid',
+		columns: 3,
+		// 外链模式参数
+		cover: '',
+		photos: [{ src: '', alt: '' }]
+	},
 	// 相册文件格式
 	IMAGE_FORMATS: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.bmp', '.tiff', '.tif'],
 	// 音乐文件格式

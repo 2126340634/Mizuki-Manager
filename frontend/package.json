@@ -1,7 +1,6 @@
 {
 	"name": "frontend",
 	"version": "0.1.0",
-	"proxy": "http://localhost:3001",
 	"private": true,
 	"dependencies": {
 		"@ant-design/icons": "^6.1.1",
@@ -11,6 +10,7 @@
 		"@testing-library/react": "^16.3.2",
 		"@testing-library/user-event": "^13.5.0",
 		"antd": "^6.3.5",
+		"dayjs": "^1.11.20",
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
 		"react-redux": "^9.2.0",
@@ -19,10 +19,8 @@
 		"web-vitals": "^2.1.4"
 	},
 	"scripts": {
-		"start": "cross-env PORT=3000 BROWSER=none react-scripts start",
-		"build": "cross-env BROWSER=none react-scripts build",
-		"test": "react-scripts test",
-		"eject": "react-scripts eject"
+		"start": "webpack serve --config webpack.config.js --mode development",
+		"build": "webpack --config webpack.config.js --mode production"
 	},
 	"browserslist": {
 		"production": [
@@ -40,11 +38,12 @@
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
 		"@types/sass-loader": "^8.0.10",
-		"cross-env": "^10.1.0",
+		"dot-env": "^0.0.1",
+		"esbuild-loader": "^4.4.3",
 		"prettier": "^3.8.1",
 		"sass": "^1.98.0",
 		"sass-loader": "^16.0.7",
-		"ts-loader": "^9.5.4",
-		"typescript": "^6.0.2"
+		"typescript": "^6.0.2",
+		"webpack-cli": "^7.0.2"
 	}
 }

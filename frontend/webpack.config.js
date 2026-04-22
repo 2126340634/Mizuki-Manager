@@ -1,23 +1,110 @@
-const TerserPlugin = require('terser-webpack-plugin')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const { EsbuildPlugin } = require('esbuild-loader')
+const fs = require('fs')
 
-export default {
+const envPath = path.resolve(__dirname, '../.env')
+if (!fs.existsSync(envPath)) {
+	console.error('\n==================== .env 文件不存在, 请创建 .env 文件并添加必要的环境变量配置 ====================\n')
+	process.exit(1)
+}
+require('dotenv').config({ path: envPath })
+
+const isProd = process.env.NODE_ENV === 'production'
+
+module.exports = {
+	entry: './src/index.tsx',
 	module: {
 		rules: [
-			{ test: /\.(ts|tsx)?$/, use: ['ts-loader'] },
-			{ test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader'] }
+			{
+				test: /\.[jt]sx?$/,
+				exclude: /node_modules/,
+				loader: 'esbuild-loader',
+				options: {
+					loader: 'tsx',
+					target: 'esnext'
+				}
+			},
+			{
+				test: /\.scss$/,
+				use: [isProd ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader'] // 提取css
+			}
 		]
 	},
+	resolve: {
+		extensions: ['.tsx', '.ts', '.jsx', '.js']
+	},
 	optimization: {
-		minimize: true,
+		minimize: isProd,
 		minimizer: [
-			new TerserPlugin({
-				terserOptions: {
-					compress: {
-						drop_console: true,
-						drop_debugger: true
-					}
-				}
+			new EsbuildPlugin({
+				target: 'esnext',
+				css: true,
+				jsx: 'automatic',
+				drop: ['console', 'debugger']
 			})
+		],
+		splitChunks: { chunks: 'all', minSize: 30000, maxSize: 244000 }
+	},
+	output: {
+		filename: '[name].[contenthash:8].chunk.js',
+		path: path.resolve(__dirname, 'dist'),
+		clean: true
+	},
+	plugins: [
+		new HtmlWebpackPlugin({
+			template: './public/index.html',
+			filename: 'index.html',
+			publicPath: '/',
+			minify: isProd && {
+				removeComments: true,
+				collapseWhitespace: true,
+				collapseInlineTagWhitespace: true,
+				conservativeCollapse: true,
+				preserveLineBreaks: true,
+				removeAttributeQuotes: true,
+				removeEmptyAttributes: true,
+				removeOptionalTags: true,
+				removeRedundantAttributes: true,
+				removeScriptTypeAttributes: true,
+				removeStyleLinkTypeAttributes: true,
+				trimCustomFragments: true,
+				sortAttributes: true,
+				sortClassName: true,
+				minifyJS: true,
+				minifyCSS: true,
+				minifyURLs: true
+			}
+		}),
+		new MiniCssExtractPlugin({
+			filename: '[name].[contenthash:8].chunk.css'
+		})
+	],
+	performance: {
+		hints: false
+	},
+	stats: {
+		preset: 'minimal',
+		moduleTrace: true,
+		errorDetails: true
+	},
+	devServer: {
+		compress: true,
+		port: process.env.FRONTEND_DEV_PORT || 3000,
+		open: false,
+		hot: true,
+		historyApiFallback: true,
+		static: {
+			directory: path.resolve(__dirname, 'public')
+		},
+		proxy: [
+			{
+				context: ['/mizuki', '/public'],
+				target: `http://localhost:${process.env.PORT || 3001}`,
+				changeOrigin: true,
+				secure: false
+			}
 		]
 	}
 }

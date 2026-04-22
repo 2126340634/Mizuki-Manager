@@ -3,7 +3,7 @@ const app = express()
 const routes = require('./routes/index.js')
 const config = require('./config')
 const { verifyToken } = require('./middlewares/auth.js')
-const path = require('node:path')
+const path = require('path')
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -42,7 +42,7 @@ app.use('/public', express.static(path.resolve(config.PUBLIC_DIR)))
 
 // 生产环境下使用构建文件
 if (isProd) {
-	const distDir = path.resolve(__dirname, '../frontend/build')
+	const distDir = path.resolve(__dirname, '../frontend/dist')
 	app.use(express.static(distDir))
 	app.use((req, res) => {
 		res.sendFile(path.resolve(distDir, 'index.html'), (err) => {
