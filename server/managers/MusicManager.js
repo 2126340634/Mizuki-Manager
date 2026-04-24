@@ -47,7 +47,7 @@ class ProjectManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldMusic(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldMusic(data) })
 	}
 }
 

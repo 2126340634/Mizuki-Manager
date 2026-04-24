@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Routes, useLocation, useNavigate } from 'react-router-dom'
 import { createRoute } from './routes/createRoute'
-import routes from './routes/routes'
+import routes, { routePaths } from './routes/routes'
 import SidebarMenu from './components/SidebarMenu'
 import './styles/App.scss'
 import { Button, Drawer, Grid } from 'antd'
@@ -28,6 +28,7 @@ export default function App() {
 		<div className="App" style={{ maxWidth: location.pathname !== '/login' ? '1600px' : '', margin: '0 auto' }}>
 			{/* PC侧边栏 */}
 			{location.pathname !== '/login' &&
+				routePaths.has(location.pathname) &&
 				(screens.md ? (
 					<Sider width={280} theme="light" style={{ borderRight: '1px solid #f0f0f0' }}>
 						<SidebarMenu menuClick={handleMenuClick} />

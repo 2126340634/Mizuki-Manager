@@ -29,8 +29,12 @@ class DiaryManager extends BaseManager {
 		diaries.forEach((d) => {
 			const images = d?.images || []
 			images.forEach((imagePath) => {
-				if (!isImage(imagePath)) return // 格式为"/images/diary/xxx.png"
-				const filePath = path.resolve(this.publicDir, imagePath)
+				let path = imagePath
+				if (path.startsWith('/')) {
+					path = path.substring(1)
+				}
+				if (!isImage(path)) return // 格式为"/images/diary/xxx.png"
+				const filePath = path.resolve(this.publicDir, path)
 				imagePaths.push(filePath)
 			})
 		})
@@ -42,7 +46,7 @@ class DiaryManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldImages(data) })
 	}
 }
 

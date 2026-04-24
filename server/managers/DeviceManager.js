@@ -28,7 +28,10 @@ class DeviceManager extends BaseManager {
 		Object.keys(devices).forEach((key) => {
 			const device = devices[key] || []
 			device.forEach((d) => {
-				const imagePath = d?.image || '' // 格式为"/images/device/xxx.png"
+				let imagePath = d?.image || '' // 格式为"/images/device/xxx.png"
+				if (imagePath.startsWith('/')) {
+					imagePath = imagePath.substring(1)
+				}
 				if (!isImage(imagePath)) return
 				const filePath = path.resolve(this.publicDir, imagePath)
 				imagePaths.push(filePath)
@@ -42,7 +45,7 @@ class DeviceManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldImages(data) })
 	}
 }
 

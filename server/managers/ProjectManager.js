@@ -26,7 +26,10 @@ class ProjectManager extends BaseManager {
 		const imagePaths = []
 		const projects = data?.projectsData || []
 		projects.forEach((p) => {
-			const imagePath = p?.image || '' // 格式为"/images/project/xxx.png"
+			let imagePath = p?.image || '' // 格式为"/images/project/xxx.png"
+			if (imagePath.startsWith('/')) {
+				imagePath = imagePath.substring(1)
+			}
 			if (!isImage(imagePath)) return
 			const filePath = path.resolve(this.publicDir, imagePath)
 			imagePaths.push(filePath)
@@ -39,7 +42,7 @@ class ProjectManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldImages(data) })
 	}
 }
 

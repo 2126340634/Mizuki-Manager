@@ -16,8 +16,8 @@ const defaultAstParseOptions = {
 }
 
 class BaseManager {
-	// 上传文件(支持批量)
-	async uploadFiles(directory, files, conditionFunc) {
+	// 上传文件(支持批量) skipIfExists:true => 文件已存在时不报错
+	async uploadFiles(directory, files, conditionFunc, { skipIfExists = false } = {}) {
 		try {
 			if (!files || (Array.isArray(files) && !files.length)) return { code: 400, success: false, message: '请上传文件' }
 			const tasks = files.map(async (file, index) => {
@@ -29,11 +29,19 @@ class BaseManager {
 					throw { code: 400, success: false, message: `文件大小不能超过 ${(config.MAX_FILE_SIZE / 1024 / 1024).toFixed(0)}MB` }
 				}
 				if (await fileExists(directory, filename)) {
-					throw { code: 409, success: false, message: `名为 ${filename} 的文件已存在` }
+					if (!skipIfExists) {
+						throw { code: 409, success: false, message: `名为 ${filename} 的文件已存在` }
+					}
+				} else {
+					await writeFile(directory, filename, file.buffer)
 				}
-				await writeFile(directory, filename, file.buffer)
 			})
-			const result = (await Promise.allSettled(tasks)).map((res, index) => ({ res, filename: files[index].originalname, path: path.join(directory, files[index].originalname) }))
+			const result = (await Promise.allSettled(tasks)).map((res, index) => {
+				const absolutePath = path.join(directory, files[index].originalname)
+				const match = absolutePath.match(/.*?(\\|\/)public(\\|\/)(.*)/) // 匹配public下的路径
+				const publicPath = `/${match && match[3] ? match[3].replace(/\\/g, '/') : ''}` // 替换反斜杠
+				return { res, filename: files[index].originalname, path: absolutePath, publicPath }
+			})
 			const errors = result.filter(({ res }) => res.status === 'rejected')
 			if (errors.length) {
 				const failedPaths = errors.map((err) => err?.res?.reason?.message || err.filename)
@@ -101,6 +109,7 @@ class BaseManager {
 	}
 	// data转换为config
 	async dataToConfig(directory, filename, data, astParseOptions = defaultAstParseOptions, options = { beforeWrite: () => {}, writed: () => {} }) {
+		const { beforeWrite = () => {}, writed = () => {} } = options || {}
 		try {
 			if (typeof directory !== 'string' || !directory.length) return { code: 400, success: false, message: '请传入directory' }
 			if (typeof filename !== 'string' || !filename.length) return { code: 400, success: false, message: '请传入filename' }
@@ -119,9 +128,9 @@ class BaseManager {
 			})
 			const output = recast.print(ast).code
 			const buffer = Buffer.from(output, 'utf8')
-			await Promise.resolve(options.beforeWrite())
+			if (typeof beforeWrite === 'function') await beforeWrite()
 			await writeFile(directory, filename, buffer)
-			await Promise.resolve(options.writed())
+			if (typeof writed === 'function') await writed()
 			return { code: 200, success: true }
 		} catch (err) {
 			return { code: 500, success: false, message: '配置更新失败', error: err }

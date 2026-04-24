@@ -11,9 +11,9 @@ class AnimeManager extends BaseManager {
 		this.animesDir = path.resolve(config.ANIMES_DIR) // diary图片目录
 		this.publicDir = path.resolve(config.PUBLIC_DIR) // public目录
 	}
-	// 上传动画图片(支持批量)
+	// 上传动漫图片(支持批量)
 	async uploadImages(files) {
-		return await super.uploadFiles(this.animesDir, files, (file) => isImage(file.originalname))
+		return await super.uploadFiles(this.animesDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
@@ -24,9 +24,12 @@ class AnimeManager extends BaseManager {
 	_getImagePaths(data) {
 		if (!isObject(data)) return
 		const imagePaths = []
-		const animes = data?.projectsData || []
+		const animes = data?.localAnimeList || []
 		animes.forEach((a) => {
-			const imagePath = a?.cover || '' // 格式为"/assets/anime/xxx.png"
+			let imagePath = a?.cover || '' // 格式为"/assets/anime/xxx.png"
+			if (imagePath.startsWith('/')) {
+				imagePath = imagePath.substring(1)
+			}
 			if (!isImage(imagePath)) return
 			const filePath = path.resolve(this.publicDir, imagePath)
 			imagePaths.push(filePath)
@@ -39,7 +42,7 @@ class AnimeManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, _, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldImages(data) })
 	}
 }
 

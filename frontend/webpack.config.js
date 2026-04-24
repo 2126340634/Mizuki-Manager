@@ -69,7 +69,10 @@ module.exports = {
 	},
 	plugins: [
 		new webpack.DefinePlugin({
-			'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development')
+			'process.env': JSON.stringify({
+				NODE_ENV: isProd ? 'production' : 'development',
+				PUBLIC_DIR: process.env.PUBLIC_DIR || '/public'
+			})
 		}),
 		new HtmlWebpackPlugin({
 			template: './public/index.html',

@@ -93,7 +93,7 @@ export default function Album() {
 	const [pageSize, setPageSize] = useState(12) // 每页数量
 	const [pageTotal, setPageTotal] = useState(0) // 相册图片总量
 
-	// 点击全选
+	// 全选
 	const onCheckAllChange: CheckboxProps['onChange'] = (e) => {
 		setCheckedPaths(e.target.checked ? new Set(files.map((file) => file.filePath)) : new Set())
 	}
@@ -197,6 +197,7 @@ export default function Album() {
 			if (res.success) message.success('上传成功')
 		} catch {
 		} finally {
+			// 批量上传时如果有至少一个失败就会catch, 所以无论成功失败都要重新获取列表
 			await getAllFiles(curFolderPath, pageNum, pageSize)
 			setLoading(false)
 		}
@@ -205,14 +206,18 @@ export default function Album() {
 
 	// 删除相册图片(批量)
 	const removeFiles = async () => {
+		const removePaths = Array.from(checkedPaths)
+		const removeAll = removePaths.length === files.length
 		try {
 			setLoading(true)
-			const res = await deleteFiles(Array.from(checkedPaths))
-			if (res.success) message.success('删除成功')
-			setCheckedPaths(new Set())
+			const res = await deleteFiles(removePaths)
+			if (res.success) {
+				message.success('删除成功')
+				setCheckedPaths(new Set())
+			}
 		} catch {
 		} finally {
-			await getAllFiles(curFolderPath, pageNum, pageSize)
+			await getAllFiles(curFolderPath, removeAll ? Math.max(1, pageNum - 1) : pageNum, pageSize)
 			setLoading(false)
 		}
 	}
@@ -395,7 +400,7 @@ export default function Album() {
 					<div className={styles.toolbar}>
 						<div>
 							{!screens.lg && <Button className={styles['toolbar-directory']} icon={<FolderOpenOutlined />} onClick={() => setDrawerVisible(true)} />}
-							<Typography.Title level={4}>{folders.find((folder) => folder.folderPath === curFolderPath)?.folderName || '选择目录'}</Typography.Title>
+							<Typography.Title level={4}>{folders.find((folder) => folder.folderPath === curFolderPath)?.folderName || '选择相册目录'}</Typography.Title>
 							{curFolderPath && (
 								<Alert
 									style={{ marginBottom: 16 }}
@@ -435,22 +440,18 @@ export default function Album() {
 									>
 										全选
 									</Checkbox>
-								) : (
-									''
-								)}
+								) : null}
 								{checkedPaths.size > 0 ? (
 									<Popconfirm title="确定删除?" okText="确定" cancelText="取消" onConfirm={removeFiles} placement="bottom">
 										<Button loading={loading} icon={<DeleteOutlined />}>
 											删除
 										</Button>
 									</Popconfirm>
-								) : (
-									''
-								)}
+								) : null}
 								<Button loading={loading} icon={<EditOutlined />} onClick={async () => await getInfoContent()}>
 									配置
 								</Button>
-								<Upload showUploadList={false} beforeUpload={uploadFiles} multiple>
+								<Upload showUploadList={false} beforeUpload={uploadFiles} multiple accept="image/*">
 									<Button loading={loading} type="primary" icon={<UploadOutlined />}>
 										上传
 									</Button>
@@ -461,48 +462,48 @@ export default function Album() {
 
 					{/* 文件列表 */}
 					{curFolderPath && files.length > 0 ? (
-						<>
-							<Row gutter={[4, 4]} style={{ marginTop: 16 }}>
-								{files.map((file, index) => (
-									<Col key={index} xs={12} sm={8} md={12} lg={6}>
-										<Card
-											hoverable
-											size="small"
-											cover={
-												<div className={styles.card} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-													<Image loading="lazy" height="100%" alt={file.filename} src={file.url} />
-												</div>
+						<Row gutter={[4, 4]} style={{ marginTop: 16 }}>
+							{files.map((file, index) => (
+								<Col key={index} xs={12} sm={8} md={12} lg={6}>
+									<Card
+										hoverable
+										size="small"
+										cover={
+											<div className={styles.cover} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+												{file.url && <Image loading="lazy" width="100%" height="100%" style={{ objectFit: 'contain' }} alt={file.filename} src={file.url} />}
+											</div>
+										}
+										actions={[<Checkbox checked={checkedPaths.has(file.filePath)} onChange={(e) => onCheckChange(e, file.filePath)} />]}
+										onClick={() => toggleCheck(file.filePath)}
+									>
+										<Card.Meta
+											title={
+												<Typography.Text style={{ fontSize: 12 }} ellipsis={{ tooltip: file.filename }}>
+													<span style={{ color: '#999', fontWeight: 'lighter' }}>{file.filename === 'cover.jpg' ? '[封面]' : ''}</span> {file.filename}
+												</Typography.Text>
 											}
-											actions={[<Checkbox checked={checkedPaths.has(file.filePath)} onChange={(e) => onCheckChange(e, file.filePath)} />]}
-											onClick={() => toggleCheck(file.filePath)}
-										>
-											<Card.Meta
-												title={
-													<Typography.Text style={{ fontSize: 12 }} ellipsis={{ tooltip: file.filename }}>
-														<span style={{ color: '#999', fontWeight: 'lighter' }}>{file.filename === 'cover.jpg' ? '[封面]' : ''}</span> {file.filename}
-													</Typography.Text>
-												}
-											/>
-										</Card>
-									</Col>
-								))}
-							</Row>
-							<Row>
-								<Pagination
-									size="small"
-									showQuickJumper
-									showSizeChanger
-									current={pageNum}
-									pageSize={pageSize}
-									total={pageTotal}
-									onChange={onPageChange}
-									pageSizeOptions={[12, 24, 48, 96]}
-									style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
-								/>
-							</Row>
-						</>
+										/>
+									</Card>
+								</Col>
+							))}
+						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description={curFolderPath ? '空空如也~' : '先选择目录'} />
+						<Empty style={{ marginTop: 60 }} description={curFolderPath ? '空空如也~' : '先选择相册目录'} />
+					)}
+					{curFolderPath && pageTotal > 0 && (
+						<Row>
+							<Pagination
+								size="small"
+								showQuickJumper
+								showSizeChanger
+								current={pageNum}
+								pageSize={pageSize}
+								total={pageTotal}
+								onChange={onPageChange}
+								pageSizeOptions={[12, 24, 48, 96]}
+								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+							/>
+						</Row>
 					)}
 				</Spin>
 			</Content>
@@ -515,14 +516,14 @@ export default function Album() {
 				onOk={debouncedSave}
 				onCancel={() => setIsModalOpen(false)}
 				width={screens.md ? (currentMode === 'external' ? 900 : 600) : '95%'}
-				centered
 				okText="保存"
 				cancelText="取消"
+				centered
 				destroyOnHidden
 				forceRender
 			>
 				<Form form={form} layout="vertical">
-					<Row gutter={[20, 0]} style={{ marginTop: 16 }}>
+					<Row gutter={[8, 0]} style={{ marginTop: 16 }}>
 						<Col xs={12} md={5}>
 							<Form.Item label="模式" name="mode">
 								<Select
@@ -594,7 +595,7 @@ export default function Album() {
 						{currentMode === 'external' && (
 							<>
 								<Col xs={24} md={12}>
-									<Form.Item label="封面图片链接" name="cover" rules={[{ required: true, message: '请输入封面图片URL' }]}>
+									<Form.Item label="封面图片链接" name="cover" rules={[{ required: true }]}>
 										<Input placeholder="输入封面图片URL" />
 									</Form.Item>
 								</Col>
@@ -619,7 +620,7 @@ export default function Album() {
 															</div>
 
 															<Row gutter={[12, 0]}>
-																<Form.Item noStyle shouldUpdate>
+																<Form.Item noStyle>
 																	{({ getFieldValue }) => {
 																		const src = getFieldValue(['photos', name, 'src'])
 																		const alt = getFieldValue(['photos', name, 'alt'])
@@ -628,7 +629,7 @@ export default function Album() {
 																				<Col xs={src ? 16 : 24}>
 																					<Row gutter={[0, 12]}>
 																						<Col xs={24}>
-																							<Form.Item {...restField} name={[name, 'src']} label="图片链接" style={{ margin: 0 }} rules={[{ required: index > 0, message: '请输入图片URL' }]}>
+																							<Form.Item {...restField} name={[name, 'src']} label="图片链接" style={{ margin: 0 }} rules={[{ required: index > 0 }]}>
 																								<Input placeholder="输入图片URL" />
 																							</Form.Item>
 																						</Col>
@@ -641,7 +642,7 @@ export default function Album() {
 																				</Col>
 																				{src && (
 																					<Col xs={8}>
-																						<Image loading="lazy" height="100%" width="100%" style={{ objectFit: 'contain', background: '#eee' }} alt={alt} src={src} />
+																						<Image loading="lazy" height="100%" width="100%" style={{ objectFit: 'contain' }} alt={alt} src={src} />
 																					</Col>
 																				)}
 																			</>

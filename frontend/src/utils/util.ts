@@ -52,3 +52,22 @@ export const throttle = <T extends (...args: any[]) => void>(func: T, delay: num
 	}
 	return throttled
 }
+
+// 传入public下的路径拼接
+export const getPublicPath = (targetPath: string): string => {
+	if (!targetPath) return ''
+	const isWebImage = targetPath.startsWith('http://') || targetPath.startsWith('https://') || targetPath.startsWith('//')
+	const isBase64 = targetPath.startsWith('data:image/')
+	if (isWebImage || isBase64) return targetPath
+	return `/public${targetPath.startsWith('/') ? '' : '/'}${targetPath}`
+}
+
+// YYYY-MM 比较年月时间戳
+export const compareMonth = (str1: string, str2: string): -1 | 0 | 1 | undefined => {
+	if (!str1 || !str2) return
+	const date1 = new Date(str1 + '-01')
+	const date2 = new Date(str2 + '-01')
+	const timestamp1 = date1.getTime()
+	const timestamp2 = date2.getTime()
+	return timestamp1 > timestamp2 ? 1 : timestamp1 < timestamp2 ? -1 : 0
+}

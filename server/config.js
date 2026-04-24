@@ -9,7 +9,7 @@ if (!fs.existsSync(envPath)) {
 require('dotenv').config({ path: envPath })
 
 // 项目根目录
-const BASE_PATH = path.resolve(process.env.BASE_PATH)
+const BASE_PATH = process.env.BASE_PATH
 // public目录
 const PUBLIC_DIR = path.join(BASE_PATH, 'public')
 

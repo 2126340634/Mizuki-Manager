@@ -90,7 +90,7 @@ export default function About() {
 		<Card
 			title={
 				<span>
-					<FileTextOutlined /> 编辑关于页面
+					<FileTextOutlined /> 关于页面
 				</span>
 			}
 			style={{ width: '100%' }}

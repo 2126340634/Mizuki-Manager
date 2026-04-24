@@ -10,6 +10,13 @@ const isProd = process.env.NODE_ENV === 'production'
 app.use(express.json()) // 解析json
 app.use(express.urlencoded({ extended: true })) // 解析url参数
 
+app.use('/mizuki', (req, res, next) => {
+	const illegalPaths = ['../', '..\\', '/../', '\\..\\'] // 非法路径
+	if (illegalPaths.some((p) => req.path.includes(p))) {
+		return res.status(403).json({ code: 403, success: false, message: '非法路径访问' })
+	}
+	next()
+})
 const mizukiRouter = express.Router()
 // 登录模块
 mizukiRouter.use('/auth', routes.auth)

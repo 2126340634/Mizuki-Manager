@@ -4,6 +4,7 @@ const Login = lazy(() => import('../pages/login'))
 const Index = lazy(() => import('../pages/index'))
 const About = lazy(() => import('../pages/about'))
 const Album = lazy(() => import('../pages/album'))
+const Anime = lazy(() => import('../pages/anime'))
 
 const lazyLoad = (Component: React.LazyExoticComponent<React.ComponentType<any>>) => {
 	return (
@@ -13,7 +14,7 @@ const lazyLoad = (Component: React.LazyExoticComponent<React.ComponentType<any>>
 	)
 }
 
-export default [
+const routes = [
 	{
 		path: '/',
 		element: <Navigate to="/index" replace />
@@ -35,7 +36,15 @@ export default [
 		element: lazyLoad(Album)
 	},
 	{
+		path: '/anime',
+		element: lazyLoad(Anime)
+	},
+	{
 		path: '*',
 		element: <div>404 页面不存在</div>
 	}
 ]
+
+export const routePaths = new Set(routes.map((route) => route.path))
+
+export default routes

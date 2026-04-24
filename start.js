@@ -25,7 +25,7 @@ if (!isProd) {
 	// 生产环境依赖构建文件
 	const buildRes = spawnSync('pnpm', ['build'], { stdio: 'inherit', shell: true, cwd: './frontend', env: { ...process.env, NODE_ENV: 'production' } })
 	if (buildRes.status !== 0) {
-		console.error('前端构建失败, 停止启动服务')
+		console.error('\n==================== 前端构建失败, 停止启动服务 ====================\n')
 		process.exit(1)
 	}
 	// 启动pm2进程监控后端
