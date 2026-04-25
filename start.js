@@ -1,4 +1,4 @@
-const { spawn, spawnSync } = require('child_process')
+const { spawn, spawnSync, exec } = require('child_process') // 1. 引入 exec
 const pm2 = require('pm2')
 const path = require('path')
 
@@ -13,11 +13,15 @@ if (!isProd) {
 		shell: true,
 		env: { ...process.env, NODE_ENV: 'development' }
 	})
-	// 关闭进程
 	const killAll = () => {
-		server?.kill()
-		frontend?.kill()
-		process.exit(0)
+		if (process.platform === 'win32') {
+			if (server?.pid) exec(`taskkill /F /T /PID ${server.pid}`)
+			if (frontend?.pid) exec(`taskkill /F /T /PID ${frontend.pid}`)
+		} else {
+			server?.kill()
+			frontend?.kill()
+		}
+		setTimeout(() => process.exit(0), 500)
 	}
 	process.on('SIGINT', killAll)
 	process.on('SIGTERM', killAll)
@@ -28,7 +32,7 @@ if (!isProd) {
 		console.error('\n==================== 前端构建失败, 停止启动服务 ====================\n')
 		process.exit(1)
 	}
-	// 启动pm2进程监控后端
+	// 启动pm2进程托管后端
 	pm2.connect((err) => {
 		if (err) {
 			console.error('pm2连接失败:', err)

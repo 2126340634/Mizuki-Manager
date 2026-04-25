@@ -111,7 +111,7 @@ module.exports = {
 		errorDetails: true
 	},
 	devServer: {
-		compress: true,
+		compress: false,
 		port: process.env.FRONTEND_DEV_PORT || 3000,
 		open: false,
 		hot: true,

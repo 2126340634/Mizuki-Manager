@@ -1,4 +1,5 @@
 import { message } from 'antd'
+import { redirectToLogin } from './util'
 type MethodType = 'GET' | 'POST' | 'PUT' | 'DELETE'
 interface RequestParams {
 	url: string
@@ -68,9 +69,7 @@ request.upload = async (params: UploadParams) => {
 async function _handleResponse(res: Response) {
 	const resJson = await res.json()
 	if (resJson.code === 401) {
-		localStorage.removeItem('token')
-		sessionStorage.removeItem('token')
-		window.location.replace('/login')
+		redirectToLogin()
 		throw resJson
 	}
 	if (!res.ok || resJson.code !== 200) throw resJson

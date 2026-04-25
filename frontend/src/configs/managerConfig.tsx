@@ -2,7 +2,7 @@ import React from 'react'
 import {
 	HomeOutlined,
 	SettingOutlined,
-	BuildOutlined,
+	RocketOutlined,
 	PictureOutlined,
 	PlayCircleOutlined,
 	FileTextOutlined,
@@ -20,7 +20,7 @@ export const managerList = [
 	{ title: '关于', subtitle: 'About', icon: <InfoCircleOutlined />, path: '/about' },
 	{ title: '相册 ', subtitle: 'Album', icon: <PictureOutlined />, path: '/album' },
 	{ title: '追番', subtitle: 'Anime', icon: <PlayCircleOutlined />, path: '/anime' },
-	{ title: '构建部署', subtitle: 'Build', icon: <BuildOutlined />, path: '/build' },
+	{ title: '构建部署', subtitle: 'Build', icon: <RocketOutlined />, path: '/builder' },
 	{ title: '配置', subtitle: 'Config', icon: <SettingOutlined />, path: '/config' },
 	{ title: '我的设备', subtitle: 'Device', icon: <DeploymentUnitOutlined />, path: '/device' },
 	{ title: '日记', subtitle: 'Diary', icon: <BookOutlined />, path: '/diary' },

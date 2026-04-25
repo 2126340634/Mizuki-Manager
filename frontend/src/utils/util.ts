@@ -71,3 +71,10 @@ export const compareMonth = (str1: string, str2: string): -1 | 0 | 1 | undefined
 	const timestamp2 = date2.getTime()
 	return timestamp1 > timestamp2 ? 1 : timestamp1 < timestamp2 ? -1 : 0
 }
+
+// 处理重定向到登录页
+export const redirectToLogin = () => {
+	localStorage.removeItem('token')
+	sessionStorage.removeItem('token')
+	window.location.replace('/login')
+}

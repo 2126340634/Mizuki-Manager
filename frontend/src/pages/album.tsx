@@ -35,6 +35,7 @@ import styles from '../styles/pages/album.module.scss'
 import { getFolders, createFolder, deleteFolder, getFolderFiles, uploadAlbumFiles, deleteFiles, getInfo, updateInfo, renameFolder } from '../services/album'
 import dayjs from 'dayjs'
 import { debounce } from '../utils/util'
+import { imageAccept } from '../configs/uploadConfig'
 
 const { Sider, Content } = Layout
 const { useBreakpoint } = Grid
@@ -420,7 +421,7 @@ export default function Album() {
 											>
 												cover.jpg
 											</span>{' '}
-											的图片作为封面
+											的图片作为封面。
 										</>
 									}
 									type="info"
@@ -451,7 +452,7 @@ export default function Album() {
 								<Button loading={loading} icon={<EditOutlined />} onClick={async () => await getInfoContent()}>
 									配置
 								</Button>
-								<Upload showUploadList={false} beforeUpload={uploadFiles} multiple accept="image/*">
+								<Upload showUploadList={false} beforeUpload={uploadFiles} multiple accept={imageAccept}>
 									<Button loading={loading} type="primary" icon={<UploadOutlined />}>
 										上传
 									</Button>
@@ -515,7 +516,7 @@ export default function Album() {
 				mask={{ closable: false }}
 				onOk={debouncedSave}
 				onCancel={() => setIsModalOpen(false)}
-				width={screens.md ? (currentMode === 'external' ? 900 : 600) : '95%'}
+				width={screens.md ? (currentMode === 'external' ? 800 : 600) : '95%'}
 				okText="保存"
 				cancelText="取消"
 				centered
@@ -525,7 +526,7 @@ export default function Album() {
 				<Form form={form} layout="vertical">
 					<Row gutter={[8, 0]} style={{ marginTop: 16 }}>
 						<Col xs={12} md={5}>
-							<Form.Item label="模式" name="mode">
+							<Form.Item style={{ marginBottom: 8 }} label="模式" name="mode">
 								<Select
 									options={[
 										{ value: '', label: '本地模式' },
@@ -536,42 +537,42 @@ export default function Album() {
 						</Col>
 
 						<Col xs={12} md={4}>
-							<Form.Item label="隐藏相册" name="hidden" valuePropName="checked">
+							<Form.Item style={{ marginBottom: 8 }} label="隐藏相册" name="hidden" valuePropName="checked">
 								<Switch checkedChildren="隐藏" unCheckedChildren="显示" />
 							</Form.Item>
 						</Col>
 
 						<Col xs={24} md={15}>
-							<Form.Item label="相册标题" name="title">
+							<Form.Item style={{ marginBottom: 8 }} label="相册标题" name="title">
 								<Input placeholder="输入相册标题" />
 							</Form.Item>
 						</Col>
 
 						<Col xs={24}>
-							<Form.Item label="相册描述" name="description">
+							<Form.Item style={{ marginBottom: 8 }} label="相册描述" name="description">
 								<Input.TextArea placeholder="输入相册描述" rows={3} showCount maxLength={500} />
 							</Form.Item>
 						</Col>
 
 						<Col xs={12} md={currentMode === 'external' ? 5 : 12}>
-							<Form.Item label="创建日期" name="date">
+							<Form.Item style={{ marginBottom: 8 }} label="创建日期" name="date">
 								<DatePicker placeholder="选择创建日期" style={{ width: '100%' }} format="YYYY-MM-DD" />
 							</Form.Item>
 						</Col>
 						<Col xs={12} md={currentMode === 'external' ? 7 : 12}>
-							<Form.Item label="拍摄地点" name="location">
+							<Form.Item style={{ marginBottom: 8 }} label="拍摄地点" name="location">
 								<Input placeholder="输入拍摄地点" />
 							</Form.Item>
 						</Col>
 
 						<Col xs={24} md={currentMode === 'external' ? 12 : 24}>
-							<Form.Item label="标签" name="tags">
+							<Form.Item style={{ marginBottom: 8 }} label="标签" name="tags">
 								<Select mode="tags" placeholder="输入标签" tokenSeparators={[',', ';', '，', '；']} />
 							</Form.Item>
 						</Col>
 
 						<Col xs={12} md={currentMode === 'external' ? 5 : 12}>
-							<Form.Item label="布局方式" name="layout">
+							<Form.Item style={{ marginBottom: 8 }} label="布局方式" name="layout">
 								<Select
 									options={[
 										{ value: 'grid', label: '网格布局' },
@@ -581,7 +582,7 @@ export default function Album() {
 							</Form.Item>
 						</Col>
 						<Col xs={12} md={currentMode === 'external' ? 7 : 12}>
-							<Form.Item label="列数" name="columns">
+							<Form.Item style={{ marginBottom: 8 }} label="列数" name="columns">
 								<Select
 									options={[
 										{ value: 1, label: '1列' },
@@ -595,7 +596,7 @@ export default function Album() {
 						{currentMode === 'external' && (
 							<>
 								<Col xs={24} md={12}>
-									<Form.Item label="封面图片链接" name="cover" rules={[{ required: true }]}>
+									<Form.Item style={{ marginBottom: 8 }} label="封面图片链接" name="cover" rules={[{ required: true }]}>
 										<Input placeholder="输入封面图片URL" />
 									</Form.Item>
 								</Col>
@@ -620,7 +621,7 @@ export default function Album() {
 															</div>
 
 															<Row gutter={[12, 0]}>
-																<Form.Item noStyle>
+																<Form.Item noStyle shouldUpdate>
 																	{({ getFieldValue }) => {
 																		const src = getFieldValue(['photos', name, 'src'])
 																		const alt = getFieldValue(['photos', name, 'alt'])

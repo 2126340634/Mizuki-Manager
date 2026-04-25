@@ -72,6 +72,7 @@ app.listen(config.PORT, () => {
     │                                                  │
     │   > 端口: ${config.PORT.toString().padEnd(38)} │
     │   > 环境: ${(process.env.NODE_ENV || 'development').padEnd(38)} │
+    │   > 系统: ${process.platform.padEnd(38)} │
     │                                                  │
     │   ${`O(∩_∩)O ~ 运行中...`.padEnd(31)}             │
     │                                                  │

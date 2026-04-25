@@ -1,0 +1,40 @@
+@use '../utils/_mixins.scss' as mix;
+
+.layout-container {
+	background: #fff;
+	min-height: 100vh;
+
+	.toolbar {
+		margin-bottom: 8px;
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+
+		@media (max-width: 768px) {
+			margin-top: 38px;
+		}
+	}
+
+	.output-container {
+		margin-top: 50px;
+		width: 100%;
+		font-family: monospace;
+		font-size: 14px;
+		height: calc(100vh - 240px);
+		overflow-y: auto;
+		white-space: pre-wrap;
+		word-break: break-all;
+		position: relative;
+
+		.log {
+			padding: 20px;
+			color: #d4d4d4;
+			background-color: #333;
+			border-radius: 8px;
+
+			&-end {
+				height: 0;
+			}
+		}
+	}
+}

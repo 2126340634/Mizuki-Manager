@@ -27,12 +27,13 @@ import {
 	Popconfirm,
 	CheckboxChangeEvent
 } from 'antd'
-import { EditOutlined, UploadOutlined, LinkOutlined, DesktopOutlined, StarFilled, DeleteOutlined } from '@ant-design/icons'
+import { EditOutlined, UploadOutlined, LinkOutlined, StarFilled, DeleteOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import { getAnimeConfig, writeAnimeConfig, uploadAnimeImages } from '../services/anime'
 import { compareMonth, debounce, getPublicPath } from '../utils/util'
 import styles from '../styles/pages/anime.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import dayjs from 'dayjs'
+import { imageAccept } from '../configs/uploadConfig'
 
 const { useBreakpoint } = Grid
 const statusOpts = [
@@ -190,7 +191,8 @@ export default function Anime() {
 				...values,
 				year: values.year ? values.year.format('YYYY') : '',
 				startDate: values.startDate ? values.startDate.format('YYYY-MM') : '',
-				endDate: values.endDate ? values.endDate.format('YYYY-MM') : ''
+				endDate: values.endDate ? values.endDate.format('YYYY-MM') : '',
+				episodes: `${values.totalEpisodes} episodes`
 			})
 			await updateList(newList, editingIndex === -1 ? '添加成功' : '修改成功', pageNum, pageSize) // 更新总列表
 		} catch {
@@ -233,14 +235,15 @@ export default function Anime() {
 			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto' }}>
 				<Spin spinning={loading}>
 					{/* 顶部标题与操作栏 */}
-					<div className={styles.toolbar} style={{ marginBottom: 12 }}>
+					<div className={styles.toolbar}>
 						<div style={{ display: 'flex', flexDirection: 'column' }}>
 							<Typography.Title level={4} style={{ margin: 0 }}>
-								<DesktopOutlined /> 追番记录
+								<PlayCircleOutlined /> 追番记录
 							</Typography.Title>
 							<Typography.Text type="secondary">管理追番数据</Typography.Text>
 						</div>
 					</div>
+					
 					<Space>
 						{pageList.length > 0 ? (
 							<Checkbox
@@ -301,7 +304,7 @@ export default function Anime() {
 													</Typography.Text>
 													<Typography.Text
 														ellipsis={{ tooltip: anime.description }}
-														style={{ fontSize: 12, fontWeight: 'lighter', color: '#999', lineHeight: '18px', maxHeight: '36px', whiteSpace: 'pre-wrap', textOverflow: 'ellipsis' }}
+														style={{ fontWeight: 'lighter', color: '#999', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}
 													>
 														{anime.description}
 													</Typography.Text>
@@ -351,7 +354,7 @@ export default function Anime() {
 					onOk={debouncedSave}
 					onCancel={() => setIsModalOpen(false)}
 					mask={{ closable: false }}
-					width={screens.md ? 500 : '95%'}
+					width={screens.md ? 600 : '95%'}
 					okText="保存"
 					cancelText="取消"
 					centered
@@ -360,54 +363,64 @@ export default function Anime() {
 				>
 					<Form form={form} layout="vertical">
 						<Row gutter={[8, 0]}>
-							<Col span={16}>
-								<Form.Item name="title" label="番剧标题" rules={[{ required: true }]}>
+							<Col span={24}>
+								<Form.Item style={{ marginBottom: 8 }} name="title" label="番剧标题" rules={[{ required: true }]}>
 									<Input placeholder="输入番剧标题" style={{ width: '100%' }} />
 								</Form.Item>
 							</Col>
 							<Col span={8}>
-								<Form.Item name="year" label="发布年份" rules={[{ required: true }]}>
+								<Form.Item style={{ marginBottom: 8 }} name="year" label="发布年份" rules={[{ required: true }]}>
 									<DatePicker placeholder="选择发布年份" picker="year" style={{ width: '100%' }} />
+								</Form.Item>
+							</Col>
+							<Col span={16}>
+								<Form.Item style={{ marginBottom: 8 }} name="studio" label="制作公司" rules={[{ required: true }]}>
+									<Input placeholder="例如: CloverWorks" style={{ width: '100%' }} />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
 								<div style={{ display: 'flex', flexDirection: screens.md ? 'row' : 'column', gap: screens.md ? 8 : 0, overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
-									<Form.Item style={{ flex: 1 }} name="cover" label="封面图片 (无引用的图片将被清理)" rules={[{ required: true }]}>
+									<Form.Item style={{ flex: 1, marginBottom: 8 }} name="cover" label="封面图片 (无引用的图片将被清理)" rules={[{ required: true }]}>
 										<Space.Compact style={{ width: '100%' }}>
 											<Form.Item name="cover" noStyle>
 												<Input placeholder="输入图片外链" />
 											</Form.Item>
-											<Upload showUploadList={false} beforeUpload={uploadCover} accept="image/*">
+											<Upload showUploadList={false} beforeUpload={uploadCover} accept={imageAccept}>
 												<Button icon={<UploadOutlined />}>上传</Button>
 											</Upload>
 										</Space.Compact>
 									</Form.Item>
 									{getPublicPath(coverValue) && (
-										<Image
-											width={screens.md ? 100 : '100%'}
-											height={100}
-											loading="lazy"
-											src={getPublicPath(coverValue)}
-											alt={coverValue || ''}
-											style={{ objectFit: 'contain', marginTop: screens.md ? 0 : -12 }}
-										/>
+										<Image width={screens.md ? 100 : '100%'} height={80} loading="lazy" src={getPublicPath(coverValue)} alt={coverValue || ''} style={{ objectFit: 'contain' }} />
 									)}
 								</div>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="description" label="番剧描述" rules={[{ required: true }]}>
+								<Form.Item style={{ marginBottom: 8 }} name="link" label="观看链接" rules={[{ required: true }]}>
+									<Input placeholder="输入观看链接 (例如B站)" style={{ width: '100%' }} />
+								</Form.Item>
+							</Col>
+							<Col span={24}>
+								<Form.Item style={{ marginBottom: 8 }} name="description" label="番剧描述" rules={[{ required: true }]}>
 									<Input.TextArea placeholder="输入番剧描述" rows={3} style={{ width: '100%' }} />
 								</Form.Item>
 							</Col>
+							<Col span={24}>
+								<Form.Item style={{ marginBottom: 8 }} name="genre" label="番剧类型" rules={[{ required: true }]}>
+									<Select mode="tags" style={{ width: '100%' }} placeholder="输入标签后按回车" tokenSeparators={[',', '，']} />
+								</Form.Item>
+							</Col>
 							<Col xs={12} md={8}>
-								<Form.Item name="rating" label="评分 (0-10)" rules={[{ required: true }]}>
+								<Form.Item style={{ marginBottom: 8 }} name="rating" label="评分 (0-10)" rules={[{ required: true }]}>
 									<InputNumber placeholder="输入番剧评分" min={0} max={10} formatter={(value) => Number(value)?.toFixed(1) || ''} style={{ width: '100%' }} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
 								<Form.Item
+									style={{ marginBottom: 8 }}
 									name="progress"
 									label="观看集数"
+									dependencies={['totalEpisodes']}
 									rules={[
 										{ required: true },
 										{
@@ -422,19 +435,21 @@ export default function Anime() {
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
-								<Form.Item name="totalEpisodes" label="总集数" rules={[{ required: true }]}>
+								<Form.Item style={{ marginBottom: 8 }} name="totalEpisodes" label="总集数" rules={[{ required: true }]}>
 									<InputNumber placeholder="输入总集数" min={0} formatter={(value) => Number(value)?.toFixed(0) || ''} style={{ width: '100%' }} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
-								<Form.Item name="status" label="观看状态" rules={[{ required: true }]}>
+								<Form.Item style={{ marginBottom: 8 }} name="status" label="观看状态" rules={[{ required: true }]}>
 									<Select placeholder="选择观看状态" options={statusOpts} style={{ width: '100%' }} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
 								<Form.Item
+									style={{ marginBottom: 8 }}
 									name="startDate"
 									label="开始日期"
+									dependencies={['endDate']}
 									rules={[
 										{ required: true },
 										{
@@ -455,7 +470,7 @@ export default function Anime() {
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
-								<Form.Item name="endDate" label="结束日期">
+								<Form.Item style={{ marginBottom: 8 }} name="endDate" label="结束日期">
 									<DatePicker picker="month" format="YYYY-MM" style={{ width: '100%' }} />
 								</Form.Item>
 							</Col>
