@@ -59,7 +59,8 @@ class BuildManager {
 					await fs.promises.rm(this.deployDir, { recursive: true, force: true })
 					await fs.promises.cp(this.distDir, this.deployDir, { recursive: true, force: true })
 				}
-				resolve({ code: 200, success: true, message: '[System] 部署完成' })
+				if (onLog) onLog('\n[System] 部署完成\n')
+				resolve({ code: 200, success: true })
 			})
 			this.childProcess.on('error', (err) => {
 				this.childProcess = null

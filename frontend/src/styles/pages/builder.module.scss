@@ -16,6 +16,7 @@
 	}
 
 	.output-container {
+		$border-radius: 8px;
 		margin-top: 50px;
 		width: 100%;
 		font-family: monospace;
@@ -25,12 +26,13 @@
 		white-space: pre-wrap;
 		word-break: break-all;
 		position: relative;
+		border-radius: $border-radius;
 
 		.log {
 			padding: 20px;
-			color: #d4d4d4;
-			background-color: #333;
-			border-radius: 8px;
+			color: #999;
+			background-color: #2a2a2a;
+			border-radius: $border-radius;
 
 			&-end {
 				height: 0;

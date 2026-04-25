@@ -1,10 +1,17 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { Layout, Typography, Grid, Space, Button, Alert, Empty, Popconfirm, message } from 'antd'
 import { RocketOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons'
 import styles from '../styles/pages/builder.module.scss'
 import { deployProjectSSE, stopDeployProcess } from '../services/builder'
-import classNames from 'classnames'
+import Convert from 'ansi-to-html'
 
+const convert = new Convert({
+	fg: '#999',
+	bg: '#2a2a2a',
+	newline: false,
+	escapeXML: true,
+	stream: true
+})
 const { Content } = Layout
 const { useBreakpoint } = Grid
 
@@ -15,7 +22,10 @@ export default function Builder() {
 	const logEndRef = useRef<HTMLDivElement>(null)
 	const ctrlRef = useRef<AbortController>(null)
 
-	const outputClass = classNames(styles['output-container'], { [styles['output-container-active']]: log.length > 0 })
+	const renderedLog = useMemo(() => {
+		if (!log) return ''
+		return convert.toHtml(log)
+	}, [log])
 
 	const scrollToBottom = useCallback(() => {
 		logEndRef?.current?.scrollIntoView()
@@ -31,7 +41,6 @@ export default function Builder() {
 		const tmpLog = log // 缓存当前Log
 		setLog('')
 		setLoading(true)
-		console.log('触发了')
 		ctrlRef.current = deployProjectSSE({
 			onMessage: (data: any) => setLog((prev) => prev + (data?.log || '')),
 			onDone: () => setLoading(false),
@@ -51,7 +60,7 @@ export default function Builder() {
 			const res = await stopDeployProcess()
 			if (res.success) {
 				message.success('已停止部署')
-				setLog((prev) => prev + '\n已终止部署子进程\n')
+				setLog((prev) => prev + '\n[System] 已终止部署子进程\n')
 			}
 		} catch {
 		} finally {
@@ -82,9 +91,11 @@ export default function Builder() {
 
 				<Space style={{ float: 'right' }}>
 					{log.length > 0 && (
-						<Button icon={<DeleteOutlined />} onClick={() => setLog('')} disabled={loading}>
-							清空日志
-						</Button>
+						<Popconfirm placement="bottom" title="确定清空日志吗？" okText="确定" cancelText="取消" onConfirm={() => setLog('')}>
+							<Button icon={<DeleteOutlined />} disabled={loading}>
+								清空日志
+							</Button>
+						</Popconfirm>
 					)}
 					<Popconfirm placement="bottom" title="确定关闭部署进程吗？" description="如遇到进程执行异常等情况可关闭后重新部署" okText="确定" cancelText="取消" onConfirm={cancelDeploy}>
 						<Button danger icon={<SyncOutlined />}>
@@ -100,8 +111,8 @@ export default function Builder() {
 
 				{/* 日志输出区域 */}
 				{log.length > 0 ? (
-					<div className={outputClass}>
-						<div className={styles.log}>{log}</div>
+					<div className={styles['output-container']}>
+						<div className={styles.log} dangerouslySetInnerHTML={{ __html: renderedLog }} />
 						<div ref={logEndRef} className={styles['log-end']} />
 					</div>
 				) : (
