@@ -18,4 +18,16 @@ export const deployProjectSSE = (cb: SSECallback) => {
 	return ctrl
 }
 
+export const syncDeployStatus = (cb: SSECallback) => {
+	const { onMessage, onDone, onError } = cb
+	const ctrl = createSSE({
+		url: '/mizuki/builder',
+		method: 'GET',
+		onMessage,
+		onDone,
+		onError
+	})
+	return ctrl
+}
+
 export const stopDeployProcess = () => request.post({ url: '/mizuki/builder/stop' })

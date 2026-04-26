@@ -49,6 +49,7 @@ export const createSSE = (params: SSEParams) => {
 				return
 			}
 		},
+		// 接收后端的发送一个带success字段的响应对象判断是否传输完成
 		onmessage(msg) {
 			const data: Data = JSON.parse(msg.data)
 			if (data.success === true) {

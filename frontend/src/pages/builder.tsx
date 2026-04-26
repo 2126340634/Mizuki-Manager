@@ -2,8 +2,10 @@ import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { Layout, Typography, Grid, Space, Button, Alert, Empty, Popconfirm, message } from 'antd'
 import { RocketOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons'
 import styles from '../styles/pages/builder.module.scss'
-import { deployProjectSSE, stopDeployProcess } from '../services/builder'
+import { deployProjectSSE, stopDeployProcess, syncDeployStatus } from '../services/builder'
 import Convert from 'ansi-to-html'
+import { useBuilderLogDB } from '../hooks/useBuilderLogDB'
+import { throttle } from '../utils/util'
 
 const convert = new Convert({
 	fg: '#999',
@@ -14,13 +16,17 @@ const convert = new Convert({
 })
 const { Content } = Layout
 const { useBreakpoint } = Grid
+const LOG_MAX_LENGTH = 100000 // 最长保留100000字符
 
 export default function Builder() {
 	const screens = useBreakpoint()
+	const logDB = useBuilderLogDB()
 	const [loading, setLoading] = useState(false)
 	const [log, setLog] = useState<string>('')
 	const logEndRef = useRef<HTMLDivElement>(null)
 	const ctrlRef = useRef<AbortController>(null)
+	const inited = useRef<boolean>(false) // 是否已初始化
+	const hasSynced = useRef<boolean>(false) // 是否已同步服务器部署状态
 
 	const renderedLog = useMemo(() => {
 		if (!log) return ''
@@ -31,28 +37,65 @@ export default function Builder() {
 		logEndRef?.current?.scrollIntoView()
 	}, [])
 
-	// 自动滚动
-	useEffect(() => {
-		if (log.length > 0) scrollToBottom()
-	}, [log, scrollToBottom])
+	const throttledSaveLog = useMemo(() => throttle(logDB.saveCache, 1000), [logDB])
 
-	const handleDeploy = () => {
-		if (loading) return
-		const tmpLog = log // 缓存当前Log
-		setLog('')
-		setLoading(true)
-		ctrlRef.current = deployProjectSSE({
-			onMessage: (data: any) => setLog((prev) => prev + (data?.log || '')),
-			onDone: () => setLoading(false),
-			onError: (err: any) => {
-				setLog(tmpLog) // 恢复之前的日志
-				console.error(err)
-				message.error(err.message || '启动部署失败')
-				setLoading(false)
+	// 监听log变化
+	useEffect(() => {
+		scrollToBottom()
+		if (inited.current) {
+			throttledSaveLog(log)
+			// 同步当前服务器部署状态
+			if (!hasSynced.current) {
+				hasSynced.current = true
+				ctrlRef.current = syncDeployStatus(_sseCallback)
 			}
-		})
+		}
+
+		return () => {
+			if (inited.current) {
+				logDB.saveCache(log) // 卸载前保存
+			}
+		}
+	}, [log, scrollToBottom, throttledSaveLog])
+
+	const _sseCallback = {
+		onMessage: (data: any) => {
+			setLoading(true)
+			setLog((prev) => {
+				const next = prev + (data?.log || '')
+				if (next.length > LOG_MAX_LENGTH) {
+					return next.slice(-LOG_MAX_LENGTH)
+				}
+				return next
+			})
+		},
+		onDone: (data: any) => {
+			if (data?.message) setLog((prev) => prev + data.message)
+			setLoading(false)
+		},
+		onError: (err: any) => {
+			setLog((prev) => prev + (err?.message || `\n[Error] ${err}\n`)) // 恢复之前的日志
+			setLoading(false)
+			console.error(err)
+		}
 	}
 
+	// 启动部署
+	const handleDeploy = () => {
+		if (loading) return
+		ctrlRef?.current?.abort()
+		ctrlRef.current = deployProjectSSE(_sseCallback)
+	}
+
+	// 清除日志数据库
+	const clearLogCache = async () => {
+		setLog('')
+		const res = await logDB.clearCache()
+		if (res) message.success('已清空日志缓存')
+		else message.error('清空失败')
+	}
+
+	// 取消部署
 	const cancelDeploy = async () => {
 		try {
 			setLoading(true)
@@ -68,7 +111,17 @@ export default function Builder() {
 		}
 	}
 
+	// 初始化
 	useEffect(() => {
+		logDB
+			.getCache()
+			.then((savedLog) => {
+				setLog(savedLog || '')
+			})
+			.finally(() => {
+				inited.current = true
+			})
+
 		return () => {
 			ctrlRef?.current?.abort()
 		}
@@ -91,7 +144,7 @@ export default function Builder() {
 
 				<Space style={{ float: 'right' }}>
 					{log.length > 0 && (
-						<Popconfirm placement="bottom" title="确定清空日志吗？" okText="确定" cancelText="取消" onConfirm={() => setLog('')}>
+						<Popconfirm placement="bottom" title="确定清空日志吗？" okText="确定" cancelText="取消" onConfirm={clearLogCache}>
 							<Button icon={<DeleteOutlined />} disabled={loading}>
 								清空日志
 							</Button>

@@ -8,18 +8,38 @@ router.post('/deploy', async (req, res) => {
 	res.setHeader('Cache-Control', 'no-cache')
 	res.setHeader('Connection', 'keep-alive')
 
-	const sendLog = (log) => {
-		res.write(`data: ${JSON.stringify({ log })}\n\n`)
+	const sendLog = (str) => {
+		res.write(`data: ${JSON.stringify({ log: str })}\n\n`)
 	}
-	bm.deploy(sendLog)
-		.then((result) => {
-			res.write(`data: ${JSON.stringify(result)}\n\n`)
+	const handleEnd = (data) => {
+		res.write(`data: ${JSON.stringify(data)}\n\n`)
+		res.end()
+	}
+	// 执行部署
+	bm.deploy(sendLog, handleEnd, handleEnd)
+})
+
+// 状态重连
+router.get('/', async (req, res) => {
+	res.setHeader('Content-Type', 'text/event-stream')
+	res.setHeader('Cache-Control', 'no-cache')
+	res.setHeader('Connection', 'keep-alive')
+
+	const statusCallback = {
+		sendLog: (str) => {
+			res.write(`data: ${JSON.stringify({ log: str })}\n\n`)
+		},
+		handleEnd: (data) => {
+			res.write(`data: ${JSON.stringify(data)}\n\n`)
 			res.end()
-		})
-		.catch((err) => {
-			res.write(`data: ${JSON.stringify(err)}\n\n`)
-			res.end()
-		})
+		}
+	}
+	bm.addCallback(statusCallback)
+
+	req.on('close', () => {
+		bm.removeCallback(statusCallback)
+		res.end()
+	})
 })
 
 router.post('/stop', async (req, res) => {

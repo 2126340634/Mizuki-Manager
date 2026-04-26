@@ -27,7 +27,7 @@ export const debounce = <T extends (...arg: any[]) => any>(func: T, delay: numbe
 }
 
 // 节流
-export const throttle = <T extends (...args: any[]) => void>(func: T, delay: number, options: { immediate?: boolean }) => {
+export const throttle = <T extends (...args: any[]) => void>(func: T, delay: number, options?: { immediate?: boolean }) => {
 	let timer: ReturnType<typeof setTimeout> | null = null
 	const throttled = function (this: any, ...args: any[]) {
 		if (timer !== null) return

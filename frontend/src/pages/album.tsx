@@ -550,7 +550,7 @@ export default function Album() {
 
 						<Col xs={24}>
 							<Form.Item style={{ marginBottom: 8 }} label="相册描述" name="description">
-								<Input.TextArea placeholder="输入相册描述" rows={3} showCount maxLength={500} />
+								<Input.TextArea placeholder="输入相册描述" rows={3} showCount />
 							</Form.Item>
 						</Col>
 
