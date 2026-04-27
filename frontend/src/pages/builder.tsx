@@ -61,13 +61,19 @@ export default function Builder() {
 	const _sseCallback = {
 		onMessage: (data: any) => {
 			setLoading(true)
-			setLog((prev) => {
-				const next = prev + (data?.log || '')
-				if (next.length > LOG_MAX_LENGTH) {
-					return next.slice(-LOG_MAX_LENGTH)
-				}
-				return next
-			})
+			// 如果接收的为历史日志，则清空上文重新输出
+			const newLog = data.log || ''
+			if (data?.isHistory) {
+				setLog(newLog || '')
+			} else {
+				setLog((prev) => {
+					const next = prev + (newLog || '')
+					if (next.length > LOG_MAX_LENGTH) {
+						return next.slice(-LOG_MAX_LENGTH)
+					}
+					return next
+				})
+			}
 		},
 		onDone: (data: any) => {
 			if (data?.message) setLog((prev) => prev + data.message)

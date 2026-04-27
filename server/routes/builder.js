@@ -8,8 +8,8 @@ router.post('/deploy', async (req, res) => {
 	res.setHeader('Cache-Control', 'no-cache')
 	res.setHeader('Connection', 'keep-alive')
 
-	const sendLog = (str) => {
-		res.write(`data: ${JSON.stringify({ log: str })}\n\n`)
+	const sendLog = (data) => {
+		res.write(`data: ${JSON.stringify(data)}\n\n`)
 	}
 	const handleEnd = (data) => {
 		res.write(`data: ${JSON.stringify(data)}\n\n`)
@@ -26,8 +26,8 @@ router.get('/', async (req, res) => {
 	res.setHeader('Connection', 'keep-alive')
 
 	const statusCallback = {
-		sendLog: (str) => {
-			res.write(`data: ${JSON.stringify({ log: str })}\n\n`)
+		sendLog: (data) => {
+			res.write(`data: ${JSON.stringify(data)}\n\n`)
 		},
 		handleEnd: (data) => {
 			res.write(`data: ${JSON.stringify(data)}\n\n`)

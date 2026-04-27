@@ -4,6 +4,10 @@ const config = require('../config.js')
 const path = require('path')
 const { EventEmitter } = require('events')
 
+/**
+ * 注意内部函数执行完后会清理闭包
+ * 闭包清理后上一次部署的日志将会清空
+ */
 class BuildManager extends EventEmitter {
 	constructor() {
 		super()
@@ -17,9 +21,8 @@ class BuildManager extends EventEmitter {
 		this.callbacks = new Set() // 多个监听运行输出回调
 	}
 	_appendLog(data) {
-		const str = data.toString()
-		this.log += str
-		return str
+		this.log += data.log || ''
+		return data
 	}
 	// 添加状态重连输出监听
 	addCallback(cb) {
@@ -32,7 +35,9 @@ class BuildManager extends EventEmitter {
 			return
 		}
 		if (typeof sendLog === 'function') {
-			sendLog(`\n---\n已重新连接部署进程\n${new Date().toISOString().replace('T', ' ').substring(0, 19)}\n---\n`)
+			const time = new Date().toISOString().replace('T', ' ').substring(0, 19)
+			sendLog({ log: this.log, isHistory: true }) // 回传历史日志
+			sendLog({ log: `\n---\n已重新连接部署进程\n${time}\n---\n` })
 		}
 		this.callbacks.add(cb)
 	}
@@ -72,8 +77,8 @@ class BuildManager extends EventEmitter {
 
 		this.log = ''
 
-		this.execCallback('log', '\n[System] 准备启动构建任务...\n')
-		onLog(this._appendLog('\n[System] 准备启动构建任务...\n'))
+		this.execCallback('log', { log: '\n[System] 准备启动构建任务...\n' })
+		onLog(this._appendLog({ log: '\n[System] 准备启动构建任务...\n' }))
 
 		if (this.isWindows) {
 			// Windows
@@ -95,15 +100,15 @@ class BuildManager extends EventEmitter {
 		this.childProcess.stdout.on('data', (data) => {
 			const cbData = data.toString()
 			console.log(cbData)
-			this.execCallback('log', cbData)
-			onLog(this._appendLog(cbData))
+			this.execCallback('log', { log: cbData })
+			onLog(this._appendLog({ log: cbData }))
 		})
 		// 监听错误
 		this.childProcess.stderr.on('data', (data) => {
 			const cbData = data.toString()
 			console.error(cbData)
-			this.execCallback('log', cbData) // 这边不能直接error回调，不然前端直接断连了
-			onLog(this._appendLog(`[Error] ${cbData}`))
+			this.execCallback('log', { log: `[Error] ${cbData}` }) // 这边不能直接error回调，不然前端直接断连了
+			onLog(this._appendLog({ log: `[Error] ${cbData}` }))
 		})
 		this.childProcess.on('close', async (code) => {
 			if (code !== 0) {
@@ -114,7 +119,7 @@ class BuildManager extends EventEmitter {
 				return
 			}
 			if (path.resolve(this.distDir) !== path.resolve(this.deployDir)) {
-				onLog(this._appendLog('\n[System] 构建完成，正在迁移文件到部署目录...\n'))
+				onLog(this._appendLog({ log: '\n[System] 构建完成，正在迁移文件到部署目录...\n' }))
 				await fs.promises.rm(this.deployDir, { recursive: true, force: true })
 				await fs.promises.cp(this.distDir, this.deployDir, { recursive: true, force: true })
 			}
