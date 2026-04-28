@@ -3,11 +3,13 @@ import { Card, Input, Button, Upload, message, Space, Typography, Spin, Popconfi
 import { SaveOutlined, UploadOutlined, FileTextOutlined, ReloadOutlined } from '@ant-design/icons'
 import { getAboutContent, updateAboutContent, replaceAboutFile } from '../services/about'
 import { debounce } from '../utils/util'
-const DRAFT_KEY = 'draft_about'
+import { useAboutContentDB } from '../hooks/useAboutContentDB'
+
 export default function About() {
 	const [content, setContent] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [showReload, setShowReload] = useState(false)
+	const db = useAboutContentDB()
 
 	// 获取内容
 	const getContent = useCallback(async () => {
@@ -23,22 +25,25 @@ export default function About() {
 		}
 	}, [])
 
+	// 初始化
 	useEffect(() => {
-		const draft = localStorage.getItem(DRAFT_KEY) || ''
-		if (draft) {
-			setContent(draft)
-			setShowReload(true)
-		} else {
-			getContent()
-		}
+		// 优先回显本地草稿
+		db.getCache().then((draft) => {
+			if (draft) {
+				setContent(draft)
+				setShowReload(true)
+			} else {
+				getContent()
+			}
+		})
 	}, [])
 
 	// 重载内容
 	const reloadContent = useCallback(async () => {
 		await getContent()
-		localStorage.removeItem(DRAFT_KEY)
+		await db.clearCache()
 		setShowReload(false)
-	}, [getContent])
+	}, [getContent, db])
 
 	// 更新内容
 	const _handleUpdate = useCallback(async () => {
@@ -74,11 +79,14 @@ export default function About() {
 	}
 
 	// 输入保存草稿
-	const _saveDraft = useCallback((content: string) => {
-		if (!content) return
-		localStorage.setItem(DRAFT_KEY, content)
-		setShowReload(true)
-	}, [])
+	const _saveDraft = useCallback(
+		async (content: string) => {
+			if (!content) return
+			await db.saveCache(content)
+			setShowReload(true)
+		},
+		[db]
+	)
 	const debouncedSaveDraft = useMemo(() => debounce(_saveDraft, 500), [_saveDraft])
 
 	const onInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

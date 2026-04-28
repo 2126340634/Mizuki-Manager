@@ -10,9 +10,18 @@ const isProd = process.env.NODE_ENV === 'production'
 app.use(express.json()) // 解析json
 app.use(express.urlencoded({ extended: true })) // 解析url参数
 
+const SAFE_PATH = path.resolve(config.BASE_PATH)
 app.use('/mizuki', (req, res, next) => {
-	const illegalPaths = ['../', '..\\', '/../', '\\..\\'] // 非法路径
-	if (illegalPaths.some((p) => req.path.includes(p))) {
+	const queryPath = req.path
+	if (!queryPath) return next()
+
+	const realPath = path.resolve(SAFE_PATH, queryPath.substring(1))
+	// console.log('queryPath为:', queryPath)
+	// console.log('访问完整路径:', realPath)
+	// console.log('项目安全根路径:', SAFE_PATH)
+
+	// 防止越出项目根目录访问
+	if (!realPath.startsWith(SAFE_PATH)) {
 		return res.status(403).json({ code: 403, success: false, message: '非法路径访问' })
 	}
 	next()

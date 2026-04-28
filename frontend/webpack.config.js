@@ -10,7 +10,7 @@ if (!fs.existsSync(envPath)) {
 	console.error('\n==================== .env 文件不存在, 请创建 .env 文件并添加必要的环境变量配置 ====================\n')
 	process.exit(1)
 }
-require('dotenv').config({ path: envPath })
+require('dotenv').config({ path: envPath }) // 注入.env配置
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -71,7 +71,7 @@ module.exports = {
 		new webpack.DefinePlugin({
 			'process.env': JSON.stringify({
 				NODE_ENV: isProd ? 'production' : 'development',
-				PUBLIC_DIR: process.env.PUBLIC_DIR || '/public'
+				DB_VERSION: process.env.DB_VERSION
 			})
 		}),
 		new HtmlWebpackPlugin({

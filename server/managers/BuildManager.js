@@ -37,13 +37,16 @@ class BuildManager extends EventEmitter {
 		if (typeof sendLog === 'function') {
 			const time = new Date().toISOString().replace('T', ' ').substring(0, 19)
 			sendLog({ log: this.log, isHistory: true }) // 回传历史日志
-			sendLog({ log: `\n---\n已重新连接部署进程\n${time}\n---\n` })
+			sendLog({ log: `\n---\n已连接部署进程\n${time}\n---\n` })
 		}
 		this.callbacks.add(cb)
 	}
 	// 移除监听
 	removeCallback(cb) {
 		this.callbacks.delete(cb)
+	}
+	clearCallbacks() {
+		this.callbacks.clear()
 	}
 	/**
 	 * @description 执行输出回调
@@ -58,8 +61,8 @@ class BuildManager extends EventEmitter {
 		} else if (mode === 'error' || mode === 'done') {
 			this.callbacks.forEach((cb) => {
 				if (typeof cb.handleEnd === 'function') cb.handleEnd(data)
-				this.removeCallback(cb) // 执行完成移除自身
 			})
+			this.clearCallbacks() // 进程结束清空所有监听
 		}
 	}
 	/**
@@ -76,6 +79,7 @@ class BuildManager extends EventEmitter {
 		}
 
 		this.log = ''
+		this.clearCallbacks()
 
 		this.execCallback('log', { log: '\n[System] 准备启动构建任务...\n' })
 		onLog(this._appendLog({ log: '\n[System] 准备启动构建任务...\n' }))
@@ -123,9 +127,13 @@ class BuildManager extends EventEmitter {
 				await fs.promises.rm(this.deployDir, { recursive: true, force: true })
 				await fs.promises.cp(this.distDir, this.deployDir, { recursive: true, force: true })
 			}
-			const cbData = { code: 200, success: true, message: '\n[System] 部署完成\n' }
-			this.execCallback('done', cbData)
-			onDone(cbData)
+			const endLog = '\n[System] 部署完成\n'
+			this.execCallback('log', { log: endLog })
+			onLog(this._appendLog({ log: endLog }))
+			// 结束回调
+			this.execCallback('done', { code: 200, success: true })
+			onDone({ code: 200, success: true })
+			// 清除子进程引用
 			this.childProcess = null
 		})
 		this.childProcess.on('error', (err) => {
@@ -149,6 +157,7 @@ class BuildManager extends EventEmitter {
 					// Linux/Mac
 					process.kill(-pid, 'SIGKILL')
 				}
+				this.clearCallbacks()
 				this.childProcess.removeAllListeners()
 				this.childProcess = null
 				return { code: 200, success: true, message: '已停止部署进程' }

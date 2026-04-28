@@ -1,12 +1,12 @@
 import { useRef } from 'react'
 import { openDB, DBInstance } from '../utils/database'
 
-export const useBuilderLogDB = () => {
+export const useConfigContentDB = () => {
 	const dbRef = useRef<DBInstance>(null)
 
 	const _getDB = async () => {
 		if (dbRef.current) return dbRef.current
-		const inst = await openDB('builder_log_store')
+		const inst = await openDB('config_content_store')
 		dbRef.current = inst
 		return inst
 	}

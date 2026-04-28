@@ -47,6 +47,7 @@ export default function Builder() {
 			// 同步当前服务器部署状态
 			if (!hasSynced.current) {
 				hasSynced.current = true
+				ctrlRef?.current?.abort() // 断开旧连接
 				ctrlRef.current = syncDeployStatus(_sseCallback)
 			}
 		}

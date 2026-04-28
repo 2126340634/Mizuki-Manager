@@ -78,3 +78,65 @@ export const redirectToLogin = () => {
 	sessionStorage.removeItem('token')
 	window.location.replace('/login')
 }
+
+// 深合并 source => target
+export const deepMerge = (target: any, source: any): any => {
+	if (!target || typeof target !== 'object' || !source) return target
+	if (Array.isArray(source)) {
+		return source.map((item, i) => deepMerge(Array.isArray(target) ? target[i] : {}, item))
+	}
+	const result = { ...target }
+	for (const key of Object.keys(source)) {
+		const s = source[key]
+		const t = target[key]
+		if (s && typeof s === 'object' && !Array.isArray(s) && t && typeof t === 'object' && !Array.isArray(t)) {
+			result[key] = deepMerge(t, s)
+		} else {
+			result[key] = s
+		}
+	}
+	return result
+}
+
+// 递归解包对象中的目标key键值对
+export const unwrap = (data: any, key: string): any => {
+	// 数组
+	if (Array.isArray(data)) {
+		return data.map((item) => unwrap(item, key))
+	}
+	// 对象
+	if (data && typeof data === 'object') {
+		// 解包key键值对
+		if (key in data) {
+			return unwrap(data[key], key)
+		}
+		const result: Record<string, any> = {}
+		for (const prop in data) {
+			result[prop] = unwrap(data[prop], key)
+		}
+		return result
+	}
+	return data
+}
+
+// 递归恢复解包对象 source:{ a, b } => target:{ key: {a, b}, xxx... }
+export const wrap = (target: any, source: any, key: string): any => {
+	if (!target || typeof target !== 'object' || !source) return target
+	// 处理数组
+	if (Array.isArray(source)) {
+		return source.map((item, i) => wrap(Array.isArray(target) ? target[i] : {}, item, key))
+	}
+	// 解包当前层target的key键值对
+	if (key in target) {
+		return {
+			...target,
+			[key]: typeof source === 'object' ? wrap(target[key], source, key) : source
+		}
+	}
+	const result = { ...target }
+	for (const prop in source) {
+		const targetValue = result.hasOwnProperty(prop) ? result[prop] : { [key]: source[prop] }
+		result[prop] = wrap(targetValue, source[prop], key)
+	}
+	return result
+}

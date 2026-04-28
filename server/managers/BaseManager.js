@@ -83,6 +83,10 @@ class BaseManager {
 			return { code: 500, success: false, message: `旧图片清理失败`, error: err }
 		}
 	}
+	// 获取注释
+	_getComment(node) {
+		return node.comments ? node.comments.map((c) => c.value.trim()).join('\n') : undefined
+	}
 	// 解析ast树获取关键字段数据
 	async getConfigData(directory, filename, astParseOptions = defaultAstParseOptions) {
 		try {
@@ -97,7 +101,7 @@ class BaseManager {
 					const node = path.node
 					const varName = node.id.name
 					if (node.init) {
-						data[varName] = ctx._astToValue(node.init)
+						data[varName] = { value: ctx._astToValue(node.init), comment: ctx._getComment(node) }
 					}
 					return false
 				}
@@ -121,12 +125,17 @@ class BaseManager {
 				visitVariableDeclarator(path) {
 					const varName = path.node.id.name
 					if (data.hasOwnProperty(varName)) {
-						path.get('init').replace(ctx._valueToAst(data[varName]))
+						const item = data[varName]
+						const newValue = item && typeof item === 'object' && 'value' in item ? item.value : item
+						path.get('init').replace(ctx._valueToAst(newValue))
+						if (item && item.comment !== undefined) {
+							path.parentPath.node.comments = [b.commentLine(' ' + item.comment)]
+						}
 					}
 					return false
 				}
 			})
-			const output = recast.print(ast).code
+			const output = recast.print(ast, { quote: 'single', trailingComma: false, tabWidth: 2, useTabs: false }).code
 			const buffer = Buffer.from(output, 'utf8')
 			if (typeof beforeWrite === 'function') await beforeWrite()
 			await writeFile(directory, filename, buffer)
@@ -136,19 +145,43 @@ class BaseManager {
 			return { code: 500, success: false, message: '配置更新失败', error: err }
 		}
 	}
+	// 解析成员表达式和标识符
+	_getMemberPath(node) {
+		if (node.type === 'Identifier') return node.name
+		if (node.type === 'MemberExpression') {
+			const objPath = this._getMemberPath(node.object)
+			const propName = node.property.name
+			return `${objPath}.${propName}`
+		}
+		return ''
+	}
 	// 递归解析ast树
 	_astToValue(node) {
 		if (!node) return undefined
 		const type = node.type
 		const ctx = this
+		// 处理负数
+		if (type === 'UnaryExpression' && node.operator === '-') {
+			// 递归处理表达式中的数值
+			const argumentValue = this._astToValue(node.argument)
+			if (typeof argumentValue === 'number') return -argumentValue
+			return undefined
+		}
+		// 普通变量
 		if (type === 'StringLiteral' || type === 'NumericLiteral' || type === 'BooleanLiteral') {
 			return node.value
 		}
+		// 成员表达式 a.member1, b.member2
+		if (type === 'Identifier' || type === 'MemberExpression') {
+			return { __isRef: true, __refName: this._getMemberPath(node) }
+		}
+		// 处理对象
 		if (type === 'ObjectExpression') {
 			const obj = {}
 			node.properties.forEach((prop) => {
 				if (prop.type === 'ObjectProperty') {
-					obj[prop.key.name] = ctx._astToValue(prop.value)
+					const key = prop.key.name || prop.key.value
+					obj[key] = { value: ctx._astToValue(prop.value), comment: this._getComment(prop) }
 				}
 			})
 			return obj
@@ -162,13 +195,45 @@ class BaseManager {
 	_valueToAst(val) {
 		if (val === null) return b.nullLiteral()
 		const type = typeof val
+		// 递归解包 {value: xxx, comment: xxx}
+		if (val && type === 'object' && 'value' in val && !val.__isRef) {
+			const node = this._valueToAst(val.value)
+			if (val.comment) {
+				const isMultiLine = val.comment.includes('\n')
+				const commentNode = isMultiLine
+					? b.commentBlock(`*\n * ${val.comment.replace(/\n/g, '\n * ')}\n `, true) // 块注释
+					: b.commentLine(' ' + val.comment, true)
+
+				node.comments = [commentNode]
+			}
+		}
+		// 回写成员表达式和引用标识符
+		if (val && type === 'object' && val.__isRef) {
+			const parts = val.__refName.split('.')
+			return parts.reduce((sum, cur) => {
+				if (!sum) return b.identifier(cur) // 第一个为标识符
+				return b.memberExpression(sum, b.identifier(cur))
+			}, null)
+		}
+		// 普通变量
 		if (type === 'string') return b.stringLiteral(val)
 		if (type === 'number') return b.numericLiteral(val)
 		if (type === 'boolean') return b.booleanLiteral(val)
+		// 复杂变量
 		if (Array.isArray(val)) return b.arrayExpression(val.map((item) => this._valueToAst(item)))
 		if (type === 'object') {
-			const props = Object.entries(val).map(([key, value]) => {
-				return b.objectProperty(b.identifier(key), this._valueToAst(value))
+			const props = Object.entries(val).map(([key, item]) => {
+				const targetValue = item && typeof item === 'object' && 'value' in item ? item.value : item
+				const property = b.objectProperty(b.identifier(key), this._valueToAst(targetValue))
+				if (item.comment) {
+					const isMultiLine = item.comment.includes('\n')
+					const commentNode = isMultiLine
+						? b.commentBlock(`*\n * ${item.comment.replace(/\n/g, '\n * ')}\n `, true) // 块注释
+						: b.commentLine(' ' + item.comment, true) // true 表示 leading 注释
+
+					property.comments = [commentNode]
+				}
+				return property
 			})
 			return b.objectExpression(props)
 		}
