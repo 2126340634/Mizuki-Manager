@@ -54,7 +54,8 @@ mizukiRouter.use((req, res) => {
 app.use('/mizuki', mizukiRouter)
 
 // 提供静态文件访问路径
-app.use('/public', express.static(path.resolve(config.PUBLIC_DIR)))
+app.use('/', express.static(path.resolve(config.PUBLIC_DIR)))
+app.use('/assets', express.static(path.resolve(config.BASE_PATH, 'src/assets')))
 
 // 生产环境下使用构建文件
 if (isProd) {

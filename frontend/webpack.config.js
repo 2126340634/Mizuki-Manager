@@ -11,7 +11,6 @@ if (!fs.existsSync(envPath)) {
 	process.exit(1)
 }
 require('dotenv').config({ path: envPath }) // 注入.env配置
-
 const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
@@ -76,6 +75,7 @@ module.exports = {
 		}),
 		new HtmlWebpackPlugin({
 			template: './public/index.html',
+			templateParameters: { PUBLIC_URL: '' },
 			filename: 'index.html',
 			publicPath: '/',
 			minify: isProd && {
@@ -116,12 +116,23 @@ module.exports = {
 		open: false,
 		hot: true,
 		historyApiFallback: true,
-		static: {
-			directory: path.resolve(__dirname, 'public')
-		},
+		static: [
+			{
+				directory: path.resolve(process.env.BASE_PATH, 'public'), // 注意这是博客根目录下的public
+				publicPath: '/'
+			},
+			{
+				directory: path.resolve(process.env.BASE_PATH, 'src/assets'), // 注意这是博客根目录下的src
+				publicPath: '/assets'
+			},
+			{
+				directory: '../frontend/public',
+				publicPath: '/'
+			}
+		],
 		proxy: [
 			{
-				context: ['/mizuki', '/public'],
+				context: ['/mizuki'],
 				target: `http://localhost:${process.env.PORT || 3001}`,
 				changeOrigin: true,
 				secure: false

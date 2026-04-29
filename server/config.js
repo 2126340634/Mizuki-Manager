@@ -34,6 +34,8 @@ module.exports = {
 	ABOUT_DIR: (() => path.join(BASE_PATH, 'src/content/spec'))(),
 	// config目录
 	CONFIG_DIR: (() => path.join(BASE_PATH, 'src'))(),
+	// ASSETS/HOME
+	HOME_DIR: (() => path.join(PUBLIC_DIR, 'assets/home'))(),
 	// 相册图片目录
 	ALBUMS_DIR: (() => path.join(PUBLIC_DIR, 'images/albums'))(),
 	// data配置目录

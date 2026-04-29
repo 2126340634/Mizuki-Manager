@@ -53,15 +53,6 @@ export const throttle = <T extends (...args: any[]) => void>(func: T, delay: num
 	return throttled
 }
 
-// 传入public下的路径拼接
-export const getPublicPath = (targetPath: string): string => {
-	if (!targetPath) return ''
-	const isWebImage = targetPath.startsWith('http://') || targetPath.startsWith('https://') || targetPath.startsWith('//')
-	const isBase64 = targetPath.startsWith('data:image/')
-	if (isWebImage || isBase64) return targetPath
-	return `/public${targetPath.startsWith('/') ? '' : '/'}${targetPath}`
-}
-
 // YYYY-MM 比较年月时间戳
 export const compareMonth = (str1: string, str2: string): -1 | 0 | 1 | undefined => {
 	if (!str1 || !str2) return
@@ -83,13 +74,16 @@ export const redirectToLogin = () => {
 export const deepMerge = (target: any, source: any): any => {
 	if (!target || typeof target !== 'object' || !source) return target
 	if (Array.isArray(source)) {
-		return source.map((item, i) => deepMerge(Array.isArray(target) ? target[i] : {}, item))
+		return source.map((item, i) => {
+			if (typeof item !== 'object' || item === null) return item // 数组内普通元素直接返回
+			return deepMerge(Array.isArray(target) ? target[i] : {}, item) // 数组内对象递归处理
+		})
 	}
 	const result = { ...target }
 	for (const key of Object.keys(source)) {
 		const s = source[key]
 		const t = target[key]
-		if (s && typeof s === 'object' && !Array.isArray(s) && t && typeof t === 'object' && !Array.isArray(t)) {
+		if (s && typeof s === 'object' && t && typeof t === 'object') {
 			result[key] = deepMerge(t, s)
 		} else {
 			result[key] = s
@@ -124,7 +118,10 @@ export const wrap = (target: any, source: any, key: string): any => {
 	if (!target || typeof target !== 'object' || !source) return target
 	// 处理数组
 	if (Array.isArray(source)) {
-		return source.map((item, i) => wrap(Array.isArray(target) ? target[i] : {}, item, key))
+		return source.map((item, i) => {
+			if (typeof item !== 'object' || item === null) return item // 数组内普通元素直接返回
+			return wrap(Array.isArray(target) ? target[i] : {}, item, key) // 数组内对象递归处理
+		})
 	}
 	// 解包当前层target的key键值对
 	if (key in target) {
@@ -134,7 +131,7 @@ export const wrap = (target: any, source: any, key: string): any => {
 		}
 	}
 	const result = { ...target }
-	for (const prop in source) {
+	for (const prop of Object.keys(source)) {
 		const targetValue = result.hasOwnProperty(prop) ? result[prop] : { [key]: source[prop] }
 		result[prop] = wrap(targetValue, source[prop], key)
 	}

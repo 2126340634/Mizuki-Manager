@@ -14,29 +14,32 @@ export interface DBInstance {
 const ALL_STORES: StoreName[] = ['builder_log_store', 'about_content_store', 'config_content_store']
 const DB_NAME = 'MizukiCache'
 const DB_VERSION = Number(process.env.DB_VERSION || '1')
+let dbInstance: IDBDatabase | null = null
+
+// 连接数据库
+const _connectDB = (): Promise<IDBDatabase> => {
+	if (dbInstance) return Promise.resolve(dbInstance)
+	return new Promise((resolve, reject) => {
+		const req = indexedDB.open(DB_NAME, DB_VERSION)
+		req.onupgradeneeded = (ev) => {
+			const db = (ev?.target as IDBOpenDBRequest)?.result
+			ALL_STORES.forEach((name) => {
+				if (!db.objectStoreNames.contains(name)) {
+					db.createObjectStore(name, { keyPath: 'id', autoIncrement: true })
+				}
+			})
+		}
+		req.onsuccess = (ev) => {
+			dbInstance = (ev?.target as IDBOpenDBRequest)?.result
+			resolve(dbInstance)
+		}
+		req.onerror = (ev) => {
+			reject((ev?.target as IDBOpenDBRequest)?.error)
+		}
+	})
+}
 
 export const openDB = async (storeName: StoreName): Promise<DBInstance> => {
-	// 连接数据库
-	const _connectDB = (): Promise<IDBDatabase> => {
-		return new Promise((resolve, reject) => {
-			const req = indexedDB.open(DB_NAME, DB_VERSION)
-			req.onupgradeneeded = (ev) => {
-				const db = (ev?.target as IDBOpenDBRequest)?.result
-				ALL_STORES.forEach((name) => {
-					if (!db.objectStoreNames.contains(name)) {
-						db.createObjectStore(name, { keyPath: 'id', autoIncrement: true })
-					}
-				})
-			}
-			req.onsuccess = (ev) => {
-				resolve((ev?.target as IDBOpenDBRequest)?.result)
-			}
-			req.onerror = (ev) => {
-				reject((ev?.target as IDBOpenDBRequest)?.error)
-			}
-		})
-	}
-
 	const db = await _connectDB()
 
 	const put = (data: DBContent): Promise<boolean> => {

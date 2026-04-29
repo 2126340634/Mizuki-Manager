@@ -29,7 +29,7 @@ import {
 } from 'antd'
 import { EditOutlined, UploadOutlined, LinkOutlined, StarFilled, DeleteOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import { getAnimeConfig, writeAnimeConfig, uploadAnimeImages } from '../services/anime'
-import { compareMonth, debounce, getPublicPath } from '../utils/util'
+import { compareMonth, debounce } from '../utils/util'
 import styles from '../styles/pages/anime.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import dayjs from 'dayjs'
@@ -243,7 +243,7 @@ export default function Anime() {
 							<Typography.Text type="secondary">管理追番数据</Typography.Text>
 						</div>
 					</div>
-					
+
 					<Space>
 						{pageList.length > 0 ? (
 							<Checkbox
@@ -276,9 +276,7 @@ export default function Anime() {
 										size="small"
 										cover={
 											<div className={styles.cover} onClick={(e) => e.stopPropagation()}>
-												{getPublicPath(anime.cover) && (
-													<Image loading="lazy" height="100%" width="100%" style={{ objectFit: 'cover', borderRadius: '8px 8px 0 0' }} src={getPublicPath(anime.cover)} alt={anime.title} />
-												)}
+												{anime.cover && <Image loading="lazy" height="100%" width="100%" style={{ objectFit: 'cover', borderRadius: '8px 8px 0 0' }} src={anime.cover} alt={anime.title} />}
 												<Tag color="black" className={styles.tag}>
 													{anime.year}
 												</Tag>
@@ -390,9 +388,7 @@ export default function Anime() {
 											</Upload>
 										</Space.Compact>
 									</Form.Item>
-									{getPublicPath(coverValue) && (
-										<Image width={screens.md ? 100 : '100%'} height={80} loading="lazy" src={getPublicPath(coverValue)} alt={coverValue || ''} style={{ objectFit: 'contain' }} />
-									)}
+									{coverValue && <Image width={screens.md ? 100 : '100%'} height={80} loading="lazy" src={coverValue} alt={coverValue || ''} style={{ objectFit: 'contain' }} />}
 								</div>
 							</Col>
 							<Col span={24}>

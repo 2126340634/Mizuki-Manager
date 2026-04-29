@@ -87,8 +87,16 @@ class BaseManager {
 	_getComment(node) {
 		return node.comments ? node.comments.map((c) => c.value.trim()).join('\n') : undefined
 	}
-	// 解析ast树获取关键字段数据
-	async getConfigData(directory, filename, astParseOptions = defaultAstParseOptions) {
+	/**
+	 * 配置文件转数据Data
+	 * @param {string} directory
+	 * @param {string} filename
+	 * @param {Object} astParseOptions
+	 * @param {{wrap}} options {wrap:包装数据和注释为{value: xxx, comment: xxx}
+	 * @returns {Promise<{code: number, success: boolean, message?: string, data?: Object, error?: Object}>}
+	 */
+	async getConfigData(directory, filename, astParseOptions = defaultAstParseOptions, options = { wrap: false }) {
+		const { wrap } = options
 		try {
 			if (typeof directory !== 'string' || !directory.length) return { code: 400, success: false, message: '请传入directory' }
 			if (typeof filename !== 'string' || !filename.length) return { code: 400, success: false, message: '请传入filename' }
@@ -101,7 +109,7 @@ class BaseManager {
 					const node = path.node
 					const varName = node.id.name
 					if (node.init) {
-						data[varName] = { value: ctx._astToValue(node.init), comment: ctx._getComment(node) }
+						data[varName] = wrap ? { value: ctx._astToValue(node.init, wrap), comment: ctx._getComment(node) } : ctx._astToValue(node.init, wrap)
 					}
 					return false
 				}
@@ -111,9 +119,17 @@ class BaseManager {
 			return { code: 500, success: false, message: '获取配置文件失败', error: err }
 		}
 	}
-	// data转换为config
-	async dataToConfig(directory, filename, data, astParseOptions = defaultAstParseOptions, options = { beforeWrite: () => {}, writed: () => {} }) {
-		const { beforeWrite = () => {}, writed = () => {} } = options || {}
+	/**
+	 * Data数据转配置文件
+	 * @param {string} directory
+	 * @param {string} filename
+	 * @param {Object} data
+	 * @param {Object} astParseOptions
+	 * @param {{unwrap, beforeWrite, writed}} options {unwrap: 是否解包{value: xxx, comment: xxx}, beforeWrite: 写入前回调, writed: 写入后回调}
+	 * @returns {Promise<{code: number, success: boolean, message?: string, error?: Object}>}
+	 */
+	async dataToConfig(directory, filename, data, astParseOptions = defaultAstParseOptions, options = { unwrap: false, beforeWrite: () => {}, writed: () => {} }) {
+		const { beforeWrite, writed, unwrap } = options
 		try {
 			if (typeof directory !== 'string' || !directory.length) return { code: 400, success: false, message: '请传入directory' }
 			if (typeof filename !== 'string' || !filename.length) return { code: 400, success: false, message: '请传入filename' }
@@ -127,14 +143,15 @@ class BaseManager {
 					if (data.hasOwnProperty(varName)) {
 						const item = data[varName]
 						const newValue = item && typeof item === 'object' && 'value' in item ? item.value : item
-						path.get('init').replace(ctx._valueToAst(newValue))
-						if (item && item.comment !== undefined) {
+						path.get('init').replace(ctx._valueToAst(newValue, unwrap))
+						if (unwrap && item && item.comment !== undefined) {
 							path.parentPath.node.comments = [b.commentLine(' ' + item.comment)]
 						}
 					}
 					return false
 				}
 			})
+
 			const output = recast.print(ast, { quote: 'single', trailingComma: false, tabWidth: 2, useTabs: false }).code
 			const buffer = Buffer.from(output, 'utf8')
 			if (typeof beforeWrite === 'function') await beforeWrite()
@@ -142,6 +159,7 @@ class BaseManager {
 			if (typeof writed === 'function') await writed()
 			return { code: 200, success: true }
 		} catch (err) {
+			console.error(err)
 			return { code: 500, success: false, message: '配置更新失败', error: err }
 		}
 	}
@@ -156,14 +174,14 @@ class BaseManager {
 		return ''
 	}
 	// 递归解析ast树
-	_astToValue(node) {
+	_astToValue(node, wrap) {
 		if (!node) return undefined
 		const type = node.type
 		const ctx = this
 		// 处理负数
 		if (type === 'UnaryExpression' && node.operator === '-') {
 			// 递归处理表达式中的数值
-			const argumentValue = this._astToValue(node.argument)
+			const argumentValue = this._astToValue(node.argument, wrap)
 			if (typeof argumentValue === 'number') return -argumentValue
 			return undefined
 		}
@@ -181,23 +199,23 @@ class BaseManager {
 			node.properties.forEach((prop) => {
 				if (prop.type === 'ObjectProperty') {
 					const key = prop.key.name || prop.key.value
-					obj[key] = { value: ctx._astToValue(prop.value), comment: this._getComment(prop) }
+					obj[key] = wrap ? { value: ctx._astToValue(prop.value, wrap), comment: this._getComment(prop) } : ctx._astToValue(prop.value, wrap)
 				}
 			})
 			return obj
 		}
 		if (type === 'ArrayExpression') {
-			return node.elements.map((el) => this._astToValue(el))
+			return node.elements.map((el) => this._astToValue(el, wrap))
 		}
 		return undefined
 	}
 	// config数据转回变量
-	_valueToAst(val) {
+	_valueToAst(val, unwrap) {
 		if (val === null) return b.nullLiteral()
 		const type = typeof val
 		// 递归解包 {value: xxx, comment: xxx}
-		if (val && type === 'object' && 'value' in val && !val.__isRef) {
-			const node = this._valueToAst(val.value)
+		if (unwrap && val && type === 'object' && 'value' in val && !val.__isRef) {
+			const node = this._valueToAst(val.value, unwrap)
 			if (val.comment) {
 				const isMultiLine = val.comment.includes('\n')
 				const commentNode = isMultiLine
@@ -206,6 +224,7 @@ class BaseManager {
 
 				node.comments = [commentNode]
 			}
+			return node
 		}
 		// 回写成员表达式和引用标识符
 		if (val && type === 'object' && val.__isRef) {
@@ -220,11 +239,11 @@ class BaseManager {
 		if (type === 'number') return b.numericLiteral(val)
 		if (type === 'boolean') return b.booleanLiteral(val)
 		// 复杂变量
-		if (Array.isArray(val)) return b.arrayExpression(val.map((item) => this._valueToAst(item)))
+		if (Array.isArray(val)) return b.arrayExpression(val.map((item) => this._valueToAst(item, unwrap)))
 		if (type === 'object') {
 			const props = Object.entries(val).map(([key, item]) => {
 				const targetValue = item && typeof item === 'object' && 'value' in item ? item.value : item
-				const property = b.objectProperty(b.identifier(key), this._valueToAst(targetValue))
+				const property = b.objectProperty(b.identifier(key), this._valueToAst(targetValue, unwrap))
 				if (item.comment) {
 					const isMultiLine = item.comment.includes('\n')
 					const commentNode = isMultiLine

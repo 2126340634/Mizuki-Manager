@@ -99,7 +99,7 @@ class AlbumManager extends BaseManager {
 			const slicedFiles = filesWithTime.slice((pageNum - 1) * pageSize, pageNum * pageSize).map(({ filename, filePath }) => ({ filename, filePath })) // 分页文件
 			for (const file of slicedFiles) {
 				const { filename, filePath } = file
-				const url = `/public${filePath.split('public', 2)[1].replaceAll('\\', '/')}`
+				const url = filePath.split('public', 2)[1].replaceAll('\\', '/')
 				files.push({ filename, filePath, url })
 			}
 			return { code: 200, success: true, data: { files, total: imgFilenames.length } }

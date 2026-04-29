@@ -1,6 +1,30 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { Card, Form, Input, InputNumber, Switch, Select, Button, message, Space, Typography, Spin, Popconfirm, Collapse, Row, Col, Divider, Empty, Modal, Tag, Flex, CollapseProps } from 'antd'
-import { SaveOutlined, SettingOutlined, ReloadOutlined, PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import {
+	Card,
+	Form,
+	Input,
+	InputNumber,
+	Switch,
+	Select,
+	Button,
+	message,
+	Space,
+	Typography,
+	Spin,
+	Popconfirm,
+	Collapse,
+	Row,
+	Col,
+	Divider,
+	Empty,
+	Modal,
+	Tag,
+	Flex,
+	CollapseProps,
+	Image,
+	Upload
+} from 'antd'
+import { SaveOutlined, SettingOutlined, ReloadOutlined, PlusOutlined, DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons'
 import { getConfigData, writeConfigData } from '../services/config'
 import { debounce, deepMerge, unwrap, wrap } from '../utils/util'
 import { useConfigContentDB } from '../hooks/useConfigContent'
@@ -231,7 +255,7 @@ const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemR
 	)
 }
 
-const StringListEditor: React.FC<{ value?: string[]; onChange?: (val: string[]) => void; addText?: string }> = ({ value = [], onChange, addText = '添加' }) => {
+const StringListEditor: React.FC<{ value?: string[]; onChange?: (val: string[]) => void; addText?: string; imageMode?: boolean }> = ({ value = [], onChange, addText = '添加', imageMode = false }) => {
 	const [inputVal, setInputVal] = useState('')
 
 	const addItem = () => {
@@ -245,32 +269,56 @@ const StringListEditor: React.FC<{ value?: string[]; onChange?: (val: string[]) 
 		newList.splice(idx, 1)
 		onChange?.(newList)
 	}
+	// 上传壁纸
+	const uploadWallpapers = (file: File, fileList: File[]) => {
+		if (file === fileList[fileList.length - 1]) {
+		}
+	}
 
 	return (
 		<div>
-			<Space wrap style={{ marginBottom: 8 }}>
+			<Space wrap style={{ marginBottom: 8, display: 'flex', gap: 16 }}>
 				{value.map((item, i) => (
-					<Tag key={i} closable onClose={() => removeItem(i)}>
-						{item}
-					</Tag>
+					<div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
+						{imageMode && <Image loading="lazy" width={70} height={70} style={{ objectFit: 'contain' }} src={item} alt={item} />}
+						<Tag key={i} closable onClose={() => removeItem(i)} style={{ display: 'flex' }}>
+							<div style={{ textOverflow: 'ellipsis', maxWidth: 180, overflow: 'hidden' }}>{item}</div>
+						</Tag>
+					</div>
 				))}
 			</Space>
 			<Space.Compact style={{ width: '100%' }}>
 				<Input value={inputVal} onChange={(e) => setInputVal(e.target.value)} placeholder="输入内容后添加" />
-				<Button onClick={addItem}>{addText}</Button>
+				{imageMode && (
+					<Upload beforeUpload={uploadWallpapers} showUploadList={true} multiple>
+						<Button>
+							<UploadOutlined />
+							<span>上传</span>
+						</Button>
+					</Upload>
+				)}
+				<Button onClick={addItem}>
+					<PlusOutlined />
+					<span>{addText}</span>
+				</Button>
 			</Space.Compact>
 		</div>
 	)
 }
 
-const collapseItems: CollapseProps['items'] = [
+const collapseItems = (
+	uploadIcon: (file: File, fileList: File[]) => void,
+	uploadLogo: (file: File, fileList: File[]) => void,
+	uploadAvatar: (file: File, fileList: File[]) => void
+): CollapseProps['items'] => [
+	// 基础配置
 	{
 		key: 'basic',
 		label: '基础配置',
 
 		children: (
 			<Row gutter={16}>
-				<Col span={12}>
+				<Col xs={24} md={12}>
 					<Form.Item name="SITE_LANG" label="站点语言">
 						<Select
 							options={[
@@ -281,14 +329,15 @@ const collapseItems: CollapseProps['items'] = [
 						/>
 					</Form.Item>
 				</Col>
-				<Col span={12}>
-					<Form.Item name="SITE_TIMEZONE" label="时区偏移">
+				<Col xs={24} md={12}>
+					<Form.Item name="SITE_TIMEZONE" label="时区偏移(-12~12, 例如中国为+8)">
 						<InputNumber min={-12} max={12} style={{ width: '100%' }} />
 					</Form.Item>
 				</Col>
 			</Row>
 		)
 	},
+	// 站点外观
 	{
 		key: 'site',
 		label: '站点外观',
@@ -331,7 +380,7 @@ const collapseItems: CollapseProps['items'] = [
 				</Row>
 				<Divider orientation="horizontal">导航栏标题</Divider>
 				<Row gutter={16}>
-					<Col span={6}>
+					<Col span={12}>
 						<Form.Item name={['siteConfig', 'navbarTitle', 'mode']} label="模式">
 							<Select
 								options={[
@@ -341,31 +390,60 @@ const collapseItems: CollapseProps['items'] = [
 							/>
 						</Form.Item>
 					</Col>
-					<Col span={6}>
+					<Col span={12}>
 						<Form.Item name={['siteConfig', 'navbarTitle', 'text']} label="文字">
 							<Input />
 						</Form.Item>
 					</Col>
-					<Col span={6}>
-						<Form.Item name={['siteConfig', 'navbarTitle', 'icon']} label="图标路径">
-							<Input placeholder="assets/home/home.png" />
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'navbarTitle', 'icon']} label="图标路径" style={{ marginBottom: 8 }}>
+							<Space.Compact style={{ width: '100%' }}>
+								<Input placeholder="例如: assets/home/home.png" />
+								<Upload beforeUpload={uploadIcon} showUploadList={false}>
+									<Button>
+										<UploadOutlined />
+										<span>上传</span>
+									</Button>
+								</Upload>
+							</Space.Compact>
+						</Form.Item>
+						<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.siteConfig?.navbarTitle?.icon !== cur?.siteConfig?.navbarTitle?.icon}>
+							{({ getFieldValue }) => {
+								const url = getFieldValue(['siteConfig', 'navbarTitle', 'icon'])
+								return <Image loading="lazy" width="100%" height={80} style={{ objectFit: 'contain' }} src={url} alt={url} />
+							}}
 						</Form.Item>
 					</Col>
-					<Col span={6}>
-						<Form.Item name={['siteConfig', 'navbarTitle', 'logo']} label="Logo路径">
-							<Input placeholder="assets/home/default-logo.png" />
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'navbarTitle', 'logo']} label="Logo路径" style={{ marginBottom: 8 }}>
+							<Space.Compact style={{ width: '100%' }}>
+								<Input placeholder="例如: assets/home/default-logo.png" />
+								<Upload beforeUpload={uploadLogo} showUploadList={false}>
+									<Button>
+										<UploadOutlined />
+										<span>上传</span>
+									</Button>
+								</Upload>
+							</Space.Compact>
+						</Form.Item>
+						<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.siteConfig?.navbarTitle?.logo !== cur?.siteConfig?.navbarTitle?.logo}>
+							{({ getFieldValue }) => {
+								const url = getFieldValue(['siteConfig', 'navbarTitle', 'logo'])
+								return <Image loading="lazy" width="100%" height={80} style={{ objectFit: 'contain' }} src={url} alt={url} />
+							}}
 						</Form.Item>
 					</Col>
 				</Row>
 				<Form.Item name={['siteConfig', 'showLastModified']} valuePropName="checked" label="显示最后修改时间">
 					<Switch />
 				</Form.Item>
-				<Form.Item name={['siteConfig', 'generateOgImages']} valuePropName="checked" label="生成OG图片">
+				<Form.Item name={['siteConfig', 'generateOgImages']} valuePropName="checked" label="生成OpenGraph图片">
 					<Switch />
 				</Form.Item>
 			</>
 		)
 	},
+	// 全屏壁纸
 	{
 		key: 'wallpaper',
 		label: '全屏壁纸',
@@ -390,10 +468,10 @@ const collapseItems: CollapseProps['items'] = [
 					<InputNumber min={0} max={10} style={{ width: '100%' }} />
 				</Form.Item>
 				<Form.Item label="桌面壁纸" name={['fullscreenWallpaperConfig', 'src', 'desktop']}>
-					<StringListEditor />
+					<StringListEditor imageMode={true} />
 				</Form.Item>
 				<Form.Item label="移动端壁纸" name={['fullscreenWallpaperConfig', 'src', 'mobile']}>
-					<StringListEditor />
+					<StringListEditor imageMode={true} />
 				</Form.Item>
 				<Form.Item name={['fullscreenWallpaperConfig', 'carousel', 'enable']} valuePropName="checked" label="轮播开关">
 					<Switch />
@@ -407,14 +485,29 @@ const collapseItems: CollapseProps['items'] = [
 			</>
 		)
 	},
+	// 个人资料
 	{
 		key: 'profile',
 		label: '个人资料',
 
 		children: (
 			<>
-				<Form.Item name={['profileConfig', 'avatar']} label="头像路径">
-					<Input />
+				<Form.Item name={['profileConfig', 'avatar']} label="头像路径" style={{ marginBottom: 8 }}>
+					<Space.Compact style={{ width: '100%' }}>
+						<Input placeholder="例如: assets/images/avatar.webp" />
+						<Upload beforeUpload={uploadAvatar} showUploadList={false}>
+							<Button>
+								<UploadOutlined />
+								<span>上传</span>
+							</Button>
+						</Upload>
+					</Space.Compact>
+				</Form.Item>
+				<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.profileConfig?.avatar !== cur?.profileConfig?.avatar}>
+					{({ getFieldValue }) => {
+						const url = getFieldValue(['profileConfig', 'avatar'])
+						return <Image loading="lazy" width="100%" height={80} style={{ objectFit: 'contain' }} src={url} alt={url} />
+					}}
 				</Form.Item>
 				<Form.Item name={['profileConfig', 'name']} label="昵称">
 					<Input />
@@ -437,8 +530,19 @@ const collapseItems: CollapseProps['items'] = [
 								<Form.Item name="name" label="名称" rules={[{ required: true }]}>
 									<Input />
 								</Form.Item>
-								<Form.Item name="icon" label="图标">
-									<Input placeholder="fa7-brands:github" />
+								<Form.Item
+									name="icon"
+									label={
+										<>
+											<span>图标</span>
+											<a href="https://icon-sets.iconify.design/" target="_blank">
+												&nbsp;打开Iconify
+											</a>
+										</>
+									}
+									rules={[{ required: true }]}
+								>
+									<Input placeholder="例如: fa7-brands:github" />
 								</Form.Item>
 								<Form.Item name="url" label="链接" rules={[{ required: true, type: 'url' }]}>
 									<Input />
@@ -456,6 +560,7 @@ const collapseItems: CollapseProps['items'] = [
 			</>
 		)
 	},
+	// 音乐播放器
 	{
 		key: 'music',
 		label: '音乐播放器',
@@ -494,18 +599,12 @@ const collapseItems: CollapseProps['items'] = [
 					<Input placeholder="例如: netease/tencent/kugou" />
 				</Form.Item>
 				<Form.Item name={['musicPlayerConfig', 'type']} label="播放类型">
-					<Select
-						options={[
-							{ label: '歌单', value: 'playlist' },
-							{ label: '单曲', value: 'song' },
-							{ label: '专辑', value: 'album' },
-							{ label: '歌手', value: 'artist' }
-						]}
-					/>
+					<Select options={[{ label: '歌单', value: 'playlist' }]} />
 				</Form.Item>
 			</>
 		)
 	},
+	// 评论配置
 	{
 		key: 'comment',
 		label: '评论配置',
@@ -617,6 +716,7 @@ const collapseItems: CollapseProps['items'] = [
 			</>
 		)
 	},
+	// 樱花特效
 	{
 		key: 'sakura',
 		label: '樱花特效',
@@ -697,6 +797,7 @@ const collapseItems: CollapseProps['items'] = [
 			</>
 		)
 	},
+	// 看板娘
 	{
 		key: 'pio',
 		label: '看板娘',
@@ -731,7 +832,7 @@ const collapseItems: CollapseProps['items'] = [
 						]}
 					/>
 				</Form.Item>
-				<Form.Item name={['pioConfig', 'models']} label="模型路径(JSON数组)">
+				<Form.Item name={['pioConfig', 'models']} label="模型路径(所有装扮)">
 					<StringListEditor addText="添加模型" />
 				</Form.Item>
 				<Divider orientation="horizontal">对话框配置</Divider>
@@ -747,15 +848,16 @@ const collapseItems: CollapseProps['items'] = [
 				<Form.Item name={['pioConfig', 'dialog', 'link']} label="关于链接">
 					<Input />
 				</Form.Item>
-				<Form.Item name={['pioConfig', 'dialog', 'touch']} label="触摸提示(数组)">
+				<Form.Item name={['pioConfig', 'dialog', 'touch']} label="触摸提示">
 					<StringListEditor addText="添加提示" />
 				</Form.Item>
-				<Form.Item name={['pioConfig', 'dialog', 'skin']} label="换装提示(数组)">
+				<Form.Item name={['pioConfig', 'dialog', 'skin']} label="换装提示">
 					<StringListEditor addText="添加提示" />
 				</Form.Item>
 			</>
 		)
 	},
+	// 其他
 	{
 		key: 'other',
 		label: '其他',
@@ -821,15 +923,17 @@ export default function Config() {
 	const db = useConfigContentDB()
 	const originalData = useRef<any>(null) // 存表单修改前数据
 
+	// 获取配置数据
 	const getConfig = useCallback(async () => {
 		try {
 			setLoading(true)
 			const res = await getConfigData()
-			console.log(res.data)
 			if (res.data && typeof res.data === 'object') {
+				// 保存原始数据
 				originalData.current = res.data // {value, comment}
+				await db.saveCache('original_data', JSON.stringify(res.data))
+				// 解包value给表单
 				form.setFieldsValue(unwrap(res.data, 'value'))
-				console.log('解包value:', unwrap(res.data, 'value'))
 			} else message.error('配置数据无效')
 		} catch {
 		} finally {
@@ -837,9 +941,10 @@ export default function Config() {
 		}
 	}, [])
 
+	// 重载最新数据
 	const reloadContent = useCallback(async () => {
 		await getConfig()
-		await db.clearCache()
+		await db.clearCache('latest')
 		setShowReload(false)
 		message.info('已重载为最新配置')
 	}, [getConfig, db])
@@ -851,14 +956,13 @@ export default function Config() {
 			setLoading(true)
 			const values = await form.validateFields()
 			const wrapped = wrap(originalData.current, values, 'value')
-			console.log('wrapped', wrapped)
 			const finalData = deepMerge(originalData.current, wrapped)
-			console.log('保存', finalData)
 			const res = await writeConfigData(finalData)
 			originalData.current = finalData
 			if (res.success) {
 				message.success('保存成功')
-				await db.clearCache()
+				await db.clearCache('latest')
+				await db.saveCache('original_data', JSON.stringify(finalData))
 				setShowReload(false)
 			}
 		} catch {
@@ -872,7 +976,7 @@ export default function Config() {
 	const _handleSaveDraft = useCallback(
 		async (values: any) => {
 			if (values) {
-				await db.saveCache(JSON.stringify(values))
+				await db.saveCache('latest', JSON.stringify(values))
 				setShowReload(true)
 			}
 		},
@@ -880,13 +984,38 @@ export default function Config() {
 	)
 	const debouncedSaveDraft = useMemo(() => debounce(_handleSaveDraft, 1000), [_handleSaveDraft])
 
+	// 上传文件(可批量)
+	const _uploadFiles = (file: File, fileList: File[]) => {
+		if (file === fileList[fileList.length - 1]) {
+		}
+	}
+
+	const uploadIcon = () => {}
+
+	const uploadLogo = () => {}
+
+	const uploadAvatar = () => {}
+
 	// 初始化
 	useEffect(() => {
-		db.getCache().then((draft) => {
+		db.getCache('latest').then((draft) => {
 			if (draft) {
 				try {
-					form.setFieldsValue(JSON.parse(draft))
-					setShowReload(true)
+					// 表单修改缓存
+					const draftValue = JSON.parse(draft)
+					if (draftValue && typeof draftValue === 'object') {
+						// 原始数据缓存
+						db.getCache('original_data').then((original) => {
+							if (original) {
+								const originalValue = JSON.parse(original)
+								if (originalValue && typeof originalValue === 'object') {
+									originalData.current = originalValue // 拿到原始数据
+									form.setFieldsValue(draftValue) // 缓存修改数据填表
+									setShowReload(true)
+								} else throw new Error('原始缓存无效')
+							} else throw new Error('原始缓存无效')
+						})
+					} else throw new Error('修改数据缓存无效')
 				} catch {
 					getConfig()
 				}
@@ -899,15 +1028,17 @@ export default function Config() {
 	return (
 		<Card
 			title={
-				<span>
+				<span style={{ marginLeft: 24 }}>
 					<SettingOutlined /> 配置管理
 				</span>
 			}
 			style={{ width: '100%' }}
 			extra={
-				<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={debouncedSave}>
-					保存
-				</Button>
+				showReload ? (
+					<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={debouncedSave}>
+						保存
+					</Button>
+				) : null
 			}
 		>
 			<Spin spinning={loading}>
@@ -923,7 +1054,7 @@ export default function Config() {
 				</div>
 
 				<Form form={form} layout="vertical" onValuesChange={() => debouncedSaveDraft(form.getFieldsValue(true))} initialValues={defaultValues}>
-					<Collapse items={collapseItems} />
+					<Collapse items={collapseItems(uploadIcon, uploadLogo, uploadAvatar)} />
 				</Form>
 			</Spin>
 		</Card>
