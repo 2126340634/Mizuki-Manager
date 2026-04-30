@@ -34,8 +34,16 @@ module.exports = {
 	ABOUT_DIR: (() => path.join(BASE_PATH, 'src/content/spec'))(),
 	// config目录
 	CONFIG_DIR: (() => path.join(BASE_PATH, 'src'))(),
-	// ASSETS/HOME
+	// src目录
+	SRC_DIR: (() => path.join(BASE_PATH, 'src'))(),
+	// 图标Logo目录
 	HOME_DIR: (() => path.join(PUBLIC_DIR, 'assets/home'))(),
+	// PC壁纸目录
+	PC_WALLPAPERS_DIR: (() => path.join(PUBLIC_DIR, 'assets/desktop-banner'))(),
+	// 移动端壁纸目录
+	MOBILE_WALLPAPERS_DIR: (() => path.join(PUBLIC_DIR, 'assets/mobile-banner'))(),
+	// 头像目录
+	AVATAR_DIR: (() => path.join(BASE_PATH, 'src/assets/images'))(),
 	// 相册图片目录
 	ALBUMS_DIR: (() => path.join(PUBLIC_DIR, 'images/albums'))(),
 	// data配置目录

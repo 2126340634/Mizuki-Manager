@@ -25,9 +25,10 @@ import {
 	Upload
 } from 'antd'
 import { SaveOutlined, SettingOutlined, ReloadOutlined, PlusOutlined, DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons'
-import { getConfigData, writeConfigData } from '../services/config'
+import { getConfigData, uploadAvatarImage, uploadHomeImage, uploadMobileWallpapers, uploadPCWallpapers, writeConfigData } from '../services/config'
 import { debounce, deepMerge, unwrap, wrap } from '../utils/util'
 import { useConfigContentDB } from '../hooks/useConfigContent'
+import { imageAccept } from '../configs/uploadConfig'
 
 const { TextArea } = Input
 
@@ -255,24 +256,29 @@ const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemR
 	)
 }
 
-const StringListEditor: React.FC<{ value?: string[]; onChange?: (val: string[]) => void; addText?: string; imageMode?: boolean }> = ({ value = [], onChange, addText = '添加', imageMode = false }) => {
+const StringListEditor: React.FC<{
+	value?: string[]
+	onChange?: (val: string[]) => void
+	addText?: string
+	imageMode?: boolean
+	uploadImage?: (file: File, fileList: File[], onSuccess?: (urls: string[]) => void) => Promise<boolean>
+}> = ({ value = [], onChange, addText = '添加', imageMode = false, uploadImage = () => false }) => {
 	const [inputVal, setInputVal] = useState('')
 
 	const addItem = () => {
-		if (inputVal.trim()) {
-			onChange?.([...value, inputVal.trim()])
+		const val = inputVal.trim()
+		if (val) {
+			onChange?.([...value, val])
 			setInputVal('')
 		}
 	}
-	const removeItem = (idx: number) => {
+	const removeItem = (index: number) => {
 		const newList = [...value]
-		newList.splice(idx, 1)
+		newList.splice(index, 1)
 		onChange?.(newList)
 	}
-	// 上传壁纸
-	const uploadWallpapers = (file: File, fileList: File[]) => {
-		if (file === fileList[fileList.length - 1]) {
-		}
+	const uploadItem = (urls: string[]) => {
+		onChange?.([...value, ...urls.filter((url) => url.trim())])
 	}
 
 	return (
@@ -282,7 +288,9 @@ const StringListEditor: React.FC<{ value?: string[]; onChange?: (val: string[]) 
 					<div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
 						{imageMode && <Image loading="lazy" width={70} height={70} style={{ objectFit: 'contain' }} src={item} alt={item} />}
 						<Tag key={i} closable onClose={() => removeItem(i)} style={{ display: 'flex' }}>
-							<div style={{ textOverflow: 'ellipsis', maxWidth: 180, overflow: 'hidden' }}>{item}</div>
+							<Typography.Text ellipsis={{ tooltip: item }} style={{ maxWidth: 180 }}>
+								{item}
+							</Typography.Text>
 						</Tag>
 					</div>
 				))}
@@ -290,7 +298,7 @@ const StringListEditor: React.FC<{ value?: string[]; onChange?: (val: string[]) 
 			<Space.Compact style={{ width: '100%' }}>
 				<Input value={inputVal} onChange={(e) => setInputVal(e.target.value)} placeholder="输入内容后添加" />
 				{imageMode && (
-					<Upload beforeUpload={uploadWallpapers} showUploadList={true} multiple>
+					<Upload accept={imageAccept} beforeUpload={(file: File, fileList: File[]) => uploadImage(file, fileList, (urls) => uploadItem(urls))} showUploadList={false} multiple>
 						<Button>
 							<UploadOutlined />
 							<span>上传</span>
@@ -307,9 +315,10 @@ const StringListEditor: React.FC<{ value?: string[]; onChange?: (val: string[]) 
 }
 
 const collapseItems = (
-	uploadIcon: (file: File, fileList: File[]) => void,
-	uploadLogo: (file: File, fileList: File[]) => void,
-	uploadAvatar: (file: File, fileList: File[]) => void
+	uploadHomeImg: (file: File, fileList: File[], onSuccess?: (url: string) => void) => Promise<boolean>,
+	uploadAvatar: (file: File, fileList: File[], onSuccess?: (url: string) => void) => Promise<boolean>,
+	uploadPCWallpaperImages: (file: File, fileList: File[], onSuccess?: (urls: string[]) => void) => Promise<boolean>,
+	uploadMobileWallpaperImages: (file: File, fileList: File[], onSuccess?: (urls: string[]) => void) => Promise<boolean>
 ): CollapseProps['items'] => [
 	// 基础配置
 	{
@@ -396,15 +405,27 @@ const collapseItems = (
 						</Form.Item>
 					</Col>
 					<Col xs={24} md={12}>
-						<Form.Item name={['siteConfig', 'navbarTitle', 'icon']} label="图标路径" style={{ marginBottom: 8 }}>
+						<Form.Item label="图标路径" style={{ marginBottom: 8 }}>
 							<Space.Compact style={{ width: '100%' }}>
-								<Input placeholder="例如: assets/home/home.png" />
-								<Upload beforeUpload={uploadIcon} showUploadList={false}>
-									<Button>
-										<UploadOutlined />
-										<span>上传</span>
-									</Button>
-								</Upload>
+								<Form.Item name={['siteConfig', 'navbarTitle', 'icon']} noStyle>
+									<Input placeholder="例如: assets/home/home.png" />
+								</Form.Item>
+								<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.siteConfig?.navbarTitle?.icon !== cur?.siteConfig?.navbarTitle?.icon}>
+									{({ setFieldValue }) => (
+										<Upload
+											accept={imageAccept}
+											beforeUpload={(file: File, fileList: File[]) => {
+												uploadHomeImg(file, fileList, (url) => setFieldValue(['siteConfig', 'navbarTitle', 'icon'], url))
+											}}
+											showUploadList={false}
+										>
+											<Button>
+												<UploadOutlined />
+												<span>上传</span>
+											</Button>
+										</Upload>
+									)}
+								</Form.Item>
 							</Space.Compact>
 						</Form.Item>
 						<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.siteConfig?.navbarTitle?.icon !== cur?.siteConfig?.navbarTitle?.icon}>
@@ -415,15 +436,27 @@ const collapseItems = (
 						</Form.Item>
 					</Col>
 					<Col xs={24} md={12}>
-						<Form.Item name={['siteConfig', 'navbarTitle', 'logo']} label="Logo路径" style={{ marginBottom: 8 }}>
+						<Form.Item label="Logo路径" style={{ marginBottom: 8 }}>
 							<Space.Compact style={{ width: '100%' }}>
-								<Input placeholder="例如: assets/home/default-logo.png" />
-								<Upload beforeUpload={uploadLogo} showUploadList={false}>
-									<Button>
-										<UploadOutlined />
-										<span>上传</span>
-									</Button>
-								</Upload>
+								<Form.Item name={['siteConfig', 'navbarTitle', 'logo']} noStyle>
+									<Input placeholder="例如: assets/home/default-logo.png" />
+								</Form.Item>
+								<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.siteConfig?.navbarTitle?.logo !== cur?.siteConfig?.navbarTitle?.logo}>
+									{({ setFieldValue }) => (
+										<Upload
+											accept={imageAccept}
+											beforeUpload={(file: File, fileList: File[]) => {
+												uploadHomeImg(file, fileList, (url) => setFieldValue(['siteConfig', 'navbarTitle', 'logo'], url))
+											}}
+											showUploadList={false}
+										>
+											<Button>
+												<UploadOutlined />
+												<span>上传</span>
+											</Button>
+										</Upload>
+									)}
+								</Form.Item>
 							</Space.Compact>
 						</Form.Item>
 						<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.siteConfig?.navbarTitle?.logo !== cur?.siteConfig?.navbarTitle?.logo}>
@@ -468,10 +501,10 @@ const collapseItems = (
 					<InputNumber min={0} max={10} style={{ width: '100%' }} />
 				</Form.Item>
 				<Form.Item label="桌面壁纸" name={['fullscreenWallpaperConfig', 'src', 'desktop']}>
-					<StringListEditor imageMode={true} />
+					<StringListEditor imageMode={true} uploadImage={uploadPCWallpaperImages} />
 				</Form.Item>
 				<Form.Item label="移动端壁纸" name={['fullscreenWallpaperConfig', 'src', 'mobile']}>
-					<StringListEditor imageMode={true} />
+					<StringListEditor imageMode={true} uploadImage={uploadMobileWallpaperImages} />
 				</Form.Item>
 				<Form.Item name={['fullscreenWallpaperConfig', 'carousel', 'enable']} valuePropName="checked" label="轮播开关">
 					<Switch />
@@ -492,15 +525,26 @@ const collapseItems = (
 
 		children: (
 			<>
-				<Form.Item name={['profileConfig', 'avatar']} label="头像路径" style={{ marginBottom: 8 }}>
+				<Form.Item label="头像路径" style={{ marginBottom: 8 }}>
 					<Space.Compact style={{ width: '100%' }}>
-						<Input placeholder="例如: assets/images/avatar.webp" />
-						<Upload beforeUpload={uploadAvatar} showUploadList={false}>
-							<Button>
-								<UploadOutlined />
-								<span>上传</span>
-							</Button>
-						</Upload>
+						<Form.Item name={['profileConfig', 'avatar']} noStyle>
+							<Input placeholder="例如: assets/images/avatar.webp" />
+						</Form.Item>
+						<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.profileConfig?.avatar !== cur?.profileConfig?.avatar}>
+							{({ setFieldValue }) => (
+								<Upload
+									beforeUpload={(file: File, fileList: File[]) => {
+										uploadAvatar(file, fileList, (url) => setFieldValue(['profileConfig', 'avatar'], url))
+									}}
+									showUploadList={false}
+								>
+									<Button>
+										<UploadOutlined />
+										<span>上传</span>
+									</Button>
+								</Upload>
+							)}
+						</Form.Item>
 					</Space.Compact>
 				</Form.Item>
 				<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.profileConfig?.avatar !== cur?.profileConfig?.avatar}>
@@ -528,7 +572,7 @@ const collapseItems = (
 						modalFields={() => (
 							<>
 								<Form.Item name="name" label="名称" rules={[{ required: true }]}>
-									<Input />
+									<Input placeholder="请输入名称" />
 								</Form.Item>
 								<Form.Item
 									name="icon"
@@ -545,7 +589,7 @@ const collapseItems = (
 									<Input placeholder="例如: fa7-brands:github" />
 								</Form.Item>
 								<Form.Item name="url" label="链接" rules={[{ required: true, type: 'url' }]}>
-									<Input />
+									<Input placeholder="请输入链接" />
 								</Form.Item>
 							</>
 						)}
@@ -933,7 +977,8 @@ export default function Config() {
 				originalData.current = res.data // {value, comment}
 				await db.saveCache('original_data', JSON.stringify(res.data))
 				// 解包value给表单
-				form.setFieldsValue(unwrap(res.data, 'value'))
+				const unwrappedData = unwrap(res.data, 'value')
+				form.setFieldsValue(unwrappedData)
 			} else message.error('配置数据无效')
 		} catch {
 		} finally {
@@ -955,8 +1000,11 @@ export default function Config() {
 		try {
 			setLoading(true)
 			const values = await form.validateFields()
-			const wrapped = wrap(originalData.current, values, 'value')
-			const finalData = deepMerge(originalData.current, wrapped)
+			const draft = JSON.parse(await db.getCache('latest'))
+			const merged = deepMerge(draft, values) // 表单最新值覆盖掉缓存值
+			console.log('merged', merged)
+			const finalData = wrap(originalData.current, merged, 'value')
+			console.log('finalData', finalData)
 			const res = await writeConfigData(finalData)
 			originalData.current = finalData
 			if (res.success) {
@@ -984,17 +1032,54 @@ export default function Config() {
 	)
 	const debouncedSaveDraft = useMemo(() => debounce(_handleSaveDraft, 1000), [_handleSaveDraft])
 
-	// 上传文件(可批量)
-	const _uploadFiles = (file: File, fileList: File[]) => {
+	// 上传文件
+	const _uploadFiles = async (file: File, fileList: File[], uploadFunc: (file: File, fileList: File[]) => Promise<any>): Promise<any> => {
 		if (file === fileList[fileList.length - 1]) {
+			try {
+				setLoading(true)
+				const res = await uploadFunc(file, fileList)
+				console.log(res)
+				if (res.success) {
+					message.success('上传成功')
+					return res
+				}
+			} catch {
+			} finally {
+				setLoading(false)
+			}
 		}
+		return false
 	}
-
-	const uploadIcon = () => {}
-
-	const uploadLogo = () => {}
-
-	const uploadAvatar = () => {}
+	// 上传Logo或Icon
+	const uploadHomeImg = async (file: File, fileList: File[], onSuccess?: (url: string) => void) => {
+		const res = await _uploadFiles(file, fileList, (file: File) => uploadHomeImage(file))
+		if (res.success) {
+			onSuccess?.(res.data?.[0]?.publicPath)
+			debouncedSaveDraft(form.getFieldsValue())
+		}
+		return false
+	}
+	// 上传头像
+	const uploadAvatar = async (file: File, fileList: File[], onSuccess?: (url: string) => void) => {
+		const res = await _uploadFiles(file, fileList, (file: File) => uploadAvatarImage(file))
+		if (res.success) {
+			onSuccess?.(res.data?.[0]?.publicPath)
+			debouncedSaveDraft(form.getFieldsValue())
+		}
+		return false
+	}
+	// 上传PC壁纸
+	const uploadPCWallpaperImages = async (file: File, fileList: File[], onSuccess?: (urls: string[]) => void) => {
+		const res = await _uploadFiles(file, fileList, (_: File, fileList: File[]) => uploadPCWallpapers(fileList))
+		if (res.success) onSuccess?.(res.data?.map((item: any) => item.publicPath))
+		return false
+	}
+	// 上传移动端壁纸
+	const uploadMobileWallpaperImages = async (file: File, fileList: File[], onSuccess?: (urls: string[]) => void) => {
+		const res = await _uploadFiles(file, fileList, (_: File, fileList: File[]) => uploadMobileWallpapers(fileList))
+		if (res.success) onSuccess?.(res.data?.map((item: any) => item.publicPath))
+		return false
+	}
 
 	// 初始化
 	useEffect(() => {
@@ -1009,9 +1094,9 @@ export default function Config() {
 							if (original) {
 								const originalValue = JSON.parse(original)
 								if (originalValue && typeof originalValue === 'object') {
-									originalData.current = originalValue // 拿到原始数据
-									form.setFieldsValue(draftValue) // 缓存修改数据填表
-									setShowReload(true)
+									originalData.current = originalValue
+									form.setFieldsValue(draftValue)
+									setShowReload(true) // 只要有修改数据缓存就显示重载按钮
 								} else throw new Error('原始缓存无效')
 							} else throw new Error('原始缓存无效')
 						})
@@ -1054,7 +1139,7 @@ export default function Config() {
 				</div>
 
 				<Form form={form} layout="vertical" onValuesChange={() => debouncedSaveDraft(form.getFieldsValue(true))} initialValues={defaultValues}>
-					<Collapse items={collapseItems(uploadIcon, uploadLogo, uploadAvatar)} />
+					<Collapse items={collapseItems(uploadHomeImg, uploadAvatar, uploadPCWallpaperImages, uploadMobileWallpaperImages)} />
 				</Form>
 			</Spin>
 		</Card>

@@ -7,7 +7,7 @@ const path = require('path')
 
 const isProd = process.env.NODE_ENV === 'production'
 
-app.use(express.json()) // 解析json
+app.use(express.json({ limit: '1mb' })) // 解析json
 app.use(express.urlencoded({ extended: true })) // 解析url参数
 
 const SAFE_PATH = path.resolve(config.BASE_PATH)

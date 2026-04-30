@@ -300,10 +300,7 @@ export default function Anime() {
 													<Typography.Text ellipsis={{ tooltip: anime.title }} style={{ fontSize: 14, fontWeight: 'bold' }}>
 														{anime.title}
 													</Typography.Text>
-													<Typography.Text
-														ellipsis={{ tooltip: anime.description }}
-														style={{ fontWeight: 'lighter', color: '#999', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}
-													>
+													<Typography.Text ellipsis={{ tooltip: anime.description }} style={{ fontWeight: 'lighter', color: '#999' }}>
 														{anime.description}
 													</Typography.Text>
 												</div>

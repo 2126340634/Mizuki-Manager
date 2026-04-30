@@ -17,7 +17,15 @@ const defaultAstParseOptions = {
 
 class BaseManager {
 	// 上传文件(支持批量) skipIfExists:true => 文件已存在时不报错
-	async uploadFiles(directory, files, conditionFunc, { skipIfExists = false } = {}) {
+	/**
+	 *
+	 * @param {string} directory
+	 * @param {File[]} files
+	 * @param {(File, number) => boolean} conditionFunc
+	 * @param {{ skipIfExists?: boolean, basePath?: 'public'|'src' }} options
+	 * @returns {Promise<{code: number, success: boolean, message?: string, data?: Object, error?: Object}>}
+	 */
+	async uploadFiles(directory, files, conditionFunc, { skipIfExists = false, basePath = 'public' } = {}) {
 		try {
 			if (!files || (Array.isArray(files) && !files.length)) return { code: 400, success: false, message: '请上传文件' }
 			const tasks = files.map(async (file, index) => {
@@ -38,7 +46,10 @@ class BaseManager {
 			})
 			const result = (await Promise.allSettled(tasks)).map((res, index) => {
 				const absolutePath = path.join(directory, files[index].originalname)
-				const match = absolutePath.match(/.*?(\\|\/)public(\\|\/)(.*)/) // 匹配public下的路径
+				const match =
+					basePath === 'public'
+						? absolutePath.match(/.*?(\\|\/)public(\\|\/)(.*)/) // 匹配public下的路径
+						: absolutePath.match(/.*?(\\|\/)src(\\|\/)(.*)/) // 匹配src下的路径
 				const publicPath = `/${match && match[3] ? match[3].replace(/\\/g, '/') : ''}` // 替换反斜杠
 				return { res, filename: files[index].originalname, path: absolutePath, publicPath }
 			})
@@ -219,7 +230,7 @@ class BaseManager {
 			if (val.comment) {
 				const isMultiLine = val.comment.includes('\n')
 				const commentNode = isMultiLine
-					? b.commentBlock(`*\n * ${val.comment.replace(/\n/g, '\n * ')}\n `, true) // 块注释
+					? b.commentBlock(val.comment, true) // 块注释
 					: b.commentLine(' ' + val.comment, true)
 
 				node.comments = [commentNode]
@@ -228,7 +239,7 @@ class BaseManager {
 		}
 		// 回写成员表达式和引用标识符
 		if (val && type === 'object' && val.__isRef) {
-			const parts = val.__refName.split('.')
+			const parts = (val?.__refName?.value ? val.__refName.value : val.__refName).split('.') || []
 			return parts.reduce((sum, cur) => {
 				if (!sum) return b.identifier(cur) // 第一个为标识符
 				return b.memberExpression(sum, b.identifier(cur))
@@ -247,7 +258,7 @@ class BaseManager {
 				if (item.comment) {
 					const isMultiLine = item.comment.includes('\n')
 					const commentNode = isMultiLine
-						? b.commentBlock(`*\n * ${item.comment.replace(/\n/g, '\n * ')}\n `, true) // 块注释
+						? b.commentBlock(item.comment, true) // 块注释
 						: b.commentLine(' ' + item.comment, true) // true 表示 leading 注释
 
 					property.comments = [commentNode]

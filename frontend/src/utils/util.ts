@@ -70,28 +70,6 @@ export const redirectToLogin = () => {
 	window.location.replace('/login')
 }
 
-// 深合并 source => target
-export const deepMerge = (target: any, source: any): any => {
-	if (!target || typeof target !== 'object' || !source) return target
-	if (Array.isArray(source)) {
-		return source.map((item, i) => {
-			if (typeof item !== 'object' || item === null) return item // 数组内普通元素直接返回
-			return deepMerge(Array.isArray(target) ? target[i] : {}, item) // 数组内对象递归处理
-		})
-	}
-	const result = { ...target }
-	for (const key of Object.keys(source)) {
-		const s = source[key]
-		const t = target[key]
-		if (s && typeof s === 'object' && t && typeof t === 'object') {
-			result[key] = deepMerge(t, s)
-		} else {
-			result[key] = s
-		}
-	}
-	return result
-}
-
 // 递归解包对象中的目标key键值对
 export const unwrap = (data: any, key: string): any => {
 	// 数组
@@ -105,7 +83,7 @@ export const unwrap = (data: any, key: string): any => {
 			return unwrap(data[key], key)
 		}
 		const result: Record<string, any> = {}
-		for (const prop in data) {
+		for (const prop of Object.keys(data)) {
 			result[prop] = unwrap(data[prop], key)
 		}
 		return result
@@ -113,27 +91,40 @@ export const unwrap = (data: any, key: string): any => {
 	return data
 }
 
-// 递归恢复解包对象 source:{ a, b } => target:{ key: {a, b}, xxx... }
+// 递归恢复解包对象(同一层属性source覆盖target) source:{ a, b } => target:{ key: {a, b}, xxx... }
 export const wrap = (target: any, source: any, key: string): any => {
-	if (!target || typeof target !== 'object' || !source) return target
+	if (!target || typeof target !== 'object') return source
 	// 处理数组
 	if (Array.isArray(source)) {
-		return source.map((item, i) => {
-			if (typeof item !== 'object' || item === null) return item // 数组内普通元素直接返回
-			return wrap(Array.isArray(target) ? target[i] : {}, item, key) // 数组内对象递归处理
-		})
-	}
-	// 解包当前层target的key键值对
-	if (key in target) {
 		return {
-			...target,
-			[key]: typeof source === 'object' ? wrap(target[key], source, key) : source
+			[key]: source.map((item, i) => {
+				if (typeof item !== 'object' || item === null) return item // 数组内普通元素直接返回
+				return wrap(Array.isArray(target) ? target[i] : {}, item, key) // 数组内对象递归处理
+			})
 		}
+	}
+	// 处理当前层target的key键值对
+	if (key in target) {
+		return { [key]: wrap(target[key], source, key) }
 	}
 	const result = { ...target }
 	for (const prop of Object.keys(source)) {
 		const targetValue = result.hasOwnProperty(prop) ? result[prop] : { [key]: source[prop] }
 		result[prop] = wrap(targetValue, source[prop], key)
+	}
+	return result
+}
+
+// 深合并对象 source合并到target, 覆盖target同层级属性
+export const deepMerge = (target: any, source: any): any => {
+	if (!source || typeof source !== 'object') return source
+	if (!target || typeof target !== 'object') return { ...source } // 防止上个target引用当前source
+	// source数组替换掉target
+	if (Array.isArray(source)) return [...source]
+	// source对象值覆盖target
+	const result = { ...target }
+	for (const prop of Object.keys(source)) {
+		result[prop] = result.hasOwnProperty(prop) ? deepMerge(target[prop], source[prop]) : deepMerge({}, source[prop])
 	}
 	return result
 }

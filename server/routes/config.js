@@ -19,4 +19,28 @@ router.post('/write', async (req, res) => {
 	res.status(result.code).json(result)
 })
 
+// 上传Icon或Logo图片
+router.post('/upload-home', upload.single('file'), async (req, res) => {
+	const result = await cm.uploadHomeImages(req?.file ? [req.file] : [])
+	res.status(result.code).json(result)
+})
+
+// 上传PC壁纸(批量)
+router.post('/upload-pc', upload.array('files'), async (req, res) => {
+	const result = await cm.uploadPCWallpapers(req?.files)
+	res.status(result.code).json(result)
+})
+
+// 上传移动端壁纸(批量)
+router.post('/upload-mobile',upload.array('files'), async (req, res) => {
+	const result = await cm.uploadMobileWallpapers(req?.files)
+	res.status(result.code).json(result)
+})
+
+// 上传头像图片
+router.post('/upload-avatar', upload.single('file'), async (req, res) => {
+	const result = await cm.uploadAvatarImages(req?.file ? [req.file] : [])
+	res.status(result.code).json(result)
+})
+
 module.exports = router
