@@ -247,7 +247,7 @@ const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemR
 			<Button type="dashed" block icon={<PlusOutlined />} onClick={handleAdd} style={{ marginTop: 8 }}>
 				{addButtonText}
 			</Button>
-			<Modal title={modalTitle} open={modalVisible} onOk={handleOk} onCancel={() => setModalVisible(false)} width={600}>
+			<Modal destroyOnHidden mask={{ closable: false }} title={modalTitle} open={modalVisible} onOk={handleOk} onCancel={() => setModalVisible(false)} width={600}>
 				<Form form={form} layout="vertical">
 					{modalFields?.(form)}
 				</Form>
@@ -594,9 +594,13 @@ const collapseItems = (
 							</>
 						)}
 						itemRender={(item) => (
-							<div>
-								<Tag>{item.name}</Tag>
-								<Typography.Text copyable>{item.url}</Typography.Text>
+							<div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+								<Tag style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+									<Typography.Text ellipsis={{ tooltip: item.name }}>{item.name}</Typography.Text>
+								</Tag>
+								<Typography.Text style={{ marginRight: 16 }} copyable ellipsis={{ tooltip: item.url }}>
+									{item.url}
+								</Typography.Text>
 							</div>
 						)}
 					/>
@@ -1002,9 +1006,7 @@ export default function Config() {
 			const values = await form.validateFields()
 			const draft = JSON.parse(await db.getCache('latest'))
 			const merged = deepMerge(draft, values) // 表单最新值覆盖掉缓存值
-			console.log('merged', merged)
 			const finalData = wrap(originalData.current, merged, 'value')
-			console.log('finalData', finalData)
 			const res = await writeConfigData(finalData)
 			originalData.current = finalData
 			if (res.success) {
@@ -1030,7 +1032,7 @@ export default function Config() {
 		},
 		[db]
 	)
-	const debouncedSaveDraft = useMemo(() => debounce(_handleSaveDraft, 1000), [_handleSaveDraft])
+	const debouncedSaveDraft = useMemo(() => debounce(_handleSaveDraft, 500), [_handleSaveDraft])
 
 	// 上传文件
 	const _uploadFiles = async (file: File, fileList: File[], uploadFunc: (file: File, fileList: File[]) => Promise<any>): Promise<any> => {
@@ -1038,7 +1040,6 @@ export default function Config() {
 			try {
 				setLoading(true)
 				const res = await uploadFunc(file, fileList)
-				console.log(res)
 				if (res.success) {
 					message.success('上传成功')
 					return res
@@ -1113,7 +1114,7 @@ export default function Config() {
 	return (
 		<Card
 			title={
-				<span style={{ marginLeft: 24 }}>
+				<span style={{ marginLeft: 24, fontSize: 18 }}>
 					<SettingOutlined /> 配置管理
 				</span>
 			}

@@ -93,19 +93,20 @@ export const unwrap = (data: any, key: string): any => {
 
 // 递归恢复解包对象(同一层属性source覆盖target) source:{ a, b } => target:{ key: {a, b}, xxx... }
 export const wrap = (target: any, source: any, key: string): any => {
+	// target当前层为空直接source覆盖
 	if (!target || typeof target !== 'object') return source
 	// 处理数组
 	if (Array.isArray(source)) {
 		return {
 			[key]: source.map((item, i) => {
-				if (typeof item !== 'object' || item === null) return item // 数组内普通元素直接返回
+				if (typeof item !== 'object' || !item) return item // 数组内普通元素直接返回
 				return wrap(Array.isArray(target) ? target[i] : {}, item, key) // 数组内对象递归处理
 			})
 		}
 	}
 	// 处理当前层target的key键值对
 	if (key in target) {
-		return { [key]: wrap(target[key], source, key) }
+		return { ...target, [key]: wrap(target[key], source, key) }
 	}
 	const result = { ...target }
 	for (const prop of Object.keys(source)) {
@@ -118,7 +119,7 @@ export const wrap = (target: any, source: any, key: string): any => {
 // 深合并对象 source合并到target, 覆盖target同层级属性
 export const deepMerge = (target: any, source: any): any => {
 	if (!source || typeof source !== 'object') return source
-	if (!target || typeof target !== 'object') return { ...source } // 防止上个target引用当前source
+	if (!target || typeof target !== 'object') return { ...source } // 防止引用当前source
 	// source数组替换掉target
 	if (Array.isArray(source)) return [...source]
 	// source对象值覆盖target

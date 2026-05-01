@@ -136,8 +136,9 @@ export default function Anime() {
 	const openEditModal = (e: React.MouseEvent | undefined, index: number) => {
 		e?.stopPropagation()
 		setEditingIndex(index)
+		form.resetFields()
 		if (index !== -1) {
-			// 修改
+			// 修改回显数据
 			const data = pageList[index]
 			form.setFieldsValue({
 				...data,
@@ -145,9 +146,6 @@ export default function Anime() {
 				startDate: data.startDate ? dayjs(data.startDate) : null,
 				endDate: data.endDate ? dayjs(data.endDate) : null
 			})
-		} else {
-			// 新增
-			form.resetFields()
 		}
 		setIsModalOpen(true)
 	}
@@ -221,9 +219,11 @@ export default function Anime() {
 	const removeAnime = async () => {
 		const removeItems: Set<AnimeItem> = new Set(pageList.filter((_, index) => checkedIdxes.has(index)))
 		const newList = animeList.filter((item) => !removeItems.has(item)) // pageList由animeList截取得到(浅拷贝),数组内都是相同内存地址的对象
-		const removeAll = pageList.length === checkedIdxes.size
-		await updateList(newList, '删除成功', removeAll ? Math.max(1, pageNum - 1) : pageNum, pageSize)
-		setCheckedIdxes(new Set())
+		// 删除后的分页总数
+		const newTotalPages = Math.max(1, Math.ceil(newList.length / pageSize))
+		// 计算删除后应该更新的pageNum值
+		const newPageNum = Math.min(pageNum, newTotalPages)
+		await updateList(newList, '删除成功', newPageNum, pageSize)
 	}
 
 	useEffect(() => {

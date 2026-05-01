@@ -208,7 +208,10 @@ export default function Album() {
 	// 删除相册图片(批量)
 	const removeFiles = async () => {
 		const removePaths = Array.from(checkedPaths)
-		const removeAll = removePaths.length === files.length
+		// 删除后的分页总数
+		const newTotalPages = Math.max(1, Math.ceil((pageTotal - removePaths.length) / pageSize))
+		// 计算删除后应该更新的pageNum值
+		const newPageNum = Math.min(pageNum, newTotalPages)
 		try {
 			setLoading(true)
 			const res = await deleteFiles(removePaths)
@@ -218,7 +221,7 @@ export default function Album() {
 			}
 		} catch {
 		} finally {
-			await getAllFiles(curFolderPath, removeAll ? Math.max(1, pageNum - 1) : pageNum, pageSize)
+			await getAllFiles(curFolderPath, newPageNum, pageSize)
 			setLoading(false)
 		}
 	}

@@ -13,7 +13,7 @@ class DeviceManager extends BaseManager {
 	}
 	// 上传设备图片(支持批量)
 	async uploadImages(files) {
-		return await super.uploadFiles(this.devicesDir, files, (file) => isImage(file.originalname))
+		return await super.uploadFiles(this.devicesDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {

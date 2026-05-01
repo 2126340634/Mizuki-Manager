@@ -7,6 +7,9 @@ const Album = lazy(() => import('../pages/album'))
 const Anime = lazy(() => import('../pages/anime'))
 const Builder = lazy(() => import('../pages/builder'))
 const Config = lazy(() => import('../pages/config'))
+const Device = lazy(() => import('../pages/device'))
+const Diary = lazy(() => import('../pages/diary'))
+const Friend = lazy(() => import('../pages/friend'))
 
 const lazyLoad = (Component: React.LazyExoticComponent<React.ComponentType<any>>) => {
 	return (
@@ -48,6 +51,18 @@ const routes = [
 	{
 		path: '/config',
 		element: lazyLoad(Config)
+	},
+	{
+		path: '/device',
+		element: lazyLoad(Device)
+	},
+	{
+		path: '/diary',
+		element: lazyLoad(Diary)
+	},
+	{
+		path: '/friend',
+		element: lazyLoad(Friend)
 	},
 	{
 		path: '*',

@@ -225,20 +225,20 @@ class BaseManager {
 		if (val === null) return b.nullLiteral()
 		const type = typeof val
 		// 递归解包 {value: xxx, comment: xxx}
-		if (unwrap && val && type === 'object' && 'value' in val && !val.__isRef) {
+		if (unwrap && val && type === 'object' && 'value' in val && !(val.value?.__isRef || val.__isRef)) {
 			const node = this._valueToAst(val.value, unwrap)
 			if (val.comment) {
 				const isMultiLine = val.comment.includes('\n')
 				const commentNode = isMultiLine
 					? b.commentBlock(val.comment, true) // 块注释
-					: b.commentLine(' ' + val.comment, true)
+					: b.commentLine(' ' + val.comment, true) // 行注释
 
 				node.comments = [commentNode]
 			}
 			return node
 		}
 		// 回写成员表达式和引用标识符
-		if (val && type === 'object' && val.__isRef) {
+		if (val && type === 'object' && (val.value?.__isRef || val.__isRef)) {
 			const parts = (val?.__refName?.value ? val.__refName.value : val.__refName).split('.') || []
 			return parts.reduce((sum, cur) => {
 				if (!sum) return b.identifier(cur) // 第一个为标识符
@@ -259,7 +259,7 @@ class BaseManager {
 					const isMultiLine = item.comment.includes('\n')
 					const commentNode = isMultiLine
 						? b.commentBlock(item.comment, true) // 块注释
-						: b.commentLine(' ' + item.comment, true) // true 表示 leading 注释
+						: b.commentLine(' ' + item.comment, true) // 行注释
 
 					property.comments = [commentNode]
 				}

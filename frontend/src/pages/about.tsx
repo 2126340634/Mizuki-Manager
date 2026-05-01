@@ -97,7 +97,7 @@ export default function About() {
 	return (
 		<Card
 			title={
-				<span style={{ marginLeft: 24 }}>
+				<span style={{ marginLeft: 24, fontSize: 18 }}>
 					<FileTextOutlined /> 关于页面
 				</span>
 			}

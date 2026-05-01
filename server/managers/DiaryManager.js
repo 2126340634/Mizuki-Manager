@@ -13,7 +13,7 @@ class DiaryManager extends BaseManager {
 	}
 	// 上传日记图片(支持批量)
 	async uploadImages(files) {
-		return await super.uploadFiles(this.diariesDir, files, (file) => isImage(file.originalname))
+		return await super.uploadFiles(this.diariesDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
@@ -29,12 +29,12 @@ class DiaryManager extends BaseManager {
 		diaries.forEach((d) => {
 			const images = d?.images || []
 			images.forEach((imagePath) => {
-				let path = imagePath
-				if (path.startsWith('/')) {
-					path = path.substring(1)
+				let p = imagePath
+				if (p.startsWith('/')) {
+					p = p.substring(1)
 				}
-				if (!isImage(path)) return // 格式为"/images/diary/xxx.png"
-				const filePath = path.resolve(this.publicDir, path)
+				if (!isImage(p)) return // 格式为"/images/diary/xxx.png"
+				const filePath = path.resolve(this.publicDir, p)
 				imagePaths.push(filePath)
 			})
 		})
