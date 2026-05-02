@@ -134,7 +134,6 @@ const defaultValues = {
 		width: 280,
 		height: 250,
 		mode: 'draggable',
-		models: [],
 		dialog: { welcome: '', home: '', close: '', link: '', touch: [], skin: [] }
 	},
 	licenseConfig: {
@@ -580,7 +579,7 @@ const collapseItems = (
 										<>
 											<span>图标</span>
 											<a href="https://icon-sets.iconify.design/" target="_blank">
-												&nbsp;打开Iconify
+												&nbsp;访问Iconify
 											</a>
 										</>
 									}
@@ -879,9 +878,6 @@ const collapseItems = (
 							{ label: '固定', value: 'fixed' }
 						]}
 					/>
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'models']} label="模型路径(所有装扮)">
-					<StringListEditor addText="添加模型" />
 				</Form.Item>
 				<Divider orientation="horizontal">对话框配置</Divider>
 				<Form.Item name={['pioConfig', 'dialog', 'welcome']} label="欢迎语">

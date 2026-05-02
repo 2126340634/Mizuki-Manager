@@ -29,6 +29,9 @@ class BaseManager {
 		try {
 			if (!files || (Array.isArray(files) && !files.length)) return { code: 400, success: false, message: '请上传文件' }
 			const tasks = files.map(async (file, index) => {
+				if (file.originalname) {
+					file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8') // 转译中文字符
+				}
 				const filename = file.originalname
 				if (!conditionFunc(file, index)) {
 					throw { code: 400, success: false, message: `请上传正确的文件格式: ${filename}` }

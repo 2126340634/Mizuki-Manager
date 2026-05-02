@@ -136,7 +136,6 @@ export default function Friend() {
 			if (editingIndex !== -1) {
 				const realIndex = friendList.findIndex((item) => item.id === pageList[editingIndex].id)
 				if (realIndex !== -1) newList[realIndex] = values
-				else newList.unshift(values)
 			} else {
 				newList.unshift(values)
 			}
@@ -193,7 +192,7 @@ export default function Friend() {
 					{pageList.length > 0 ? (
 						<Row gutter={[8, 8]} style={{ marginTop: 16 }}>
 							{pageList.map((item, index) => (
-								<Col key={item.id} xs={24} sm={12} md={12} lg={8}>
+								<Col key={item.id} xs={24} sm={12} lg={8} xl={6}>
 									<Card hoverable size="small" onClick={() => _handleCheck(!checkedIdxes.has(index), index)} actions={[<EditOutlined key="edit" onClick={(e) => openEditModal(e, index)} />]}>
 										<div style={{ position: 'relative' }}>
 											<Checkbox style={{ position: 'absolute', right: 0, top: 0, zIndex: 1 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
@@ -210,7 +209,7 @@ export default function Friend() {
 												</div>
 											</Space>
 
-											<Typography.Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 13, color: '#666', minHeight: 40 }}>
+											<Typography.Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 14, color: '#666', minHeight: 40 }}>
 												{item.desc}
 											</Typography.Paragraph>
 

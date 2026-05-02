@@ -159,7 +159,6 @@ export default function Device() {
 				const realIndex = deviceList.findIndex((item) => item === pageList[editingIndex])
 				// 不改变原有设备位置顺序
 				if (realIndex !== -1) newList[realIndex] = values
-				else newList.unshift(values)
 			} else {
 				newList.unshift(values)
 			}
@@ -340,7 +339,7 @@ export default function Device() {
 											</Upload>
 										</Space.Compact>
 									</Form.Item>
-									{imageValue && <Image loading="lazy" width={70} height={70} src={imageValue} style={{ objectFit: 'contain' }} />}
+									{imageValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} src={imageValue} style={{ objectFit: 'contain' }} />}
 								</div>
 							</Col>
 							<Col span={24}>
