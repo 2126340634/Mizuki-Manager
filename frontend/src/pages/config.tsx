@@ -26,7 +26,7 @@ import {
 } from 'antd'
 import { SaveOutlined, SettingOutlined, ReloadOutlined, PlusOutlined, DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons'
 import { getConfigData, uploadAvatarImage, uploadHomeImage, uploadMobileWallpapers, uploadPCWallpapers, writeConfigData } from '../services/config'
-import { debounce, deepMerge, unwrap, wrap } from '../utils/util'
+import { debounce, deepMerge, throttle, unwrap, wrap } from '../utils/util'
 import { useConfigContentDB } from '../hooks/useConfigContent'
 import { imageAccept } from '../configs/uploadConfig'
 import { Icon } from '@iconify/react'
@@ -996,7 +996,7 @@ export default function Config() {
 		await db.clearCache('latest')
 		setShowReload(false)
 		message.info('已重载为最新配置')
-	}, [getConfig, db])
+	}, [getConfig])
 
 	// 保存
 	const _handleSave = useCallback(async () => {
@@ -1019,19 +1019,16 @@ export default function Config() {
 		} finally {
 			setLoading(false)
 		}
-	}, [form, db])
-	const debouncedSave = useMemo(() => debounce(_handleSave, 2000, { immediate: true }), [_handleSave])
+	}, [])
+	const throttledSave = useMemo(() => throttle(_handleSave, 2000, { immediate: true }), [_handleSave])
 
 	// 保存草稿
-	const _handleSaveDraft = useCallback(
-		async (values: any) => {
-			if (values) {
-				await db.saveCache('latest', JSON.stringify(values))
-				setShowReload(true)
-			}
-		},
-		[db]
-	)
+	const _handleSaveDraft = useCallback(async (values: any) => {
+		if (values) {
+			await db.saveCache('latest', JSON.stringify(values))
+			setShowReload(true)
+		}
+	}, [])
 	const debouncedSaveDraft = useMemo(() => debounce(_handleSaveDraft, 500), [_handleSaveDraft])
 
 	// 上传文件
@@ -1114,14 +1111,14 @@ export default function Config() {
 	return (
 		<Card
 			title={
-				<span style={{ marginLeft: 24, fontSize: 18 }}>
+				<span style={{ marginLeft: 24 }}>
 					<SettingOutlined /> 配置管理
 				</span>
 			}
 			style={{ width: '100%' }}
 			extra={
 				showReload ? (
-					<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={debouncedSave}>
+					<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={throttledSave}>
 						保存
 					</Button>
 				) : null

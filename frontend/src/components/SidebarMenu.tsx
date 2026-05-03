@@ -25,7 +25,7 @@ export default function SidebarMenu({ menuClick }: Props) {
 	const { selectedKey } = useSelector((state: RootState) => state.menu)
 	// 监听路由变化选中菜单
 	useEffect(() => {
-		const matchedItem = menuItems.find((item) => item?.key === location.pathname)
+		const matchedItem = menuItems.find((item) => item?.key === location.pathname || location.pathname.startsWith(`${item?.key}/`))
 		if (matchedItem) {
 			if (selectedKey !== matchedItem.key) {
 				dispatch(updateSelect(matchedItem.key))

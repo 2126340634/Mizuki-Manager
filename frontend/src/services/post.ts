@@ -1,7 +1,7 @@
 import request from '../utils/request'
 
 // 获取全部文章
-export const getAllPosts = () => request.get({ url: '/mizuki/post' })
+export const getAllPosts = (pageNum: number, pageSize: number) => request.get({ url: '/mizuki/post', data: { pageNum, pageSize } })
 
 // 获取单个文章内容
 export const getPostContent = (filename: string) => request.get({ url: '/mizuki/post/content', data: { filename } })

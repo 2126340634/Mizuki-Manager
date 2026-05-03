@@ -12,6 +12,8 @@ const Diary = lazy(() => import('../pages/diary'))
 const Friend = lazy(() => import('../pages/friend'))
 const Project = lazy(() => import('../pages/project'))
 const Skill = lazy(() => import('../pages/skill'))
+const Timeline = lazy(() => import('../pages/timeline'))
+const Post = lazy(() => import('../pages/post'))
 
 const lazyLoad = (Component: React.LazyExoticComponent<React.ComponentType<any>>) => {
 	return (
@@ -75,11 +77,19 @@ const routes = [
 		element: lazyLoad(Skill)
 	},
 	{
+		path: '/timeline',
+		element: lazyLoad(Timeline)
+	},
+	{
+		path: '/post/*',
+		element: lazyLoad(Post)
+	},
+	{
 		path: '*',
 		element: <div>404 页面不存在</div>
 	}
 ]
 
-export const routePaths = new Set(routes.map((route) => route.path))
+export const routePaths = [...routes.map((route) => route.path), '/post']
 
 export default routes

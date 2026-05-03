@@ -29,7 +29,7 @@ import {
 } from 'antd'
 import { EditOutlined, UploadOutlined, LinkOutlined, StarFilled, DeleteOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import { getAnimeConfig, writeAnimeConfig, uploadAnimeImages } from '../services/anime'
-import { compareMonth, debounce } from '../utils/util'
+import { compareMonth, throttle } from '../utils/util'
 import styles from '../styles/pages/anime.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import dayjs from 'dayjs'
@@ -198,7 +198,7 @@ export default function Anime() {
 			setLoading(false)
 		}
 	}, [updateList, animeList, editingIndex, form])
-	const debouncedSave = useMemo(() => debounce(_handleSave, 2000, { immediate: true }), [_handleSave])
+	const throttledSave = useMemo(() => throttle(_handleSave, 2000, { immediate: true }), [_handleSave])
 
 	// 上传封面
 	const uploadCover = async (file: File) => {
@@ -346,7 +346,7 @@ export default function Anime() {
 				<Modal
 					title="编辑番剧信息"
 					open={isModalOpen}
-					onOk={debouncedSave}
+					onOk={throttledSave}
 					onCancel={() => setIsModalOpen(false)}
 					mask={{ closable: false }}
 					width={screens.md ? 600 : '95%'}

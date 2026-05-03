@@ -25,7 +25,7 @@ import {
 } from 'antd'
 import { EditOutlined, UploadOutlined, LinkOutlined, DeleteOutlined, BoxPlotOutlined } from '@ant-design/icons'
 import { getDeviceConfig, writeDeviceConfig, uploadDeviceImages } from '../services/device'
-import { debounce } from '../utils/util'
+import { throttle } from '../utils/util'
 import styles from '../styles/pages/device.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import { imageAccept } from '../configs/uploadConfig'
@@ -167,7 +167,7 @@ export default function Device() {
 			console.error(err)
 		}
 	}, [updateList, deviceList, editingIndex, form, pageList, pageNum, pageSize])
-	const debouncedSave = useMemo(() => debounce(_handleSave, 2000, { immediate: true }), [_handleSave])
+	const throttledSave = useMemo(() => throttle(_handleSave, 2000, { immediate: true }), [_handleSave])
 
 	const uploadCover = async (file: File) => {
 		try {
@@ -301,7 +301,7 @@ export default function Device() {
 				<Modal
 					title="编辑设备信息"
 					open={isModalOpen}
-					onOk={debouncedSave}
+					onOk={throttledSave}
 					onCancel={() => setIsModalOpen(false)}
 					width={screens.md ? 600 : '95%'}
 					okText="保存"

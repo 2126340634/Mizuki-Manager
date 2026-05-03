@@ -1,4 +1,4 @@
-type StoreName = 'builder_log_store' | 'about_content_store' | 'config_content_store'
+type StoreName = 'builder_log_store' | 'about_content_store' | 'config_content_store' | 'post_content_store'
 export interface DBContent {
 	id: number | string
 	content: string
@@ -11,7 +11,7 @@ export interface DBInstance {
 	getAll: () => Promise<DBContent[]>
 }
 
-const ALL_STORES: StoreName[] = ['builder_log_store', 'about_content_store', 'config_content_store']
+const ALL_STORES: StoreName[] = ['builder_log_store', 'about_content_store', 'config_content_store', 'post_content_store']
 const DB_NAME = 'MizukiCache'
 const DB_VERSION = Number(process.env.DB_VERSION || '1')
 let dbInstance: IDBDatabase | null = null

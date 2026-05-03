@@ -8,7 +8,8 @@ const upload = multer({ storage: multer.memoryStorage(), limits: config.MAX_FILE
 
 // 获取全部文章
 router.get('/', async (req, res) => {
-	const result = await pm.getAll()
+	const { pageNum, pageSize } = req?.query || {}
+	const result = await pm.getAll(pageNum, pageSize)
 	res.status(result.code).json(result)
 })
 

@@ -34,7 +34,7 @@ import { FolderOutlined, UploadOutlined, EditOutlined, PlusOutlined, FolderOpenO
 import styles from '../styles/pages/album.module.scss'
 import { getFolders, createFolder, deleteFolder, getFolderFiles, uploadAlbumFiles, deleteFiles, getInfo, updateInfo, renameFolder } from '../services/album'
 import dayjs from 'dayjs'
-import { debounce } from '../utils/util'
+import { throttle } from '../utils/util'
 import { imageAccept } from '../configs/uploadConfig'
 
 const { Sider, Content } = Layout
@@ -281,7 +281,7 @@ export default function Album() {
 		} finally {
 			setLoading(false)
 		}
-	}, [getAllFolders])
+	}, [getAllFolders, curFolderPath])
 
 	// 更多选项点击
 	const dropdownClick = useCallback(
@@ -329,7 +329,6 @@ export default function Album() {
 
 	// 保存配置
 	const _saveInfoContent = useCallback(async () => {
-		if (loading) return
 		try {
 			setLoading(true)
 			const values = await form.validateFields()
@@ -342,14 +341,13 @@ export default function Album() {
 			if (res.success) {
 				message.success('保存成功')
 				setIsModalOpen(false)
-				await getInfoContent({ openModal: false })
 			}
 		} catch {
 		} finally {
 			setLoading(false)
 		}
-	}, [getInfoContent, form])
-	const debouncedSave = useMemo(() => debounce(_saveInfoContent, 2000, { immediate: true }), [_saveInfoContent])
+	}, [getInfoContent, curFolderPath])
+	const throttledSave = useMemo(() => throttle(_saveInfoContent, 2000, { immediate: true }), [_saveInfoContent])
 
 	const menuItems = useMemo(() => {
 		return folders.map((folder) => ({
@@ -452,7 +450,7 @@ export default function Album() {
 										</Button>
 									</Popconfirm>
 								) : null}
-								<Button loading={loading} icon={<EditOutlined />} onClick={async () => await getInfoContent()}>
+								<Button loading={loading} icon={<EditOutlined />} onClick={() => getInfoContent()}>
 									配置
 								</Button>
 								<Upload showUploadList={false} beforeUpload={uploadFiles} multiple accept={imageAccept}>
@@ -517,7 +515,7 @@ export default function Album() {
 				title="编辑相册配置"
 				open={isModalOpen}
 				mask={{ closable: false }}
-				onOk={debouncedSave}
+				onOk={throttledSave}
 				onCancel={() => setIsModalOpen(false)}
 				width={screens.md ? (currentMode === 'external' ? 800 : 600) : '95%'}
 				okText="保存"

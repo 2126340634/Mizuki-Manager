@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Card, Input, Button, Upload, message, Space, Typography, Spin, Popconfirm } from 'antd'
-import { SaveOutlined, UploadOutlined, FileTextOutlined, ReloadOutlined } from '@ant-design/icons'
+import { SaveOutlined, UploadOutlined, ReloadOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { getAboutContent, updateAboutContent, replaceAboutFile } from '../services/about'
-import { debounce } from '../utils/util'
+import { debounce, throttle } from '../utils/util'
 import { useAboutContentDB } from '../hooks/useAboutContentDB'
 
 export default function About() {
@@ -43,7 +43,7 @@ export default function About() {
 		await getContent()
 		await db.clearCache()
 		setShowReload(false)
-	}, [getContent, db])
+	}, [getContent])
 
 	// 更新内容
 	const _handleUpdate = useCallback(async () => {
@@ -60,7 +60,7 @@ export default function About() {
 			setLoading(false)
 		}
 	}, [reloadContent, content])
-	const debouncedUpdate = useMemo(() => debounce(_handleUpdate, 2000, { immediate: true }), [_handleUpdate])
+	const throttledUpdate = useMemo(() => throttle(_handleUpdate, 2000, { immediate: true }), [_handleUpdate])
 
 	// 替换文件
 	const handleReplace = async (file: File) => {
@@ -79,14 +79,11 @@ export default function About() {
 	}
 
 	// 输入保存草稿
-	const _saveDraft = useCallback(
-		async (content: string) => {
-			if (!content) return
-			await db.saveCache(content)
-			setShowReload(true)
-		},
-		[db]
-	)
+	const _saveDraft = useCallback(async (content: string) => {
+		if (!content) return
+		await db.saveCache(content)
+		setShowReload(true)
+	}, [])
 	const debouncedSaveDraft = useMemo(() => debounce(_saveDraft, 500), [_saveDraft])
 
 	const onInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -97,19 +94,19 @@ export default function About() {
 	return (
 		<Card
 			title={
-				<span style={{ marginLeft: 24, fontSize: 18 }}>
-					<FileTextOutlined /> 关于页面
+				<span style={{ marginLeft: 24 }}>
+					<InfoCircleOutlined /> 关于页面
 				</span>
 			}
 			style={{ width: '100%' }}
 			extra={
 				<Space style={{ marginLeft: 10 }}>
-					<Upload showUploadList={false} beforeUpload={handleReplace}>
+					<Upload showUploadList={false} beforeUpload={handleReplace} accept=".md">
 						<Button loading={loading} icon={<UploadOutlined />}>
 							上传替换
 						</Button>
 					</Upload>
-					<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={debouncedUpdate}>
+					<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={throttledUpdate}>
 						保存
 					</Button>
 				</Space>
@@ -126,7 +123,7 @@ export default function About() {
 						</Popconfirm>
 					)}
 				</div>
-				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 15 }} style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 139px)' }} />
+				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 15 }} style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 139px)' }} placeholder="输入关于内容" />
 			</Spin>
 		</Card>
 	)

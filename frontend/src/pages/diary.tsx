@@ -27,7 +27,7 @@ import {
 } from 'antd'
 import { EditOutlined, UploadOutlined, DeleteOutlined, BookOutlined, EnvironmentOutlined, SmileOutlined } from '@ant-design/icons'
 import { getDiaryConfig, writeDiaryConfig, uploadDiaryImages } from '../services/diary'
-import { debounce } from '../utils/util'
+import { throttle } from '../utils/util'
 import styles from '../styles/pages/diary.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import { imageAccept } from '../configs/uploadConfig'
@@ -155,7 +155,7 @@ export default function Diary() {
 			console.error(err)
 		}
 	}, [updateList, diaryList, editingIndex, form, pageList, pageNum, pageSize])
-	const debouncedSave = useMemo(() => debounce(_handleSave, 2000, { immediate: true }), [_handleSave])
+	const throttledSave = useMemo(() => throttle(_handleSave, 2000, { immediate: true }), [_handleSave])
 
 	const handleUpload = async (file: File, fileList: File[]) => {
 		if (file === fileList[fileList.length - 1]) {
@@ -291,7 +291,7 @@ export default function Diary() {
 				<Modal
 					title={editingIndex === -1 ? '添加日记' : '修改日记'}
 					open={isModalOpen}
-					onOk={debouncedSave}
+					onOk={throttledSave}
 					onCancel={() => setIsModalOpen(false)}
 					width={screens.md ? 600 : '95%'}
 					okText="保存"

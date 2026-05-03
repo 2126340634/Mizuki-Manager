@@ -119,15 +119,18 @@ module.exports = {
 		static: [
 			{
 				directory: path.resolve(process.env.BASE_PATH, 'public'), // 注意这是博客根目录下的public
-				publicPath: '/'
+				publicPath: '/',
+				watch: false
 			},
 			{
 				directory: path.resolve(process.env.BASE_PATH, 'src/assets'), // 注意这是博客根目录下的src
-				publicPath: '/assets'
+				publicPath: '/assets',
+				watch: false
 			},
 			{
 				directory: '../frontend/public',
-				publicPath: '/'
+				publicPath: '/',
+				watch: false
 			}
 		],
 		proxy: [

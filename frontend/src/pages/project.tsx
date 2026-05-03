@@ -29,7 +29,7 @@ import { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { EditOutlined, DeleteOutlined, ProjectOutlined, GithubOutlined, CodeOutlined, RocketOutlined, UploadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { getProjectConfig, writeProjectConfig, uploadProjectImages } from '../services/project'
-import { debounce } from '../utils/util'
+import { throttle } from '../utils/util'
 import styles from '../styles/pages/friend.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import { imageAccept } from '../configs/uploadConfig'
@@ -191,7 +191,7 @@ export default function Project() {
 			console.error(err)
 		}
 	}, [updateList, projectList, editingIndex, form, pageList, pageNum, pageSize])
-	const debouncedSave = useMemo(() => debounce(_handleSave, 2000, { immediate: true }), [_handleSave])
+	const throttledSave = useMemo(() => throttle(_handleSave, 2000, { immediate: true }), [_handleSave])
 
 	const removeProjects = async () => {
 		const removeIds = new Set(pageList.filter((_, index) => checkedIdxes.has(index)).map((i) => i.id))
@@ -327,7 +327,7 @@ export default function Project() {
 				<Modal
 					title={editingIndex === -1 ? '新增项目' : '修改项目'}
 					open={isModalOpen}
-					onOk={debouncedSave}
+					onOk={throttledSave}
 					onCancel={() => setIsModalOpen(false)}
 					width={800}
 					okText="保存"

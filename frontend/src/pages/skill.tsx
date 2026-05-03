@@ -27,7 +27,7 @@ import {
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { DeleteOutlined, CodeOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons'
 import { getSkillConfig, writeSkillConfig } from '../services/skill'
-import { debounce } from '../utils/util'
+import { throttle } from '../utils/util'
 import styles from '../styles/pages/skill.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import { Icon } from '@iconify/react'
@@ -196,7 +196,7 @@ export default function Skill() {
 			console.error(err)
 		}
 	}, [updateList, skillList, editingIndex, form, pageList, pageNum, pageSize])
-	const debouncedSave = useMemo(() => debounce(_handleSave, 2000, { immediate: true }), [_handleSave])
+	const throttledSave = useMemo(() => throttle(_handleSave, 2000, { immediate: true }), [_handleSave])
 
 	const removeSkills = async () => {
 		const removeIds = new Set(pageList.filter((_, index) => checkedIdxes.has(index)).map((i) => i.id))
@@ -344,7 +344,7 @@ export default function Skill() {
 				<Modal
 					title={editingIndex === -1 ? '新增技能' : '编辑技能'}
 					open={isModalOpen}
-					onOk={debouncedSave}
+					onOk={throttledSave}
 					onCancel={() => setIsModalOpen(false)}
 					width={600}
 					okText="保存"
@@ -404,7 +404,7 @@ export default function Skill() {
 									label={
 										<>
 											<span>图标(仅部分支持)</span>
-											<a href="https://icon-sets.iconify.design/" target="_blank" rel="noreferrer">
+											<a href="https://icon-sets.iconify.design/" target="_blank">
 												&nbsp;访问 Iconify
 											</a>
 										</>

@@ -27,7 +27,7 @@ import {
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { EditOutlined, DeleteOutlined, TeamOutlined, LinkOutlined, UserOutlined } from '@ant-design/icons'
 import { getFriendConfig, writeFriendConfig } from '../services/friend'
-import { debounce } from '../utils/util'
+import { throttle } from '../utils/util'
 import styles from '../styles/pages/friend.module.scss'
 import { Content } from 'antd/es/layout/layout'
 
@@ -144,7 +144,7 @@ export default function Friend() {
 			console.error(err)
 		}
 	}, [updateList, friendList, editingIndex, form, pageList, pageNum, pageSize])
-	const debouncedSave = useMemo(() => debounce(_handleSave, 2000, { immediate: true }), [_handleSave])
+	const throttledSave = useMemo(() => throttle(_handleSave, 2000, { immediate: true }), [_handleSave])
 
 	const removeFriends = async () => {
 		const removeIds = new Set(pageList.filter((_, index) => checkedIdxes.has(index)).map((i) => i.id))
@@ -251,7 +251,7 @@ export default function Friend() {
 				<Modal
 					title={editingIndex === -1 ? '新增友链' : '修改友链'}
 					open={isModalOpen}
-					onOk={debouncedSave}
+					onOk={throttledSave}
 					onCancel={() => setIsModalOpen(false)}
 					width={screens.md ? 600 : '95%'}
 					okText="保存"
