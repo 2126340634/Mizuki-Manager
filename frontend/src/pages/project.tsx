@@ -304,7 +304,7 @@ export default function Project() {
 							))}
 						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description="快来发布你的第一个项目吧~" />
+						<Empty style={{ marginTop: 60 }} description="快来发布你的第一个项目~" />
 					)}
 
 					{projectList.length > 0 && (

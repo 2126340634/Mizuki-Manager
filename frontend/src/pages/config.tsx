@@ -29,6 +29,7 @@ import { getConfigData, uploadAvatarImage, uploadHomeImage, uploadMobileWallpape
 import { debounce, deepMerge, unwrap, wrap } from '../utils/util'
 import { useConfigContentDB } from '../hooks/useConfigContent'
 import { imageAccept } from '../configs/uploadConfig'
+import { Icon } from '@iconify/react'
 
 const { TextArea } = Input
 
@@ -39,7 +40,7 @@ interface EditableListProps {
 	addButtonText?: string
 	emptyText?: string
 	modalTitle?: string
-	modalFields?: (form: any) => React.ReactNode
+	modalFields?: (form: any, iconValue: string) => React.ReactNode
 }
 
 // 默认值
@@ -180,6 +181,8 @@ const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemR
 	const [editingIndex, setEditingIndex] = useState<number | null>(null)
 	const [form] = Form.useForm()
 
+	const iconValue = Form.useWatch('icon', form)
+
 	const handleAdd = () => {
 		setEditingIndex(null)
 		form.resetFields()
@@ -248,7 +251,7 @@ const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemR
 			</Button>
 			<Modal destroyOnHidden mask={{ closable: false }} title={modalTitle} open={modalVisible} onOk={handleOk} onCancel={() => setModalVisible(false)} width={600}>
 				<Form form={form} layout="vertical">
-					{modalFields?.(form)}
+					{modalFields?.(form, iconValue)}
 				</Form>
 			</Modal>
 		</>
@@ -568,7 +571,7 @@ const collapseItems = (
 					<EditableList
 						addButtonText="添加链接"
 						modalTitle="编辑社交链接"
-						modalFields={() => (
+						modalFields={(_, iconValue) => (
 							<>
 								<Form.Item name="name" label="名称" rules={[{ required: true }]}>
 									<Input placeholder="请输入名称" />
@@ -577,7 +580,7 @@ const collapseItems = (
 									name="icon"
 									label={
 										<>
-											<span>图标</span>
+											<span>图标(仅部分支持)</span>
 											<a href="https://icon-sets.iconify.design/" target="_blank">
 												&nbsp;访问Iconify
 											</a>
@@ -585,9 +588,9 @@ const collapseItems = (
 									}
 									rules={[{ required: true }]}
 								>
-									<Input placeholder="例如: fa7-brands:github" />
+									<Input placeholder="例如: fa7-brands:github" suffix={iconValue ? <Icon icon={iconValue} width={20} height={20} /> : <span />} />
 								</Form.Item>
-								<Form.Item name="url" label="链接" rules={[{ required: true, type: 'url' }]}>
+								<Form.Item name="url" label="链接" rules={[{ required: true }]}>
 									<Input placeholder="请输入链接" />
 								</Form.Item>
 							</>
@@ -597,6 +600,7 @@ const collapseItems = (
 								<Tag style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
 									<Typography.Text ellipsis={{ tooltip: item.name }}>{item.name}</Typography.Text>
 								</Tag>
+								<Icon icon={item.icon} fontSize={20}></Icon>
 								<Typography.Text style={{ marginRight: 16 }} copyable ellipsis={{ tooltip: item.url }}>
 									{item.url}
 								</Typography.Text>
@@ -916,7 +920,7 @@ const collapseItems = (
 				<Form.Item name={['licenseConfig', 'name']} label="许可证名称">
 					<Input />
 				</Form.Item>
-				<Form.Item name={['licenseConfig', 'url']} label="许可证链接" rules={[{ type: 'url', message: '请输入有效的URL' }]}>
+				<Form.Item name={['licenseConfig', 'url']} label="许可证链接" rules={[{ message: '请输入有效的URL' }]}>
 					<Input placeholder="https://creativecommons.org/licenses/by-nc-sa/4.0/" />
 				</Form.Item>
 

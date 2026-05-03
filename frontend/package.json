@@ -4,6 +4,7 @@
 	"private": true,
 	"dependencies": {
 		"@ant-design/icons": "^6.1.1",
+		"@iconify/react": "^6.0.2",
 		"@microsoft/fetch-event-source": "^2.0.1",
 		"@reduxjs/toolkit": "^2.11.2",
 		"@testing-library/dom": "^10.4.1",

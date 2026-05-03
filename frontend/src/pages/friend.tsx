@@ -271,7 +271,7 @@ export default function Friend() {
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="siteurl" label="站点链接" rules={[{ required: true, type: 'url' }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="siteurl" label="站点链接" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
 									<Input prefix={<LinkOutlined />} placeholder="输入站点提供的链接" />
 								</Form.Item>
 							</Col>

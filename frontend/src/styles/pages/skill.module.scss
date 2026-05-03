@@ -1,0 +1,14 @@
+@use '../utils/_mixins.scss' as mix;
+
+.layout-container {
+	background: #fff;
+	min-height: 100vh;
+
+	.toolbar {
+		margin-bottom: 12px;
+
+		@media (max-width: 768px) {
+			margin-top: 38px;
+		}
+	}
+}

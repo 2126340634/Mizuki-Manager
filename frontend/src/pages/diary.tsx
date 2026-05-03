@@ -234,7 +234,7 @@ export default function Diary() {
 											</Typography.Paragraph>
 
 											{item.images && item.images.length > 0 && (
-												<div onClick={(e) => e.stopPropagation()} style={{ maxHeight: 120, overflow: 'auto' }}>
+												<div onClick={(e) => e.stopPropagation()} style={{ maxHeight: 120, overflow: 'auto', scrollbarWidth: 'thin' }}>
 													<Image.PreviewGroup>
 														{item.images.map((img: string, idx: number) => (
 															<Image loading="lazy" key={idx} src={img} width={60} height={60} style={{ objectFit: 'cover', borderRadius: 4 }} />
