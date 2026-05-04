@@ -12,7 +12,8 @@ import {
 	DeploymentUnitOutlined,
 	HistoryOutlined,
 	InfoCircleOutlined,
-	CustomerServiceOutlined
+	CustomerServiceOutlined,
+	SoundOutlined
 } from '@ant-design/icons'
 
 export const managerList = [
@@ -25,6 +26,7 @@ export const managerList = [
 	{ title: '我的设备', subtitle: 'Device', icon: <DeploymentUnitOutlined />, path: '/device' },
 	{ title: '日记', subtitle: 'Diary', icon: <BookOutlined />, path: '/diary' },
 	{ title: '友链', subtitle: 'Friend', icon: <TeamOutlined />, path: '/friend' },
+	{ title: '音乐播放器', subtitle: 'Music', icon: <SoundOutlined />, path: '/music' },
 	{ title: '文章', subtitle: 'Post', icon: <FileTextOutlined />, path: '/post' },
 	{ title: '项目展示', subtitle: 'Project', icon: <ProjectOutlined />, path: '/project' },
 	{ title: '技能展示', subtitle: 'Skill', icon: <CustomerServiceOutlined />, path: '/skill' },

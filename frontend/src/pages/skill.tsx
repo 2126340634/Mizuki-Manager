@@ -187,7 +187,6 @@ export default function Skill() {
 			if (editingIndex !== -1) {
 				const realIndex = skillList.findIndex((item) => item.id === pageList[editingIndex].id)
 				if (realIndex !== -1) newList[realIndex] = formattedValues
-				else newList.unshift(formattedValues)
 			} else {
 				newList.unshift(formattedValues)
 			}

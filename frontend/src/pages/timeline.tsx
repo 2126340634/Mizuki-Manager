@@ -196,7 +196,6 @@ export default function Timeline() {
 			if (editingIndex !== -1) {
 				const realIndex = timelineList.findIndex((item) => item.id === pageList[editingIndex].id)
 				if (realIndex !== -1) newList[realIndex] = formattedValues
-				else newList.unshift(formattedValues)
 			} else {
 				newList.unshift(formattedValues)
 			}

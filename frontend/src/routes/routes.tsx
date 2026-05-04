@@ -13,6 +13,7 @@ const Friend = lazy(() => import('../pages/friend'))
 const Project = lazy(() => import('../pages/project'))
 const Skill = lazy(() => import('../pages/skill'))
 const Timeline = lazy(() => import('../pages/timeline'))
+const Music = lazy(() => import('../pages/music'))
 const Post = lazy(() => import('../pages/post'))
 
 const lazyLoad = (Component: React.LazyExoticComponent<React.ComponentType<any>>) => {
@@ -79,6 +80,10 @@ const routes = [
 	{
 		path: '/timeline',
 		element: lazyLoad(Timeline)
+	},
+	{
+		path: '/music',
+		element: lazyLoad(Music)
 	},
 	{
 		path: '/post/*',

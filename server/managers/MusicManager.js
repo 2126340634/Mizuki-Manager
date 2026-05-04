@@ -9,16 +9,16 @@ class ProjectManager extends BaseManager {
 		this.dataDir = path.resolve(config.MUSIC_DATA_DIR) // 音乐配置目录
 		this.configFilename = 'constants.ts'
 		this.coverDir = path.resolve(config.MUSIC_COVER_DIR) // 音乐封面目录
-		this.urlDir = path.resolve(config.MUSIC_URL_DIR) // 音乐文件目录
+		this.urlDir = path.resolve(config.MUSIC_URL_DIR) // 音频文件目录
 		this.publicDir = path.resolve(config.PUBLIC_DIR) // public目录
 	}
-	// 上传音乐(封面,音频文件)
-	async uploadMusic(coverFile, urlFile) {
-		return await super.uploadFiles(this.coverDir, [coverFile, urlFile], (file, index) => {
-			if (index === 0 && !isImage(file.originalname)) return false
-			if (index === 1 && !isMusic(file.originalname)) return false
-			return true
-		})
+	// 上传音频文件
+	async uploadMusic(file) {
+		return await super.uploadFiles(this.urlDir, [file], (file) => isMusic(file.originalname), { skipIfExists: true })
+	}
+	// 上传音乐封面
+	async uploadCover(file) {
+		return await super.uploadFiles(this.coverDir, [file], (file) => isImage(file.originalname), { skipIfExists: true })
 	}
 	// 清除旧音乐(封面,音频文件)
 	async _clearOldMusic(data) {
