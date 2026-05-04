@@ -4,8 +4,14 @@ const { AuthManager } = require('../managers/index.js')
 const am = new AuthManager()
 
 router.post('/login', (req, res) => {
-	const { username, password } = req?.body || {}
-	const result = am.login(username, password)
+	const { username, password, captcha } = req?.body || {}
+	const result = am.login(username, password, captcha)
+	res.status(result.code).json(result)
+})
+
+router.get('/refresh-captcha', (req, res) => {
+	const { username } = req?.query || {}
+	const result = am.refreshCaptcha(username)
 	res.status(result.code).json(result)
 })
 

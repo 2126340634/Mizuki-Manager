@@ -125,7 +125,7 @@ function PostList() {
 					<FileTextOutlined /> 文章管理
 				</span>
 			}
-			style={{ width: '100%' }}
+			style={{ width: '100%', height: '100vh', overflowY: 'auto' }}
 			extra={
 				<Space.Compact style={{ marginLeft: 10 }}>
 					<Upload showUploadList={false} beforeUpload={uploadPost} accept=".md">

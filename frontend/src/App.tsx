@@ -7,6 +7,7 @@ import './styles/App.scss'
 import { Button, Drawer, Grid } from 'antd'
 import { MenuUnfoldOutlined } from '@ant-design/icons'
 import Sider from 'antd/es/layout/Sider'
+import Support from './components/Support'
 
 export default function App() {
 	const { useBreakpoint } = Grid
@@ -49,6 +50,8 @@ export default function App() {
 			)}
 			{/* 路由 */}
 			<Routes>{createRoute(routes)}</Routes>
+
+			<Support />
 		</div>
 	)
 }

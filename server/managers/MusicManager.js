@@ -27,6 +27,13 @@ class ProjectManager extends BaseManager {
 		const clearMusics = super.clearOldMusic(music.urlPaths, this.urlDir)
 		return await Promise.allSettled([clearCovers, clearMusics])
 	}
+	_getPublicPath(targetPath) {
+		if (!targetPath) return ''
+		if (targetPath.startsWith('/')) {
+			targetPath = targetPath.substring(1)
+		}
+		return path.resolve(this.publicDir, targetPath)
+	}
 	// 提取constants.ts内所有音乐(封面,音频文件)的完整路径
 	_getMusicPaths(data) {
 		if (!isObject(data)) return []
@@ -34,10 +41,16 @@ class ProjectManager extends BaseManager {
 		const urlPaths = []
 		const list = data?.LOCAL_PLAYLIST || []
 		list.forEach((item) => {
-			const coverPath = item?.cover || '' // 封面格式为"assets/music/cover/xxx.png"
-			const urlPath = item?.url || '' // 音频格式为"assets/music/url/xxx.mp3"
-			if (isImage(coverPath)) coverPaths.push(path.resolve(this.publicDir, coverPath))
-			if (isMusic(urlPath)) urlPaths.push(path.resolve(this.publicDir, urlPath))
+			const coverPath = item?.cover || '' // 封面格式为"/assets/music/cover/xxx.png"
+			const urlPath = item?.url || '' // 音频格式为"/assets/music/url/xxx.mp3"
+			if (isImage(coverPath)) {
+				const p = this._getPublicPath(coverPath)
+				if (p) coverPaths.push(p)
+			}
+			if (isMusic(urlPath)) {
+				const p = this._getPublicPath(urlPath)
+				if (p) urlPaths.push(p)
+			}
 		})
 		return { coverPaths, urlPaths }
 	}

@@ -5,32 +5,50 @@ import styles from '../styles/pages/index.module.scss'
 import { managerList } from '../configs/managerConfig'
 import { useDispatch } from 'react-redux'
 import { AppDispatch, updateSelect } from '../stores'
-import { defaultTheme } from '../configs/styleConfig'
+import { defaultTheme, themes } from '../configs/styleConfig'
+import { useGlobalContext } from '../hooks/useGlobalContext'
 
 export default function Index() {
+	const { onNotify } = useGlobalContext()
 	const [color, setColor] = useState(defaultTheme)
 	const nav = useNavigate()
 	const dispatch = useDispatch<AppDispatch>()
 	useEffect(() => {
 		// 加载主题颜色
 		const localColor = localStorage.getItem('color_rgb')
-		if (localColor) setColor(localColor)
+		if (localColor) {
+			setColor(localColor)
+			onNotify({ theme: localColor })
+		}
 	}, [])
 	const updateColor = useCallback((color: any) => {
 		const { r, g, b } = color.metaColor
 		setColor(`rgb(${r}, ${g}, ${b})`)
 		localStorage.setItem('color_rgb', `rgb(${r}, ${g}, ${b})`)
+		onNotify({ theme: `rgb(${r}, ${g}, ${b})` })
 	}, [])
 	return (
 		<div className={styles.container}>
-			<Typography.Title level={1} className={styles.title}>
+			<Typography.Title level={1} className={styles.title} style={{ color }}>
 				MIZUKI MANAGER
-				<ColorPicker className={styles['color-picker']} size="small" format="rgb" value={color || defaultTheme} disabledAlpha disabledFormat onChangeComplete={updateColor} />
+				<ColorPicker
+					className={styles['color-picker']}
+					size="small"
+					format="rgb"
+					value={color}
+					presets={[
+						{ label: '默认主题', colors: [defaultTheme] },
+						{ label: '预设主题', colors: themes }
+					]}
+					disabledAlpha
+					disabledFormat
+					onChangeComplete={updateColor}
+					destroyOnHidden
+				/>
 			</Typography.Title>
 			<Typography.Title level={5} className={styles.subtitle}>
-				Mizuki 博客后台管理
+				Mizuki 博客管理器
 			</Typography.Title>
-
 			<Row gutter={[8, 8]}>
 				{managerList
 					.filter((item) => !item.hidden)

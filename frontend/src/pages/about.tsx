@@ -123,7 +123,7 @@ export default function About() {
 						</Popconfirm>
 					)}
 				</div>
-				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 25 }} style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 139px)' }} placeholder="输入关于内容" />
+				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 25 }} style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 141px)' }} placeholder="输入关于内容" />
 			</Spin>
 		</Card>
 	)

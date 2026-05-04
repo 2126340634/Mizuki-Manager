@@ -2,4 +2,9 @@
 	margin: 0;
 	padding: 0;
 	scrollbar-width: thin;
+
+	// mobile
+	@media (max-width: 768px) {
+		scrollbar-width: none;
+	}
 }

@@ -267,7 +267,7 @@ export default function Album() {
 			setLoading(true)
 			Modal.confirm({
 				centered: true,
-				content: '确定删除?',
+				content: '确定要删除整个相册？注意此操作无法撤回！',
 				onOk: async () => {
 					const res = await deleteFolder(curFolderPath)
 					if (res.success) {
@@ -464,7 +464,7 @@ export default function Album() {
 
 					{/* 文件列表 */}
 					{curFolderPath && files.length > 0 ? (
-						<Row gutter={[4, 4]} style={{ marginTop: 16 }}>
+						<Row gutter={[4, 4]} style={{ marginTop: 16, maxHeight: 'calc(100vh - 274px)', overflowY: 'auto' }}>
 							{files.map((file, index) => (
 								<Col key={index} xs={12} sm={8} md={12} lg={6}>
 									<Card

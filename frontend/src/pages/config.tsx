@@ -27,7 +27,7 @@ import {
 import { SaveOutlined, SettingOutlined, ReloadOutlined, PlusOutlined, DeleteOutlined, EditOutlined, UploadOutlined } from '@ant-design/icons'
 import { getConfigData, uploadAvatarImage, uploadHomeImage, uploadMobileWallpapers, uploadPCWallpapers, writeConfigData } from '../services/config'
 import { debounce, deepMerge, throttle, unwrap, wrap } from '../utils/util'
-import { useConfigContentDB } from '../hooks/useConfigContent'
+import { useConfigContentDB } from '../hooks/useConfigContentDB'
 import { imageAccept } from '../configs/uploadConfig'
 import { Icon } from '@iconify/react'
 
@@ -149,7 +149,8 @@ const defaultValues = {
 		link: { enable: true, text: '', url: '', external: false }
 	},
 	shareConfig: { enable: true },
-	relatedPostsConfig: { enable: true, maxCount: 5 }
+	relatedPostsConfig: { enable: true, maxCount: 5 },
+	randomPostsConfig: { enable: true, maxCount: 5 }
 }
 
 const featurePages = [
@@ -932,10 +933,10 @@ const collapseItems = (
 				<Form.Item name={['announcementConfig', 'content']} label="公告内容">
 					<TextArea rows={2} />
 				</Form.Item>
-				<Form.Item name={['announcementConfig', 'closable']} valuePropName="checked" label="可关闭">
+				<Form.Item name={['announcementConfig', 'closable']} valuePropName="checked" label="公告可关闭">
 					<Switch />
 				</Form.Item>
-				<Form.Item name={['announcementConfig', 'link', 'enable']} valuePropName="checked" label="启用公告链接">
+				<Form.Item name={['announcementConfig', 'link', 'enable']} valuePropName="checked" label="公告链接">
 					<Switch />
 				</Form.Item>
 				<Form.Item name={['announcementConfig', 'link', 'text']} label="链接文本">
@@ -956,7 +957,13 @@ const collapseItems = (
 				<Form.Item name={['relatedPostsConfig', 'enable']} valuePropName="checked" label="相关文章">
 					<Switch />
 				</Form.Item>
-				<Form.Item name={['relatedPostsConfig', 'maxCount']} label="最大数量">
+				<Form.Item name={['relatedPostsConfig', 'maxCount']} label="相关文章最大数量">
+					<InputNumber min={1} max={20} />
+				</Form.Item>
+				<Form.Item name={['randomPostsConfig', 'enable']} valuePropName="checked" label="随机文章">
+					<Switch />
+				</Form.Item>
+				<Form.Item name={['randomPostsConfig', 'maxCount']} label="随机文章最大数量">
 					<InputNumber min={1} max={20} />
 				</Form.Item>
 			</>
@@ -1137,7 +1144,7 @@ export default function Config() {
 				</div>
 
 				<Form form={form} layout="vertical" onValuesChange={() => debouncedSaveDraft(form.getFieldsValue(true))} initialValues={defaultValues}>
-					<Collapse items={collapseItems(uploadHomeImg, uploadAvatar, uploadPCWallpaperImages, uploadMobileWallpaperImages)} />
+					<Collapse style={{ maxHeight: 'calc(100vh - 143px)', overflowY: 'auto' }} items={collapseItems(uploadHomeImg, uploadAvatar, uploadPCWallpaperImages, uploadMobileWallpaperImages)} />
 				</Form>
 			</Spin>
 		</Card>

@@ -1,5 +1,6 @@
 import { message } from 'antd'
 import { redirectToLogin } from './util'
+
 type MethodType = 'GET' | 'POST' | 'PUT' | 'DELETE'
 interface RequestParams {
 	url: string

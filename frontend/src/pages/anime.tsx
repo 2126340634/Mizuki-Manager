@@ -232,7 +232,7 @@ export default function Anime() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto' }}>
+			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
 				<Spin spinning={loading}>
 					{/* 顶部标题与操作栏 */}
 					<div className={styles.toolbar}>

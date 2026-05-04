@@ -24,6 +24,7 @@
 		"jsonwebtoken": "^9.0.3",
 		"multer": "^2.1.1",
 		"pm2": "^6.0.14",
-		"recast": "^0.23.11"
+		"recast": "^0.23.11",
+		"svg-captcha": "^1.4.0"
 	}
 }

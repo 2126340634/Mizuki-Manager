@@ -1,0 +1,25 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	left: 8px;
+	bottom: 8px;
+	gap: 4px;
+
+	.text {
+		font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+		cursor: pointer;
+		color: #757575;
+		font-weight: 300;
+		font-size: 16px;
+
+		&:hover {
+			color: #000;
+		}
+	}
+
+	// mobile隐藏
+	@media (max-width: 768px) {
+		display: none;
+	}
+}

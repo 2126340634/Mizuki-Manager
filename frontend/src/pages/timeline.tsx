@@ -225,14 +225,14 @@ export default function Timeline() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto' }}>
+			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
 				<Spin spinning={loading}>
 					<div className={styles.toolbar}>
 						<div style={{ display: 'flex', flexDirection: 'column' }}>
 							<Typography.Title level={4} style={{ margin: 0 }}>
 								<ClockCircleOutlined /> 时间线管理
 							</Typography.Title>
-							<Typography.Text type="secondary">管理个人经历时间线</Typography.Text>
+							<Typography.Text type="secondary">管理成长历程和重要里程碑</Typography.Text>
 						</div>
 					</div>
 
