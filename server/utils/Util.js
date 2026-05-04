@@ -13,12 +13,12 @@ async function fileExists(directory, filename) {
 	}
 }
 // 确保目录存在
-async function ensureDirExist(directory) {
+async function ensureDirExist(directory, { create = true } = {}) {
 	try {
 		await fs.promises.access(directory)
 		return true
 	} catch {
-		await fs.promises.mkdir(directory, { recursive: true })
+		if (create) await fs.promises.mkdir(directory, { recursive: true })
 		return false
 	}
 }
@@ -58,5 +58,10 @@ function isMarkdown(filename) {
 	if (typeof filename !== 'string' || !filename) return false
 	return config.MARKDOWN_FORMATS.some((format) => filename.endsWith(format))
 }
+// 文件命名校验
+function isLegalFilename(filename) {
+	if (typeof filename !== 'string' || !filename) return false
+	return /^[a-zA-Z0-9_\-\s]{1,100}$/.test(filename)
+}
 
-module.exports = { fileExists, ensureDirExist, readFile, deleteFile, writeFile, isObject, isImage, isMusic, isMarkdown }
+module.exports = { fileExists, ensureDirExist, readFile, deleteFile, writeFile, isObject, isImage, isMusic, isMarkdown, isLegalFilename }

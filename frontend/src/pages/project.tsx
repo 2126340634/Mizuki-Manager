@@ -96,7 +96,6 @@ export default function Project() {
 		try {
 			setLoading(true)
 			const res = await getProjectConfig()
-			console.log(res)
 			if (res.success) {
 				const data: Project[] = res.data?.projectsData || []
 				setProjectList(data)

@@ -17,3 +17,6 @@ export const uploadPostFile = (file: File) => request.upload({ url: '/mizuki/pos
 
 // 删除文章
 export const deletePost = (filename: string) => request.delete({ url: '/mizuki/post', data: { filename } })
+
+// 重命名文章
+export const renamePost = (filename: string, newName: string) => request.post({ url: '/mizuki/post/rename', data: { filename, newName } })

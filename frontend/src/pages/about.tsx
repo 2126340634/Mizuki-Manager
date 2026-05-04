@@ -100,16 +100,16 @@ export default function About() {
 			}
 			style={{ width: '100%' }}
 			extra={
-				<Space style={{ marginLeft: 10 }}>
+				<Space.Compact style={{ marginLeft: 10 }}>
 					<Upload showUploadList={false} beforeUpload={handleReplace} accept=".md">
 						<Button loading={loading} icon={<UploadOutlined />}>
-							上传替换
+							上传
 						</Button>
 					</Upload>
 					<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={throttledUpdate}>
 						保存
 					</Button>
-				</Space>
+				</Space.Compact>
 			}
 		>
 			<Spin spinning={loading}>
@@ -123,7 +123,7 @@ export default function About() {
 						</Popconfirm>
 					)}
 				</div>
-				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 15 }} style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 139px)' }} placeholder="输入关于内容" />
+				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 25 }} style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 139px)' }} placeholder="输入关于内容" />
 			</Spin>
 		</Card>
 	)

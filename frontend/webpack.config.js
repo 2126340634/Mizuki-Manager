@@ -115,7 +115,9 @@ module.exports = {
 		port: process.env.FRONTEND_DEV_PORT || 3000,
 		open: false,
 		hot: true,
-		historyApiFallback: true,
+		historyApiFallback: {
+			disableDotRule: true // 允许路径包含.符号
+		},
 		static: [
 			{
 				directory: path.resolve(process.env.BASE_PATH, 'public'), // 注意这是博客根目录下的public

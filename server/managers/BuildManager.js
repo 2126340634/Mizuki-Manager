@@ -15,6 +15,7 @@ class BuildManager extends EventEmitter {
 		this.deployDir = config.DEPLOY_DIR
 		this.distDir = config.DIST_DIR
 		this.buildCommand = { pnpm: 'pnpm build', npm: 'npm run build', yarn: 'yarn build' }[config.PACKAGE_TOOL] || 'pnpm build'
+		this.installCommand = { pnpm: 'pnpm install', npm: 'npm install', yarn: 'yarn install' }[config.PACKAGE_TOOL] || 'pnpm install'
 		this.childProcess = null
 		this.isWindows = process.platform === 'win32'
 		this.log = '' // 缓存当前日志
@@ -66,6 +67,38 @@ class BuildManager extends EventEmitter {
 		}
 	}
 	/**
+	 * @description 部署前安装更新包管理器
+	 * @func onLog 发送新日志内容回调
+	 * @func onError 执行出错回调,发送错误数据对象
+	 * @returns {Promise<boolean>} true为安装成功
+	 */
+	_installPackage(onLog) {
+		const installParts = this.installCommand.split(' ')
+		const command = this.isWindows ? 'cmd.exe' : installParts[0]
+		const args = this.isWindows ? ['/c', this.installCommand] : installParts.slice(1)
+		const process = spawn(command, args, { cwd: this.basePath })
+
+		this.execCallback('log', { log: `[System] 开始安装更新包管理器...\n` })
+		onLog(this._appendLog({ log: `[System] 开始安装更新包管理器...\n` }))
+
+		process.stdout.on('data', (data) => {
+			const cbData = data.toString()
+			this.execCallback('log', { log: cbData })
+			onLog(this._appendLog({ log: cbData }))
+		})
+		process.stderr.on('data', (data) => {
+			const cbData = data.toString()
+			this.execCallback('log', { log: `[Install Error] ${cbData}` })
+			onLog(this._appendLog({ log: `[Install Error] ${cbData}` }))
+		})
+		return new Promise((resolve) => {
+			process.on('close', (code) => {
+				if (code !== 0) return resolve(false)
+				resolve(true)
+			})
+		})
+	}
+	/**
 	 * @description 部署构建
 	 * @func onLog 发送新日志内容回调
 	 * @func onDone 部署完成回调,发送成功数据对象
@@ -80,6 +113,15 @@ class BuildManager extends EventEmitter {
 
 		this.log = ''
 		this.clearCallbacks()
+
+		// 安装更新包管理器
+		const installed = await this._installPackage(onLog)
+		if (!installed) {
+			this.execCallback('error', { code: 500, success: false, message: `\n[System] 安装更新包管理器失败\n` })
+			onError({ code: 500, success: false, message: `\n[System] 安装更新包管理器失败\n` })
+			this.childProcess = null
+			return
+		}
 
 		this.execCallback('log', { log: '\n[System] 准备启动构建任务...\n' })
 		onLog(this._appendLog({ log: '\n[System] 准备启动构建任务...\n' }))
@@ -141,6 +183,7 @@ class BuildManager extends EventEmitter {
 			this.execCallback('error', cbData)
 			onError(cbData)
 			this.childProcess = null
+			return
 		})
 	}
 	// 强制停止构建子进程

@@ -47,4 +47,11 @@ router.delete('/', async (req, res) => {
 	res.status(result.code).json(result)
 })
 
+// 重命名文章
+router.post('/rename', async (req, res) => {
+	const { filename, newName } = req?.body || {}
+	const result = await pm.rename(filename, newName)
+	res.status(result.code).json(result)
+})
+
 module.exports = router

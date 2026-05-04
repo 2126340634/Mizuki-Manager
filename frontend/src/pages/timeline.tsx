@@ -381,7 +381,7 @@ export default function Timeline() {
 								pageSize={pageSize}
 								total={timelineList.length}
 								onChange={onPageChange}
-								pageSizeOptions={[12, 24, 48]}
+								pageSizeOptions={[12, 24]}
 								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
 							/>
 						</Row>

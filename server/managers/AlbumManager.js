@@ -1,6 +1,6 @@
 const config = require('../config')
 const fs = require('fs')
-const { readFile, writeFile, isImage, ensureDirExist } = require('../utils/Util')
+const { readFile, writeFile, isImage, ensureDirExist, isLegalFilename } = require('../utils/Util')
 const path = require('path')
 const BaseManager = require('./BaseManager')
 
@@ -60,9 +60,9 @@ class AlbumManager extends BaseManager {
 		try {
 			if (typeof folderPath !== 'string' || !folderPath) return { code: 400, success: false, message: '请传入正确的文件夹路径' }
 			if (typeof newName !== 'string' || !newName) return { code: 400, success: false, message: '请传入正确的新文件名' }
-			if (!/^[a-zA-Z0-9_\-\s]{1,100}$/.test(newName)) return { code: 400, success: false, message: '文件名不能有特殊符号, 长度最大为100个字符' }
-			if (!(await ensureDirExist(folderPath))) {
-				return { code: 409, success: false, message: '未找到该目录' }
+			if (!isLegalFilename(newName)) return { code: 400, success: false, message: '文件名不能有特殊符号, 长度最大为100个字符' }
+			if (!(await ensureDirExist(folderPath, { create: false }))) {
+				return { code: 404, success: false, message: '未找到该目录' }
 			}
 			const newFolderPath = path.resolve(config.ALBUMS_DIR, newName)
 			await fs.promises.rename(folderPath, newFolderPath)

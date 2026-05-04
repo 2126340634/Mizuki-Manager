@@ -90,7 +90,6 @@ export default function Diary() {
 			const res = await getDiaryConfig()
 			if (res.success) {
 				const data: DiaryItem[] = res.data?.diaryData || []
-				console.log(data)
 				// 按日期最新倒序排列
 				const sortedData = data.sort((a, b) => dayjs(b.date).unix() - dayjs(a.date).unix())
 				setDiaryList(sortedData)
