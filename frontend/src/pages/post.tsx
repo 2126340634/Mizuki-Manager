@@ -296,7 +296,7 @@ function PostEditor(props: PostEditorProps) {
 					if (draft !== POST_FRONT_MATTER) setShowReload(true)
 				} else {
 					// 修改
-					if (draft === POST_FRONT_MATTER) {
+					if (draft === POST_FRONT_MATTER || !isEditingRef.current) {
 						getContent() // 未修改则重新获取
 					} else {
 						setContent(draft) // 已修改则使用缓存
