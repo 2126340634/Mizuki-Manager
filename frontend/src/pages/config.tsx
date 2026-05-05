@@ -30,6 +30,7 @@ import { debounce, deepMerge, throttle, unwrap, wrap } from '../utils/util'
 import { useConfigContentDB } from '../hooks/useConfigContentDB'
 import { imageAccept } from '../configs/uploadConfig'
 import { Icon } from '@iconify/react'
+import styles from '../styles/pages/config.module.scss'
 
 const { TextArea } = Input
 
@@ -224,8 +225,8 @@ const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemR
 				<CustomList
 					dataSource={value}
 					renderItem={(item, idx) => (
-						<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
-							<div style={{ flex: 1 }}>
+						<div className={styles.listItem}>
+							<div className={styles.listItemContent}>
 								{itemRender ? (
 									itemRender(
 										item,
@@ -247,7 +248,7 @@ const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemR
 					)}
 				/>
 			)}
-			<Button type="dashed" block icon={<PlusOutlined />} onClick={handleAdd} style={{ marginTop: 8 }}>
+			<Button type="dashed" block icon={<PlusOutlined />} onClick={handleAdd} className={styles.addButton}>
 				{addButtonText}
 			</Button>
 			<Modal destroyOnHidden mask={{ closable: false }} title={modalTitle} open={modalVisible} onOk={handleOk} onCancel={() => setModalVisible(false)} width={600}>
@@ -285,20 +286,20 @@ const StringListEditor: React.FC<{
 	}
 
 	return (
-		<div>
-			<Space wrap style={{ marginBottom: 8, display: 'flex', gap: 16 }}>
+		<>
+			<Space wrap className={styles.tagSpace}>
 				{value.map((item, i) => (
-					<div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
-						{imageMode && <Image loading="lazy" width={70} height={70} style={{ objectFit: 'contain' }} src={item} alt={item} />}
-						<Tag key={i} closable onClose={() => removeItem(i)} style={{ display: 'flex' }}>
-							<Typography.Text ellipsis={{ tooltip: item }} style={{ maxWidth: 180 }}>
+					<div className={styles.tagItem}>
+						{imageMode && <Image loading="lazy" width={70} height={70} className={styles.tagImage} src={item} alt={item} />}
+						<Tag key={i} closable onClose={() => removeItem(i)} className={styles.tag}>
+							<Typography.Text ellipsis={{ tooltip: item }} className={styles.tagText}>
 								{item}
 							</Typography.Text>
 						</Tag>
 					</div>
 				))}
 			</Space>
-			<Space.Compact style={{ width: '100%' }}>
+			<Space.Compact className={styles.fullWidth}>
 				<Input value={inputVal} onChange={(e) => setInputVal(e.target.value)} placeholder="输入内容后添加" />
 				{imageMode && (
 					<Upload accept={imageAccept} beforeUpload={(file: File, fileList: File[]) => uploadImage(file, fileList, (urls) => uploadItem(urls))} showUploadList={false} multiple>
@@ -313,7 +314,7 @@ const StringListEditor: React.FC<{
 					<span>{addText}</span>
 				</Button>
 			</Space.Compact>
-		</div>
+		</>
 	)
 }
 
@@ -329,7 +330,7 @@ const collapseItems = (
 		label: '基础配置',
 
 		children: (
-			<Row gutter={16}>
+			<Row gutter={[8, 0]}>
 				<Col xs={24} md={12}>
 					<Form.Item name="SITE_LANG" label="站点语言">
 						<Select
@@ -343,7 +344,7 @@ const collapseItems = (
 				</Col>
 				<Col xs={24} md={12}>
 					<Form.Item name="SITE_TIMEZONE" label="时区偏移(-12~12, 例如中国为+8)">
-						<InputNumber min={-12} max={12} style={{ width: '100%' }} />
+						<InputNumber min={-12} max={12} className={styles.fullWidth} />
 					</Form.Item>
 				</Col>
 			</Row>
@@ -356,32 +357,40 @@ const collapseItems = (
 
 		children: (
 			<>
-				<Form.Item name={['siteConfig', 'title']} label="站点标题">
-					<Input />
-				</Form.Item>
-				<Form.Item name={['siteConfig', 'subtitle']} label="副标题">
-					<Input />
-				</Form.Item>
-				<Form.Item name={['siteConfig', 'siteURL']} label="站点URL">
-					<Input />
-				</Form.Item>
-				<Form.Item name={['siteConfig', 'siteStartDate']} label="建站日期">
-					<Input placeholder="2026-01-01" />
-				</Form.Item>
-				<Row gutter={16}>
-					<Col span={12}>
-						<Form.Item name={['siteConfig', 'themeColor', 'hue']} label="主题色色相">
-							<InputNumber min={0} max={360} style={{ width: '100%' }} />
+				<Row gutter={[8, 0]}>
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'title']} label="站点标题">
+							<Input />
 						</Form.Item>
 					</Col>
-					<Col span={12}>
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'subtitle']} label="副标题">
+							<Input />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'siteStartDate']} label="建站日期">
+							<Input placeholder="2026-01-01" />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'themeColor', 'hue']} label="主题色色相">
+							<InputNumber min={0} max={360} className={styles.fullWidth} />
+						</Form.Item>
+					</Col>
+					<Col span={24}>
+						<Form.Item name={['siteConfig', 'siteURL']} label="站点URL">
+							<Input />
+						</Form.Item>
+					</Col>
+					<Col span={24}>
 						<Form.Item name={['siteConfig', 'themeColor', 'fixed']} label="固定主题色" valuePropName="checked">
 							<Switch />
 						</Form.Item>
 					</Col>
 				</Row>
 				<Divider orientation="horizontal">功能页面</Divider>
-				<Row gutter={16}>
+				<Row gutter={[8, 0]}>
 					{featurePages.map((f) => (
 						<Col span={6} key={f.key}>
 							<Form.Item name={['siteConfig', 'featurePages', f.key]} label={f.name} valuePropName="checked">
@@ -391,7 +400,7 @@ const collapseItems = (
 					))}
 				</Row>
 				<Divider orientation="horizontal">导航栏标题</Divider>
-				<Row gutter={16}>
+				<Row gutter={[8, 0]}>
 					<Col span={12}>
 						<Form.Item name={['siteConfig', 'navbarTitle', 'mode']} label="模式">
 							<Select
@@ -408,8 +417,8 @@ const collapseItems = (
 						</Form.Item>
 					</Col>
 					<Col xs={24} md={12}>
-						<Form.Item label="图标路径" style={{ marginBottom: 8 }}>
-							<Space.Compact style={{ width: '100%' }}>
+						<Form.Item label="图标路径" className={styles.formItemNoMargin}>
+							<Space.Compact className={styles.fullWidth}>
 								<Form.Item name={['siteConfig', 'navbarTitle', 'icon']} noStyle>
 									<Input placeholder="例如: assets/home/home.png" />
 								</Form.Item>
@@ -434,13 +443,13 @@ const collapseItems = (
 						<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.siteConfig?.navbarTitle?.icon !== cur?.siteConfig?.navbarTitle?.icon}>
 							{({ getFieldValue }) => {
 								const url = getFieldValue(['siteConfig', 'navbarTitle', 'icon'])
-								return <Image loading="lazy" width="100%" height={80} style={{ objectFit: 'contain' }} src={url} alt={url} />
+								return <Image loading="lazy" width="100%" height={80} className={styles.previewImage} src={url} alt={url} />
 							}}
 						</Form.Item>
 					</Col>
 					<Col xs={24} md={12}>
-						<Form.Item label="Logo路径" style={{ marginBottom: 8 }}>
-							<Space.Compact style={{ width: '100%' }}>
+						<Form.Item label="Logo路径" className={styles.formItemNoMargin}>
+							<Space.Compact className={styles.fullWidth}>
 								<Form.Item name={['siteConfig', 'navbarTitle', 'logo']} noStyle>
 									<Input placeholder="例如: assets/home/default-logo.png" />
 								</Form.Item>
@@ -465,7 +474,7 @@ const collapseItems = (
 						<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.siteConfig?.navbarTitle?.logo !== cur?.siteConfig?.navbarTitle?.logo}>
 							{({ getFieldValue }) => {
 								const url = getFieldValue(['siteConfig', 'navbarTitle', 'logo'])
-								return <Image loading="lazy" width="100%" height={80} style={{ objectFit: 'contain' }} src={url} alt={url} />
+								return <Image loading="lazy" width="100%" height={80} className={styles.previewImage} src={url} alt={url} />
 							}}
 						</Form.Item>
 					</Col>
@@ -485,40 +494,56 @@ const collapseItems = (
 		label: '全屏壁纸',
 
 		children: (
-			<>
-				<Form.Item name={['fullscreenWallpaperConfig', 'position']} label="壁纸位置">
-					<Select
-						options={[
-							{ label: '居中', value: 'center' },
-							{ label: '顶部', value: 'top' },
-							{ label: '底部', value: 'bottom' },
-							{ label: '左侧', value: 'left' },
-							{ label: '右侧', value: 'right' }
-						]}
-					/>
-				</Form.Item>
-				<Form.Item name={['fullscreenWallpaperConfig', 'opacity']} label="透明度">
-					<InputNumber min={0} max={1} step={0.1} style={{ width: '100%' }} />
-				</Form.Item>
-				<Form.Item name={['fullscreenWallpaperConfig', 'blur']} label="模糊度">
-					<InputNumber min={0} max={10} style={{ width: '100%' }} />
-				</Form.Item>
-				<Form.Item label="桌面壁纸" name={['fullscreenWallpaperConfig', 'src', 'desktop']}>
-					<StringListEditor imageMode={true} uploadImage={uploadPCWallpaperImages} />
-				</Form.Item>
-				<Form.Item label="移动端壁纸" name={['fullscreenWallpaperConfig', 'src', 'mobile']}>
-					<StringListEditor imageMode={true} uploadImage={uploadMobileWallpaperImages} />
-				</Form.Item>
-				<Form.Item name={['fullscreenWallpaperConfig', 'carousel', 'enable']} valuePropName="checked" label="轮播开关">
-					<Switch />
-				</Form.Item>
-				<Form.Item name={['fullscreenWallpaperConfig', 'carousel', 'interval']} label="轮播间隔(秒)">
-					<InputNumber min={1} />
-				</Form.Item>
-				<Form.Item name={['fullscreenWallpaperConfig', 'zIndex']} label="层级">
-					<InputNumber />
-				</Form.Item>
-			</>
+			<Row gutter={[8, 0]}>
+				<Col xs={24} md={8}>
+					<Form.Item name={['fullscreenWallpaperConfig', 'position']} label="壁纸位置">
+						<Select
+							options={[
+								{ label: '居中', value: 'center' },
+								{ label: '顶部', value: 'top' },
+								{ label: '底部', value: 'bottom' },
+								{ label: '左侧', value: 'left' },
+								{ label: '右侧', value: 'right' }
+							]}
+						/>
+					</Form.Item>
+				</Col>
+				<Col xs={24} md={8}>
+					<Form.Item name={['fullscreenWallpaperConfig', 'opacity']} label="透明度">
+						<InputNumber min={0} max={1} step={0.1} className={styles.fullWidth} />
+					</Form.Item>
+				</Col>
+				<Col xs={24} md={8}>
+					<Form.Item name={['fullscreenWallpaperConfig', 'blur']} label="模糊度">
+						<InputNumber min={0} max={10} className={styles.fullWidth} />
+					</Form.Item>
+				</Col>
+				<Col span={24}>
+					<Form.Item label="桌面壁纸" name={['fullscreenWallpaperConfig', 'src', 'desktop']}>
+						<StringListEditor imageMode={true} uploadImage={uploadPCWallpaperImages} />
+					</Form.Item>
+				</Col>
+				<Col span={24}>
+					<Form.Item label="移动端壁纸" name={['fullscreenWallpaperConfig', 'src', 'mobile']}>
+						<StringListEditor imageMode={true} uploadImage={uploadMobileWallpaperImages} />
+					</Form.Item>
+				</Col>
+				<Col span={24}>
+					<Form.Item name={['fullscreenWallpaperConfig', 'carousel', 'enable']} valuePropName="checked" label="轮播开关">
+						<Switch />
+					</Form.Item>
+				</Col>
+				<Col xs={24} md={12}>
+					<Form.Item name={['fullscreenWallpaperConfig', 'carousel', 'interval']} label="轮播间隔(秒)">
+						<InputNumber min={1} className={styles.fullWidth} />
+					</Form.Item>
+				</Col>
+				<Col xs={24} md={12}>
+					<Form.Item name={['fullscreenWallpaperConfig', 'zIndex']} label="层级">
+						<InputNumber className={styles.fullWidth} />
+					</Form.Item>
+				</Col>
+			</Row>
 		)
 	},
 	// 个人资料
@@ -528,8 +553,8 @@ const collapseItems = (
 
 		children: (
 			<>
-				<Form.Item label="头像路径" style={{ marginBottom: 8 }}>
-					<Space.Compact style={{ width: '100%' }}>
+				<Form.Item label="头像路径" className={styles.formItemNoMargin}>
+					<Space.Compact className={styles.fullWidth}>
 						<Form.Item name={['profileConfig', 'avatar']} noStyle>
 							<Input placeholder="例如: assets/images/avatar.webp" />
 						</Form.Item>
@@ -553,14 +578,14 @@ const collapseItems = (
 				<Form.Item noStyle shouldUpdate={(prev, cur) => prev?.profileConfig?.avatar !== cur?.profileConfig?.avatar}>
 					{({ getFieldValue }) => {
 						const url = getFieldValue(['profileConfig', 'avatar'])
-						return <Image loading="lazy" width="100%" height={80} style={{ objectFit: 'contain' }} src={url} alt={url} />
+						return <Image loading="lazy" width="100%" height={80} className={styles.previewImage} src={url} alt={url} />
 					}}
 				</Form.Item>
 				<Form.Item name={['profileConfig', 'name']} label="昵称">
 					<Input />
 				</Form.Item>
 				<Form.Item name={['profileConfig', 'bio']} label="简介">
-					<TextArea rows={2} />
+					<TextArea rows={3} />
 				</Form.Item>
 				<Form.Item name={['profileConfig', 'typewriter', 'enable']} valuePropName="checked" label="打字机效果">
 					<Switch />
@@ -597,12 +622,12 @@ const collapseItems = (
 							</>
 						)}
 						itemRender={(item) => (
-							<div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-								<Tag style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+							<div className={styles.linkItem}>
+								<Tag className={styles.linkTag}>
 									<Typography.Text ellipsis={{ tooltip: item.name }}>{item.name}</Typography.Text>
 								</Tag>
 								<Icon icon={item.icon} fontSize={20}></Icon>
-								<Typography.Text style={{ marginRight: 16 }} copyable ellipsis={{ tooltip: item.url }}>
+								<Typography.Text className={styles.linkUrl} copyable ellipsis={{ tooltip: item.url }}>
 									{item.url}
 								</Typography.Text>
 							</div>
@@ -775,77 +800,87 @@ const collapseItems = (
 
 		children: (
 			<>
-				<Form.Item name={['sakuraConfig', 'enable']} valuePropName="checked" label="启用樱花">
-					<Switch />
-				</Form.Item>
-				<Form.Item name={['sakuraConfig', 'sakuraNum']} label="樱花数量">
-					<InputNumber min={1} max={50} />
-				</Form.Item>
-				<Form.Item name={['sakuraConfig', 'limitTimes']} label="越界限制次数（-1为无限）">
-					<InputNumber min={-1} />
-				</Form.Item>
-				<Divider orientation="horizontal">大小范围</Divider>
-				<Row gutter={16}>
-					<Col span={12}>
+				<Row gutter={[8, 0]}>
+					<Col span={24}>
+						<Form.Item name={['sakuraConfig', 'enable']} valuePropName="checked" label="启用樱花">
+							<Switch />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['sakuraConfig', 'sakuraNum']} label="樱花数量">
+							<InputNumber min={1} max={50} className={styles.fullWidth} />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['sakuraConfig', 'limitTimes']} label="越界限制次数(-1为无限)">
+							<InputNumber min={-1} className={styles.fullWidth} />
+						</Form.Item>
+					</Col>
+				</Row>
+				<Divider orientation="horizontal">尺寸范围</Divider>
+				<Row gutter={[8, 0]}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'size', 'min']} label="最小尺寸倍数">
-							<InputNumber min={0.1} max={2} step={0.1} />
+							<InputNumber min={0.1} max={2} step={0.1} className={styles.fullWidth} />
 						</Form.Item>
 					</Col>
-					<Col span={12}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'size', 'max']} label="最大尺寸倍数">
-							<InputNumber min={0.1} max={2} step={0.1} />
+							<InputNumber min={0.1} max={2} step={0.1} className={styles.fullWidth} />
 						</Form.Item>
 					</Col>
 				</Row>
-				<Divider orientation="horizontal">透明度范围</Divider>
-				<Row gutter={16}>
-					<Col span={12}>
+				<Divider orientation="horizontal">透明度</Divider>
+				<Row gutter={[8, 0]}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'opacity', 'min']} label="最小透明度">
-							<InputNumber min={0} max={1} step={0.1} />
+							<InputNumber min={0} max={1} step={0.1} className={styles.fullWidth} />
 						</Form.Item>
 					</Col>
-					<Col span={12}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'opacity', 'max']} label="最大透明度">
-							<InputNumber min={0} max={1} step={0.1} />
+							<InputNumber min={0} max={1} step={0.1} className={styles.fullWidth} />
 						</Form.Item>
 					</Col>
 				</Row>
-				<Divider orientation="horizontal">速度配置</Divider>
-				<Row gutter={16}>
-					<Col span={12}>
+				<Divider orientation="horizontal">速度</Divider>
+				<Row gutter={[8, 0]}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'speed', 'horizontal', 'min']} label="水平速度最小值">
-							<InputNumber step={0.1} />
+							<InputNumber className={styles.fullWidth} step={0.1} />
 						</Form.Item>
 					</Col>
-					<Col span={12}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'speed', 'horizontal', 'max']} label="水平速度最大值">
-							<InputNumber step={0.1} />
+							<InputNumber className={styles.fullWidth} step={0.1} />
 						</Form.Item>
 					</Col>
-					<Col span={12}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'speed', 'vertical', 'min']} label="垂直速度最小值">
-							<InputNumber step={0.1} />
+							<InputNumber className={styles.fullWidth} step={0.1} />
 						</Form.Item>
 					</Col>
-					<Col span={12}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'speed', 'vertical', 'max']} label="垂直速度最大值">
-							<InputNumber step={0.1} />
+							<InputNumber className={styles.fullWidth} step={0.1} />
 						</Form.Item>
 					</Col>
-					<Col span={12}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'speed', 'rotation']} label="旋转速度">
-							<InputNumber step={0.01} />
+							<InputNumber className={styles.fullWidth} step={0.01} />
 						</Form.Item>
 					</Col>
-					<Col span={12}>
+					<Col xs={24} md={12}>
 						<Form.Item name={['sakuraConfig', 'speed', 'fadeSpeed']} label="消失速度">
-							<InputNumber step={0.01} />
+							<InputNumber className={styles.fullWidth} step={0.01} />
+						</Form.Item>
+					</Col>
+					<Col span={24}>
+						<Form.Item name={['sakuraConfig', 'zIndex']} label="层级">
+							<InputNumber />
 						</Form.Item>
 					</Col>
 				</Row>
-				<Form.Item name={['sakuraConfig', 'zIndex']} label="层级">
-					<InputNumber />
-				</Form.Item>
 			</>
 		)
 	},
@@ -856,53 +891,81 @@ const collapseItems = (
 
 		children: (
 			<>
-				<Form.Item name={['pioConfig', 'enable']} valuePropName="checked" label="启用">
-					<Switch />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'position']} label="位置">
-					<Select
-						options={[
-							{ label: '左侧', value: 'left' },
-							{ label: '右侧', value: 'right' }
-						]}
-					/>
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'hiddenOnMobile']} valuePropName="checked" label="移动端隐藏">
-					<Switch />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'width']} label="宽度(px)">
-					<InputNumber min={100} />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'height']} label="高度(px)">
-					<InputNumber min={100} />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'mode']} label="模式">
-					<Select
-						options={[
-							{ label: '可拖拽', value: 'draggable' },
-							{ label: '固定', value: 'fixed' }
-						]}
-					/>
-				</Form.Item>
+				<Row gutter={[8, 0]}>
+					<Col span={24}>
+						<Form.Item name={['pioConfig', 'enable']} valuePropName="checked" label="启用">
+							<Switch />
+						</Form.Item>
+					</Col>
+					<Col span={24}>
+						<Form.Item name={['pioConfig', 'hiddenOnMobile']} valuePropName="checked" label="移动端隐藏">
+							<Switch />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['pioConfig', 'position']} label="位置">
+							<Select
+								options={[
+									{ label: '左侧', value: 'left' },
+									{ label: '右侧', value: 'right' }
+								]}
+							/>
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['pioConfig', 'mode']} label="模式">
+							<Select
+								options={[
+									{ label: '可拖拽', value: 'draggable' },
+									{ label: '固定', value: 'fixed' }
+								]}
+							/>
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['pioConfig', 'width']} label="宽度(px)">
+							<InputNumber min={100} className={styles.fullWidth} />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['pioConfig', 'height']} label="高度(px)">
+							<InputNumber min={100} className={styles.fullWidth} />
+						</Form.Item>
+					</Col>
+				</Row>
 				<Divider orientation="horizontal">对话框配置</Divider>
-				<Form.Item name={['pioConfig', 'dialog', 'welcome']} label="欢迎语">
-					<Input />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'dialog', 'home']} label="首页提示">
-					<Input />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'dialog', 'close']} label="关闭提示">
-					<Input />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'dialog', 'link']} label="关于链接">
-					<Input />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'dialog', 'touch']} label="触摸提示">
-					<StringListEditor addText="添加提示" />
-				</Form.Item>
-				<Form.Item name={['pioConfig', 'dialog', 'skin']} label="换装提示">
-					<StringListEditor addText="添加提示" />
-				</Form.Item>
+				<Row gutter={[8, 0]}>
+					<Col xs={24} md={12}>
+						<Form.Item name={['pioConfig', 'dialog', 'welcome']} label="欢迎语">
+							<Input />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['pioConfig', 'dialog', 'home']} label="首页提示">
+							<Input />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['pioConfig', 'dialog', 'close']} label="关闭提示">
+							<Input />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['pioConfig', 'dialog', 'link']} label="关于链接">
+							<Input />
+						</Form.Item>
+					</Col>
+					<Col span={24}>
+						<Form.Item name={['pioConfig', 'dialog', 'touch']} label="触摸提示">
+							<StringListEditor addText="添加提示" />
+						</Form.Item>
+					</Col>
+					<Col span={24}>
+						<Form.Item name={['pioConfig', 'dialog', 'skin']} label="换装提示">
+							<StringListEditor addText="添加提示" />
+						</Form.Item>
+					</Col>
+				</Row>
 			</>
 		)
 	},
@@ -931,7 +994,7 @@ const collapseItems = (
 					<Input placeholder="留空使用默认标题" />
 				</Form.Item>
 				<Form.Item name={['announcementConfig', 'content']} label="公告内容">
-					<TextArea rows={2} />
+					<TextArea rows={5} />
 				</Form.Item>
 				<Form.Item name={['announcementConfig', 'closable']} valuePropName="checked" label="公告可关闭">
 					<Switch />
@@ -977,6 +1040,7 @@ export default function Config() {
 	const [showReload, setShowReload] = useState(false)
 	const db = useConfigContentDB()
 	const originalData = useRef<any>(null) // 存表单修改前数据
+	const [msgApi, msgContextHolder] = message.useMessage()
 
 	// 获取配置数据
 	const getConfig = useCallback(async () => {
@@ -990,7 +1054,7 @@ export default function Config() {
 				// 解包value给表单
 				const unwrappedData = unwrap(res.data, 'value')
 				form.setFieldsValue(unwrappedData)
-			} else message.error('配置数据无效')
+			} else msgApi.error('配置数据无效')
 		} catch {
 		} finally {
 			setLoading(false)
@@ -1002,7 +1066,7 @@ export default function Config() {
 		await getConfig()
 		await db.clearCache('latest')
 		setShowReload(false)
-		message.info('已重载为最新配置')
+		msgApi.info('已重载为最新配置')
 	}, [getConfig])
 
 	// 保存
@@ -1017,7 +1081,7 @@ export default function Config() {
 			const res = await writeConfigData(finalData)
 			originalData.current = finalData
 			if (res.success) {
-				message.success('保存成功')
+				msgApi.success('保存成功')
 				await db.clearCache('latest')
 				await db.saveCache('original_data', JSON.stringify(finalData))
 				setShowReload(false)
@@ -1045,7 +1109,7 @@ export default function Config() {
 				setLoading(true)
 				const res = await uploadFunc(file, fileList)
 				if (res.success) {
-					message.success('上传成功')
+					msgApi.success('上传成功')
 					return res
 				}
 			} catch {
@@ -1116,37 +1180,40 @@ export default function Config() {
 	}, [])
 
 	return (
-		<Card
-			title={
-				<span style={{ marginLeft: 24 }}>
-					<SettingOutlined /> 配置管理
-				</span>
-			}
-			style={{ width: '100%' }}
-			extra={
-				showReload ? (
-					<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={throttledSave}>
-						保存
-					</Button>
-				) : null
-			}
-		>
-			<Spin spinning={loading}>
-				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-					<Typography.Text type="secondary">编辑配置项</Typography.Text>
-					{showReload && (
-						<Popconfirm title="当前有未保存的草稿，确定放弃并重载？" onConfirm={reloadContent}>
-							<Button size="small" icon={<ReloadOutlined />} loading={loading}>
-								内容重载
-							</Button>
-						</Popconfirm>
-					)}
-				</div>
+		<>
+			{msgContextHolder}
+			<Card
+				title={
+					<span className={styles.cardTitle}>
+						<SettingOutlined /> 配置管理
+					</span>
+				}
+				className={styles.card}
+				extra={
+					showReload ? (
+						<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={throttledSave}>
+							保存
+						</Button>
+					) : null
+				}
+			>
+				<Spin spinning={loading}>
+					<div className={styles.cardHeader}>
+						<Typography.Text type="secondary">编辑配置项</Typography.Text>
+						{showReload && (
+							<Popconfirm title="当前有未保存的草稿，确定放弃并重载？" onConfirm={reloadContent}>
+								<Button size="small" icon={<ReloadOutlined />} loading={loading}>
+									内容重载
+								</Button>
+							</Popconfirm>
+						)}
+					</div>
 
-				<Form form={form} layout="vertical" onValuesChange={() => debouncedSaveDraft(form.getFieldsValue(true))} initialValues={defaultValues}>
-					<Collapse style={{ maxHeight: 'calc(100vh - 143px)', overflowY: 'auto' }} items={collapseItems(uploadHomeImg, uploadAvatar, uploadPCWallpaperImages, uploadMobileWallpaperImages)} />
-				</Form>
-			</Spin>
-		</Card>
+					<Form form={form} layout="vertical" onValuesChange={() => debouncedSaveDraft(form.getFieldsValue(true))} initialValues={defaultValues}>
+						<Collapse className={styles.collapse} items={collapseItems(uploadHomeImg, uploadAvatar, uploadPCWallpaperImages, uploadMobileWallpaperImages)} />
+					</Form>
+				</Spin>
+			</Card>
+		</>
 	)
 }

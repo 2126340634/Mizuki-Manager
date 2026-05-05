@@ -12,3 +12,98 @@
 		}
 	}
 }
+
+.content {
+	padding: 24px;
+	overflow-y: auto;
+	height: 100vh;
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+}
+
+.toolbarTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.pageTitle {
+	margin: 0;
+}
+
+.friendListRow {
+	margin-top: 16px;
+}
+
+.cardContent {
+	position: relative;
+}
+
+.cardCheckbox {
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 1;
+}
+
+.friendHeader {
+	margin-bottom: 8px;
+}
+
+.friendTitle {
+	font-size: 16px;
+}
+
+.friendDesc {
+	font-size: 14px;
+	color: #666;
+	min-height: 40px;
+}
+
+.tagSpace {
+	margin-top: 8px;
+}
+
+.tag {
+	max-width: 150px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.empty {
+	margin-top: 60px;
+}
+
+.pagination {
+	margin: 30px auto;
+	white-space: nowrap;
+}
+
+.modalFormItem {
+	width: 100%;
+	margin-bottom: 8px;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+.modalImageWrapper {
+	display: flex;
+	white-space: nowrap;
+	align-items: center;
+	gap: 8px;
+	flex-direction: column;
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+	}
+}
+
+.modalAvatar {
+	width: 88px;
+	height: 80px;
+	border: 1px solid #eee;
+}

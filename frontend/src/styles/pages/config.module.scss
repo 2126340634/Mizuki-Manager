@@ -1,0 +1,88 @@
+.cardTitle {
+	margin-left: 24px;
+}
+
+.card {
+	width: 100%;
+}
+
+.cardHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.collapse {
+	max-height: calc(100vh - 143px);
+	overflow-y: auto;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+.formItemNoMargin {
+	margin-bottom: 8px;
+}
+
+.previewImage {
+	object-fit: contain;
+}
+
+.linkItem {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.linkTag {
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.linkUrl {
+	margin-right: 16px;
+}
+
+.listItem {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 0;
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.listItemContent {
+	flex: 1;
+}
+
+.addButton {
+	margin-top: 8px;
+}
+
+.tagSpace {
+	margin-bottom: 8px;
+	display: flex;
+	gap: 16px;
+}
+
+.tagItem {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+}
+
+.tagImage {
+	object-fit: contain;
+}
+
+.tag {
+	display: flex;
+}
+
+.tagText {
+	max-width: 180px;
+}

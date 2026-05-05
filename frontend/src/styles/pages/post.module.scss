@@ -1,0 +1,23 @@
+.cardTitle {
+	margin-left: 0;
+}
+
+.card {
+	width: 100%;
+}
+
+.helpLink {
+	font-size: 12px;
+	margin-right: 8px;
+}
+
+.cardHeader {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 12px;
+}
+
+.editorTextarea {
+	font-family: monospace;
+	max-height: calc(100vh - 139px);
+}

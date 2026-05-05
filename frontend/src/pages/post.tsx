@@ -5,6 +5,7 @@ import { getAllPosts, getPostContent, updatePost, createPost, uploadPostFile, de
 import { debounce, throttle } from '../utils/util'
 import { usePostContentDB } from '../hooks/usePostContentDB'
 import { useNavigate, useParams, Routes, Route, Link } from 'react-router-dom'
+import styles from '../styles/pages/post.module.scss'
 
 const POST_FRONT_MATTER =
 	'---\n' +
@@ -315,15 +316,15 @@ function PostEditor(props: PostEditorProps) {
 	return (
 		<Card
 			title={
-				<span>
+				<span className={styles.cardTitle}>
 					<FileTextOutlined /> {isNewRef.current ? '新建文章' : `${isEditingRef.current ? '编辑' : '查看'} ${filenameRef.current?.replace('.md', '')}`}
 				</span>
 			}
-			style={{ width: '100%' }}
+			className={styles.card}
 			extra={
 				isEditingRef.current && (
 					<>
-						<a style={{ fontSize: 12 }} href="https://docs.mizuki.mysqil.com/press/file/" target="_blank">
+						<a className={styles.helpLink} href="https://docs.mizuki.mysqil.com/press/file/" target="_blank">
 							如何编写文章？
 						</a>
 						<Space.Compact>
@@ -341,7 +342,7 @@ function PostEditor(props: PostEditorProps) {
 			}
 		>
 			<Spin spinning={loading}>
-				<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+				<div className={styles.cardHeader}>
 					<Typography.Text type="secondary">{filenameRef.current}</Typography.Text>
 					{isEditingRef.current && showReload && (
 						<Popconfirm title={isNewRef.current ? '确定要恢复为新建的默认内容？' : '确定要重载为最新内容？'} onConfirm={reloadContent}>
@@ -356,7 +357,7 @@ function PostEditor(props: PostEditorProps) {
 					value={content}
 					onChange={onChange}
 					autoSize={{ minRows: 25 }}
-					style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 139px)' }}
+					className={styles.editorTextarea}
 					placeholder={isEditing ? POST_FRONT_MATTER : '还没有任何内容哦~'}
 				/>
 			</Spin>

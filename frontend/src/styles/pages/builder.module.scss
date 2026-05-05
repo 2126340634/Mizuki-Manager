@@ -40,3 +40,33 @@
 		}
 	}
 }
+
+.content {
+	padding: 24px;
+	overflow-y: auto;
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+}
+
+.toolbarTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.pageTitle {
+	margin: 0;
+}
+
+.alert {
+	margin-bottom: 8px;
+}
+
+.buttonGroup {
+	float: right;
+}
+
+.empty {
+	margin-top: 120px;
+}

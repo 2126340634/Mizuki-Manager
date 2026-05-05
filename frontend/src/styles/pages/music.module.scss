@@ -12,3 +12,124 @@
 		}
 	}
 }
+
+.content {
+	padding: 24px;
+	overflow-y: auto;
+	height: 100vh;
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+}
+
+.toolbarTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.pageTitle {
+	margin: 0;
+}
+
+.actionBar {
+	margin-bottom: 16px;
+}
+
+.coverContainer {
+	height: 140px;
+	overflow: hidden;
+	position: relative;
+	background: #f5f5f5;
+}
+
+.coverImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.coverPlaceholder {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+
+.coverPlaceholderIcon {
+	font-size: 40px;
+	color: #ccc;
+}
+
+.cardCheckbox {
+	position: absolute;
+	right: 8px;
+	top: 8px;
+	z-index: 1;
+}
+
+.cardDescription {
+	font-size: 12px;
+	margin-bottom: 8px;
+}
+
+.tagSpace {
+	margin-top: 8px;
+}
+
+.durationTag {
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.empty {
+	margin-top: 60px;
+}
+
+.paginationWrapper {
+	margin-top: 32px;
+}
+
+.pagination {
+	margin: 30px auto;
+	white-space: nowrap;
+}
+
+.modalFormItem {
+	width: 100%;
+	margin-bottom: 8px;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+.modalImageWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+		gap: 8px;
+	}
+}
+
+.modalImage {
+	object-fit: contain;
+}
+
+.audioWrapper {
+	display: flex;
+	flex-direction: column;
+}
+
+.audioPlayer {
+	width: 100%;
+	height: 30px;
+	margin-top: 8px;
+}

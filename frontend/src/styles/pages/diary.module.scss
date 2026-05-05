@@ -12,3 +12,107 @@
 		}
 	}
 }
+
+.content {
+	padding: 24px;
+	overflow-y: auto;
+	height: 100vh;
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+}
+
+.toolbarTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.pageTitle {
+	margin: 0;
+}
+
+.diaryListRow {
+	margin-top: 16px;
+}
+
+.cardContent {
+	position: relative;
+}
+
+.cardCheckbox {
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 1;
+}
+
+.diaryDate {
+	font-size: 12px;
+}
+
+.diaryContent {
+	white-space: pre-wrap;
+}
+
+.imagePreviewGroup {
+	max-height: 120px;
+	overflow: auto;
+	scrollbar-width: thin;
+}
+
+.previewImage {
+	object-fit: cover;
+	border-radius: 4px;
+}
+
+.tagSpace {
+	margin-top: 8px;
+}
+
+.tag {
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.empty {
+	margin-top: 60px;
+}
+
+.pagination {
+	margin: 30px auto;
+	white-space: nowrap;
+}
+
+.modalFormItem {
+	margin-bottom: 8px;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+.imageList {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	margin-top: 8px;
+}
+
+.imageItem {
+	position: relative;
+}
+
+.imageItemImg {
+	object-fit: cover;
+}
+
+.imageDeleteBtn {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	color: red;
+	cursor: pointer;
+}

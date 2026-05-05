@@ -191,11 +191,11 @@ export default function Diary() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
+			<Content className={styles.content}>
 				<Spin spinning={loading}>
 					<div className={styles.toolbar}>
-						<div style={{ display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={4} style={{ margin: 0 }}>
+						<div className={styles.toolbarTitle}>
+							<Typography.Title level={4} className={styles.pageTitle}>
 								<BookOutlined /> 日记管理
 							</Typography.Title>
 							<Typography.Text type="secondary">记录生活中的每一个瞬间</Typography.Text>
@@ -221,43 +221,43 @@ export default function Diary() {
 					</Space>
 
 					{pageList.length > 0 ? (
-						<Row gutter={[8, 8]} style={{ marginTop: 16 }}>
+						<Row gutter={[8, 8]} className={styles.diaryListRow}>
 							{pageList.map((item, index) => (
 								<Col key={item.id} xs={24} sm={12} md={12} lg={8}>
 									<Card hoverable size="small" onClick={() => _handleCheck(!checkedIdxes.has(index), index)} actions={[<EditOutlined key="edit" onClick={(e) => openEditModal(e, index)} />]}>
-										<div style={{ position: 'relative' }}>
-											<Checkbox style={{ position: 'absolute', right: 0, top: 0, zIndex: 1 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
-											<Typography.Text type="secondary" style={{ fontSize: 12 }}>
+										<div className={styles.cardContent}>
+											<Checkbox className={styles.cardCheckbox} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
+											<Typography.Text type="secondary" className={styles.diaryDate}>
 												{dayjs(item.date).format('YYYY-MM-DD HH:mm')}
 											</Typography.Text>
-											<Typography.Paragraph ellipsis={{ rows: 5 }} style={{ whiteSpace: 'pre-wrap' }}>
+											<Typography.Paragraph ellipsis={{ rows: 5 }} className={styles.diaryContent}>
 												{item.content}
 											</Typography.Paragraph>
 
 											{item.images && item.images.length > 0 && (
-												<div onClick={(e) => e.stopPropagation()} style={{ maxHeight: 120, overflow: 'auto', scrollbarWidth: 'thin' }}>
+												<div className={styles.imagePreviewGroup} onClick={(e) => e.stopPropagation()}>
 													<Image.PreviewGroup>
 														{item.images.map((img: string, idx: number) => (
-															<Image loading="lazy" key={idx} src={img} width={60} height={60} style={{ objectFit: 'cover', borderRadius: 4 }} />
+															<Image loading="lazy" key={idx} src={img} width={60} height={60} className={styles.previewImage} />
 														))}
 													</Image.PreviewGroup>
 												</div>
 											)}
 
 											{(item.mood || item.location || (item.tags && item.tags.length > 0)) && (
-												<Space wrap style={{ marginTop: 8 }}>
+												<Space wrap className={styles.tagSpace}>
 													{item.mood && (
-														<Tag icon={<SmileOutlined />} color="orange" style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+														<Tag icon={<SmileOutlined />} color="orange" className={styles.tag}>
 															{item.mood}
 														</Tag>
 													)}
 													{item.location && (
-														<Tag icon={<EnvironmentOutlined />} color="blue" style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+														<Tag icon={<EnvironmentOutlined />} color="blue" className={styles.tag}>
 															{item.location}
 														</Tag>
 													)}
 													{item.tags?.map((tag: string) => (
-														<Tag key={tag} style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+														<Tag key={tag} className={styles.tag}>
 															#{tag}
 														</Tag>
 													))}
@@ -269,7 +269,7 @@ export default function Diary() {
 							))}
 						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description="目前还没有记录哦" />
+						<Empty className={styles.empty} description="目前还没有记录哦" />
 					)}
 
 					{diaryList.length > 0 && (
@@ -283,7 +283,7 @@ export default function Diary() {
 								total={diaryList.length}
 								onChange={onPageChange}
 								pageSizeOptions={[12, 24, 48, 96]}
-								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+								className={styles.pagination}
 							/>
 						</Row>
 					)}
@@ -307,22 +307,22 @@ export default function Diary() {
 						</Form.Item>
 						<Row gutter={8}>
 							<Col xs={24} md={12}>
-								<Form.Item name="date" label="时间" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
-									<DatePicker showTime style={{ width: '100%' }} />
+								<Form.Item name="date" label="时间" rules={[{ required: true }]} className={styles.modalFormItem}>
+									<DatePicker showTime className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="mood" label="心情" style={{ marginBottom: 8 }}>
+								<Form.Item name="mood" label="心情" className={styles.modalFormItem}>
 									<Input prefix={<SmileOutlined />} placeholder="现在的状态" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="content" label="正文" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="content" label="正文" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input.TextArea placeholder="此刻在想什么..." rows={10} />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item label="添加图片" style={{ marginBottom: 8 }}>
+								<Form.Item label="添加图片" className={styles.modalFormItem}>
 									<Space wrap>
 										<Upload showUploadList={false} beforeUpload={handleUpload} accept={imageAccept} multiple>
 											<Button loading={loading} icon={<UploadOutlined />}>
@@ -330,12 +330,12 @@ export default function Diary() {
 											</Button>
 										</Upload>
 										<Form.Item name="images" noStyle>
-											<div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+											<div className={styles.imageList}>
 												{imagesValue?.map((url: string, i: number) => (
-													<div key={i} style={{ position: 'relative' }}>
-														<Image loading="lazy" src={url} width={60} height={60} style={{ objectFit: 'cover' }} />
+													<div key={i} className={styles.imageItem}>
+														<Image loading="lazy" src={url} width={60} height={60} className={styles.imageItemImg} />
 														<DeleteOutlined
-															style={{ position: 'absolute', top: -4, right: -4, color: 'red', cursor: 'pointer' }}
+															className={styles.imageDeleteBtn}
 															onClick={() => {
 																const next = imagesValue.filter((_: any, idx: number) => idx !== i)
 																form.setFieldsValue({ images: next })
@@ -349,13 +349,13 @@ export default function Diary() {
 								</Form.Item>
 							</Col>
 							<Col span={12}>
-								<Form.Item name="location" label="地点" style={{ marginBottom: 8 }}>
+								<Form.Item name="location" label="地点" className={styles.modalFormItem}>
 									<Input prefix={<EnvironmentOutlined />} placeholder="在哪里？" />
 								</Form.Item>
 							</Col>
 							<Col span={12}>
-								<Form.Item name="tags" label="标签" style={{ marginBottom: 8 }}>
-									<Select mode="tags" placeholder="添加标签" style={{ width: '100%' }} />
+								<Form.Item name="tags" label="标签" className={styles.modalFormItem}>
+									<Select mode="tags" placeholder="添加标签" className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 						</Row>

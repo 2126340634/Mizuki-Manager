@@ -32,3 +32,83 @@
 		}
 	}
 }
+
+.content {
+	padding: 24px;
+	overflow-y: auto;
+	height: 100vh;
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+}
+
+.toolbarTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.pageTitle {
+	margin: 0;
+}
+
+.deviceListRow {
+	margin-top: 16px;
+}
+
+.coverImage {
+	object-fit: cover;
+}
+
+.coverCheckbox {
+	position: absolute;
+	left: 8px;
+	top: 4px;
+}
+
+.deviceName {
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.cardDescription {
+	width: 100%;
+}
+
+.deviceDescription {
+	font-size: 12px;
+}
+
+.empty {
+	margin-top: 60px;
+}
+
+.pagination {
+	margin: 30px auto;
+	white-space: nowrap;
+}
+
+.modalFormItem {
+	margin-bottom: 8px;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+.modalImageWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	overflow: hidden;
+	white-space: pre-wrap;
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+		gap: 8px;
+	}
+}
+
+.modalImage {
+	object-fit: contain;
+}

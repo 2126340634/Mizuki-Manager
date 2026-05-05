@@ -225,18 +225,18 @@ export default function Timeline() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
+			<Content className={styles.content}>
 				<Spin spinning={loading}>
 					<div className={styles.toolbar}>
-						<div style={{ display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={4} style={{ margin: 0 }}>
+						<div className={styles.toolbarTitle}>
+							<Typography.Title level={4} className={styles.pageTitle}>
 								<ClockCircleOutlined /> 时间线管理
 							</Typography.Title>
 							<Typography.Text type="secondary">管理成长历程和重要里程碑</Typography.Text>
 						</div>
 					</div>
 
-					<Space style={{ marginBottom: 16 }}>
+					<Space className={styles.actionBar}>
 						{pageList.length > 0 && (
 							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
 								全选
@@ -265,38 +265,39 @@ export default function Timeline() {
 										hoverable
 										size="small"
 										onClick={() => _handleCheck(!checkedIdxes.has(index), index)}
-										style={{ marginBottom: 16, borderLeft: `4px solid ${item.color || typeMap[item.type]?.color || '#1890ff'}` }}
+										className={styles.timelineCard}
+										style={{ borderLeftColor: item.color || typeMap[item.type]?.color || '#1890ff' }}
 										actions={[<EditOutlined key="edit" onClick={(e) => openEditModal(e, index)} />]}
 									>
-										<Checkbox style={{ position: 'absolute', right: 16, top: 16, zIndex: 1 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
+										<Checkbox className={styles.cardCheckbox} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
 
-										<div style={{ marginBottom: 12 }}>
+										<div className={styles.tagWrapper}>
 											<Space wrap>
 												{item.featured && (
-													<Tag style={{ borderRadius: 12 }} color="gold">
+													<Tag className={styles.featuredTag} color="gold">
 														精选
 													</Tag>
 												)}
 												{!item.endDate && (
-													<Tag style={{ borderRadius: 12 }} color="green">
+													<Tag className={styles.currentTag} color="green">
 														当前状态
 													</Tag>
 												)}
-												<Tag style={{ borderRadius: 12 }} color={typeMap[item.type]?.color}>
+												<Tag className={styles.typeTag} color={typeMap[item.type]?.color}>
 													{typeMap[item.type]?.label}
 												</Tag>
 											</Space>
 										</div>
 
-										<Typography.Title level={5} style={{ marginBottom: 4 }}>
+										<Typography.Title level={5} className={styles.timelineTitle}>
 											{item.title}
 										</Typography.Title>
 
-										<div style={{ display: 'flex', gap: 16, marginBottom: 8, flexWrap: 'wrap' }}>
+										<div className={styles.metaInfo}>
 											{item.organization && (
 												<Space size={4}>
 													<TeamOutlined />
-													<Typography.Text type="secondary" style={{ fontSize: 12 }}>
+													<Typography.Text type="secondary" className={styles.metaText}>
 														{item.organization}
 													</Typography.Text>
 												</Space>
@@ -304,74 +305,70 @@ export default function Timeline() {
 											{item.location && (
 												<Space size={4}>
 													<EnvironmentOutlined />
-													<Typography.Text type="secondary" style={{ fontSize: 12 }}>
+													<Typography.Text type="secondary" className={styles.metaText}>
 														{item.location}
 													</Typography.Text>
 												</Space>
 											)}
 											{item.position && (
-												<Typography.Text type="secondary" style={{ fontSize: 12 }}>
+												<Typography.Text type="secondary" className={styles.metaText}>
 													{item.position}
 												</Typography.Text>
 											)}
 										</div>
 
-										<Typography.Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 8 }}>
+										<Typography.Text type="secondary" className={styles.dateText}>
 											{formatDate(item.startDate)} - {item.endDate ? formatDate(item.endDate) : '至今'}
 										</Typography.Text>
 
-										<Typography.Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 12, marginBottom: 8, color: '#666' }}>
+										<Typography.Paragraph ellipsis={{ rows: 2 }} className={styles.descriptionText}>
 											{item.description}
 										</Typography.Paragraph>
 
-										<div style={{ marginBottom: 4 }}>
-											{item.achievements && item.achievements.length > 0 && (
-												<div style={{ display: 'flex', flexDirection: 'column' }}>
-													<span style={{ fontSize: 12 }}>成就荣誉</span>
-													<Space wrap size={[4, 0]}>
-														{item.achievements?.map((achieve) => (
-															<Tag key={achieve} color="default" style={{ fontSize: 10, maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-																<span style={{ fontSize: 8, color: '#00c00a' }}>●</span> {achieve}
-															</Tag>
-														))}
-													</Space>
-												</div>
-											)}
-										</div>
-										<div style={{ marginBottom: 4 }}>
-											{item.skills && item.skills.length > 0 && (
+										{item.achievements && item.achievements.length > 0 && (
+											<div className={styles.sectionWrapper}>
+												<span className={styles.sectionLabel}>成就荣誉</span>
 												<Space wrap size={[4, 0]}>
-													{item.skills?.map((skill) => (
-														<Tag key={skill} color="blue" style={{ fontSize: 10, maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-															{skill}
+													{item.achievements?.map((achieve) => (
+														<Tag key={achieve} color="default" className={styles.achievementTag}>
+															<span className={styles.bulletDot}>●</span> {achieve}
 														</Tag>
 													))}
 												</Space>
-											)}
-										</div>
-										<div>
-											{item.links && item.links.length > 0 && (
-												<Space wrap size={[4, 0]}>
-													{item.links?.map((link, idx) => (
-														<a key={idx} href={link.url} target="_blank" onClick={(e) => e.stopPropagation()}>
-															<Tag color="geekblue" style={{ fontSize: 10, maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-																<LinkOutlined /> {link.name}
-															</Tag>
-														</a>
-													))}
-												</Space>
-											)}
-										</div>
+											</div>
+										)}
+
+										{item.skills && item.skills.length > 0 && (
+											<Space wrap size={[4, 0]} className={styles.skillWrapper}>
+												{item.skills?.map((skill) => (
+													<Tag key={skill} color="blue" className={styles.skillTag}>
+														{skill}
+													</Tag>
+												))}
+											</Space>
+										)}
+
+										{item.links && item.links.length > 0 && (
+											<Space wrap size={[4, 0]}>
+												{item.links?.map((link, idx) => (
+													<a key={idx} href={link.url} target="_blank" onClick={(e) => e.stopPropagation()}>
+														<Tag color="geekblue" className={styles.linkTag}>
+															<LinkOutlined /> {link.name}
+														</Tag>
+													</a>
+												))}
+											</Space>
+										)}
 									</Card>
 								)
 							}))}
 						/>
 					) : (
-						<Empty style={{ marginTop: 60 }} description="快来添加你的第一段经历~" />
+						<Empty className={styles.empty} description="快来添加你的第一段经历~" />
 					)}
 
 					{timelineList.length > 0 && (
-						<Row justify="center" style={{ marginTop: 32 }}>
+						<Row justify="center" className={styles.paginationWrapper}>
 							<Pagination
 								size="small"
 								showQuickJumper
@@ -381,7 +378,7 @@ export default function Timeline() {
 								total={timelineList.length}
 								onChange={onPageChange}
 								pageSizeOptions={[12, 24]}
-								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+								className={styles.pagination}
 							/>
 						</Row>
 					)}
@@ -405,12 +402,12 @@ export default function Timeline() {
 						</Form.Item>
 						<Row gutter={[8, 0]}>
 							<Col xs={24} md={14}>
-								<Form.Item name="title" label="标题" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="title" label="标题" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input placeholder="输入标题" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={6}>
-								<Form.Item name="type" label="类型" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="type" label="类型" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Select
 										options={[
 											{ label: '教育经历', value: 'education' },
@@ -422,37 +419,37 @@ export default function Timeline() {
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={4}>
-								<Form.Item name="featured" label="是否精选" valuePropName="checked" style={{ marginBottom: 8 }}>
+								<Form.Item name="featured" label="是否精选" valuePropName="checked" className={styles.modalFormItem}>
 									<Switch />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={14}>
-								<Form.Item name="organization" label="组织/机构" style={{ marginBottom: 8 }}>
+								<Form.Item name="organization" label="组织/机构" className={styles.modalFormItem}>
 									<Input placeholder="例如: 某大学/某公司" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={6}>
-								<Form.Item name="location" label="地点" style={{ marginBottom: 8 }}>
+								<Form.Item name="location" label="地点" className={styles.modalFormItem}>
 									<Input placeholder="例如: 北京/上海" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={4}>
-								<Form.Item name="color" label="主题颜色" style={{ marginBottom: 8 }}>
-									<Input type="color" style={{ width: '100%' }} />
+								<Form.Item name="color" label="主题颜色" className={styles.modalFormItem}>
+									<Input type="color" className={`${styles.fullWidth} ${styles.pointer}`} />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="startDate" label="开始日期" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
-									<DatePicker style={{ width: '100%' }} placeholder="选择开始日期" />
+								<Form.Item name="startDate" label="开始日期" rules={[{ required: true }]} className={styles.modalFormItem}>
+									<DatePicker className={styles.fullWidth} placeholder="选择开始日期" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="endDate" label="结束日期" style={{ marginBottom: 8 }}>
-									<DatePicker style={{ width: '100%' }} placeholder="留空表示至今" />
+								<Form.Item name="endDate" label="结束日期" className={styles.modalFormItem}>
+									<DatePicker className={styles.fullWidth} placeholder="留空表示至今" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="position" label="职位/角色" style={{ marginBottom: 8 }}>
+								<Form.Item name="position" label="职位/角色" className={styles.modalFormItem}>
 									<Input placeholder="例如: 前端开发实习生" />
 								</Form.Item>
 							</Col>
@@ -467,7 +464,7 @@ export default function Timeline() {
 											</a>
 										</>
 									}
-									style={{ marginBottom: 8 }}
+									className={styles.modalFormItem}
 								>
 									<Form.Item name="icon" noStyle>
 										<Input placeholder="例如: material-symbols:school" suffix={iconValue ? <Icon icon={iconValue} width={20} height={20} /> : <span />} />
@@ -475,40 +472,34 @@ export default function Timeline() {
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="description" label="描述" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="description" label="描述" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<TextArea rows={3} placeholder="详细描述这段经历..." />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="achievements" label="成就荣誉" style={{ marginBottom: 8 }}>
+								<Form.Item name="achievements" label="成就荣誉" className={styles.modalFormItem}>
 									<Select mode="tags" placeholder="添加这段经历的收获和成就" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="skills" label="技术栈" style={{ marginBottom: 8 }}>
+								<Form.Item name="skills" label="技术栈" className={styles.modalFormItem}>
 									<Select mode="tags" placeholder="添加相关技术栈, 如: React" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<div style={{ marginBottom: 8 }}>相关链接</div>
+								<div className={styles.linksLabel}>相关链接</div>
 								<Form.List name="links">
 									{(fields, { add, remove }) => (
 										<>
 											{fields.map((field) => (
-												<div key={field.key} style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4, width: '100%' }}>
-													<Form.Item key={`name-${field.key}`} name={[field.name, 'name']} rules={[{ required: true, message: '请输入名称' }]} style={{ marginBottom: 0 }}>
+												<div key={field.key} className={styles.linkRow}>
+													<Form.Item key={`name-${field.key}`} name={[field.name, 'name']} rules={[{ required: true, message: '请输入名称' }]} className={styles.linkNameInput}>
 														<Input placeholder="名称" />
 													</Form.Item>
-													<Form.Item key={`url-${field.key}`} name={[field.name, 'url']} rules={[{ required: true, message: '请输入链接地址' }]} style={{ marginBottom: 0, flex: 1 }}>
+													<Form.Item key={`url-${field.key}`} name={[field.name, 'url']} rules={[{ required: true, message: '请输入链接地址' }]} className={styles.linkUrlInput}>
 														<Input placeholder="链接地址" />
 													</Form.Item>
-													<Form.Item
-														key={`type-${field.key}`}
-														name={[field.name, 'type']}
-														rules={[{ required: true, message: '请选择类型' }]}
-														style={{ marginBottom: 0, width: 100 }}
-														initialValue="other"
-													>
+													<Form.Item key={`type-${field.key}`} name={[field.name, 'type']} rules={[{ required: true, message: '请选择类型' }]} className={styles.linkTypeSelect} initialValue="other">
 														<Select
 															options={[
 																{ label: '网站', value: 'website' },

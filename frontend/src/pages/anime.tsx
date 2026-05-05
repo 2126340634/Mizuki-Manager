@@ -232,12 +232,12 @@ export default function Anime() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
+			<Content className={styles.content}>
 				<Spin spinning={loading}>
 					{/* 顶部标题与操作栏 */}
 					<div className={styles.toolbar}>
-						<div style={{ display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={4} style={{ margin: 0 }}>
+						<div className={styles.toolbarTitle}>
+							<Typography.Title level={4} className={styles.pageTitle}>
 								<PlayCircleOutlined /> 追番记录
 							</Typography.Title>
 							<Typography.Text type="secondary">管理追番数据</Typography.Text>
@@ -247,7 +247,7 @@ export default function Anime() {
 					<Space>
 						{pageList.length > 0 ? (
 							<Checkbox
-								style={{ whiteSpace: 'nowrap' }}
+								className={styles.checkbox}
 								onChange={onCheckAllChange}
 								indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length}
 								checked={checkedIdxes.size === pageList.length}
@@ -268,7 +268,7 @@ export default function Anime() {
 					</Space>
 
 					{pageList.length > 0 ? (
-						<Row gutter={[4, 4]} style={{ marginTop: 16 }}>
+						<Row gutter={[4, 4]} className={styles.animeListRow}>
 							{pageList.map((anime, index) => (
 								<Col key={index} xs={12} sm={8} md={12} lg={6}>
 									<Card
@@ -276,13 +276,13 @@ export default function Anime() {
 										size="small"
 										cover={
 											<div className={styles.cover} onClick={(e) => e.stopPropagation()}>
-												{anime.cover && <Image loading="lazy" height="100%" width="100%" style={{ objectFit: 'cover', borderRadius: '8px 8px 0 0' }} src={anime.cover} alt={anime.title} />}
+												{anime.cover && <Image loading="lazy" height="100%" width="100%" className={styles.coverImage} src={anime.cover} alt={anime.title} />}
 												<Tag color="black" className={styles.tag}>
 													{anime.year}
 												</Tag>
 												{(() => {
 													const selected = checkedIdxes.has(index)
-													return <Checkbox style={{ position: 'absolute', left: 8, top: 4, opacity: selected ? 1 : 0.4 }} checked={selected} onChange={(e) => onCheckChange(e, index)} />
+													return <Checkbox className={styles.coverCheckbox} style={{ opacity: selected ? 1 : 0.4 }} checked={selected} onChange={(e) => onCheckChange(e, index)} />
 												})()}
 											</div>
 										}
@@ -296,20 +296,20 @@ export default function Anime() {
 									>
 										<Card.Meta
 											title={
-												<div style={{ display: 'flex', flexDirection: 'column' }}>
-													<Typography.Text ellipsis={{ tooltip: anime.title }} style={{ fontSize: 14, fontWeight: 'bold' }}>
+												<div className={styles.cardTitle}>
+													<Typography.Text ellipsis={{ tooltip: anime.title }} className={styles.animeTitle}>
 														{anime.title}
 													</Typography.Text>
-													<Typography.Text ellipsis={{ tooltip: anime.description }} style={{ fontWeight: 'lighter', color: '#999' }}>
+													<Typography.Text ellipsis={{ tooltip: anime.description }} className={styles.animeDescription}>
 														{anime.description}
 													</Typography.Text>
 												</div>
 											}
 											description={
-												<Space orientation="vertical" style={{ width: '100%' }}>
-													<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-														<div style={{ color: '#faad14', fontSize: 16 }}>
-															<StarFilled style={{ marginRight: 4 }} />
+												<Space orientation="vertical" className={styles.cardDescription}>
+													<div className={styles.ratingWrapper}>
+														<div className={styles.rating}>
+															<StarFilled className={styles.starIcon} />
 															{Number(anime.rating || 0).toFixed(1)}
 														</div>
 														<Typography.Text type="secondary">{anime.status === 'watching' ? '在看' : anime.status === 'completed' ? '看过' : '想看'}</Typography.Text>
@@ -323,7 +323,7 @@ export default function Anime() {
 							))}
 						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description="快来开启你的追番生涯吧~" />
+						<Empty className={styles.empty} description="快来开启你的追番生涯吧~" />
 					)}
 					{animeList.length > 0 && (
 						<Row>
@@ -336,7 +336,7 @@ export default function Anime() {
 								total={animeList.length}
 								onChange={onPageChange}
 								pageSizeOptions={[12, 24, 48, 96]}
-								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+								className={styles.pagination}
 							/>
 						</Row>
 					)}
@@ -359,24 +359,24 @@ export default function Anime() {
 					<Form form={form} layout="vertical">
 						<Row gutter={[8, 0]}>
 							<Col span={24}>
-								<Form.Item style={{ marginBottom: 8 }} name="title" label="番剧标题" rules={[{ required: true }]}>
-									<Input placeholder="输入番剧标题" style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="title" label="番剧标题" rules={[{ required: true }]}>
+									<Input placeholder="输入番剧标题" className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col span={8}>
-								<Form.Item style={{ marginBottom: 8 }} name="year" label="发布年份" rules={[{ required: true }]}>
-									<DatePicker placeholder="选择发布年份" picker="year" style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="year" label="发布年份" rules={[{ required: true }]}>
+									<DatePicker placeholder="选择发布年份" picker="year" className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col span={16}>
-								<Form.Item style={{ marginBottom: 8 }} name="studio" label="制作公司" rules={[{ required: true }]}>
-									<Input placeholder="例如: CloverWorks" style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="studio" label="制作公司" rules={[{ required: true }]}>
+									<Input placeholder="例如: CloverWorks" className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<div style={{ display: 'flex', flexDirection: screens.md ? 'row' : 'column', gap: screens.md ? 8 : 0, overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
-									<Form.Item style={{ flex: 1, marginBottom: 8 }} name="cover" label="封面图片 (无引用的图片将被清理)" rules={[{ required: true }]}>
-										<Space.Compact style={{ width: '100%' }}>
+								<div className={styles.coverUploadWrapper}>
+									<Form.Item className={styles.modalFormItem} name="cover" label="封面图片" rules={[{ required: true }]}>
+										<Space.Compact className={styles.fullWidth}>
 											<Form.Item name="cover" noStyle>
 												<Input placeholder="输入图片外链" />
 											</Form.Item>
@@ -387,32 +387,32 @@ export default function Anime() {
 											</Upload>
 										</Space.Compact>
 									</Form.Item>
-									{coverValue && <Image width={screens.md ? 100 : '100%'} height={80} loading="lazy" src={coverValue} alt={coverValue || ''} style={{ objectFit: 'contain' }} />}
+									{coverValue && <Image width={screens.md ? 100 : '100%'} height={80} loading="lazy" src={coverValue} alt={coverValue || ''} className={styles.modalCoverImage} />}
 								</div>
 							</Col>
 							<Col span={24}>
-								<Form.Item style={{ marginBottom: 8 }} name="link" label="观看链接" rules={[{ required: true }]}>
-									<Input placeholder="输入观看链接 (例如B站)" style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="link" label="观看链接" rules={[{ required: true }]}>
+									<Input placeholder="输入观看链接 (例如B站)" className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item style={{ marginBottom: 8 }} name="description" label="番剧描述" rules={[{ required: true }]}>
-									<Input.TextArea placeholder="输入番剧描述" rows={3} style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="description" label="番剧描述" rules={[{ required: true }]}>
+									<Input.TextArea placeholder="输入番剧描述" rows={3} className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item style={{ marginBottom: 8 }} name="genre" label="番剧类型" rules={[{ required: true }]}>
-									<Select mode="tags" style={{ width: '100%' }} placeholder="输入标签后按回车" tokenSeparators={[',', '，']} />
+								<Form.Item className={styles.modalFormItem} name="genre" label="番剧类型" rules={[{ required: true }]}>
+									<Select mode="tags" className={styles.fullWidth} placeholder="输入标签后按回车" tokenSeparators={[',', '，']} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
-								<Form.Item style={{ marginBottom: 8 }} name="rating" label="评分 (0-10)" rules={[{ required: true }]}>
-									<InputNumber placeholder="输入番剧评分" min={0} max={10} formatter={(value) => Number(value)?.toFixed(1) || ''} style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="rating" label="评分 (0-10)" rules={[{ required: true }]}>
+									<InputNumber placeholder="输入番剧评分" min={0} max={10} formatter={(value) => Number(value)?.toFixed(1) || ''} className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
 								<Form.Item
-									style={{ marginBottom: 8 }}
+									className={styles.modalFormItem}
 									name="progress"
 									label="观看集数"
 									dependencies={['totalEpisodes']}
@@ -426,22 +426,22 @@ export default function Anime() {
 										}
 									]}
 								>
-									<InputNumber placeholder="输入观看集数" min={0} formatter={(value) => Number(value)?.toFixed(0) || ''} style={{ width: '100%' }} />
+									<InputNumber placeholder="输入观看集数" min={0} formatter={(value) => Number(value)?.toFixed(0) || ''} className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
-								<Form.Item style={{ marginBottom: 8 }} name="totalEpisodes" label="总集数" rules={[{ required: true }]}>
-									<InputNumber placeholder="输入总集数" min={0} formatter={(value) => Number(value)?.toFixed(0) || ''} style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="totalEpisodes" label="总集数" rules={[{ required: true }]}>
+									<InputNumber placeholder="输入总集数" min={0} formatter={(value) => Number(value)?.toFixed(0) || ''} className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
-								<Form.Item style={{ marginBottom: 8 }} name="status" label="观看状态" rules={[{ required: true }]}>
-									<Select placeholder="选择观看状态" options={statusOpts} style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="status" label="观看状态" rules={[{ required: true }]}>
+									<Select placeholder="选择观看状态" options={statusOpts} className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
 								<Form.Item
-									style={{ marginBottom: 8 }}
+									className={styles.modalFormItem}
 									name="startDate"
 									label="开始日期"
 									dependencies={['endDate']}
@@ -461,12 +461,12 @@ export default function Anime() {
 										}
 									]}
 								>
-									<DatePicker picker="month" format="YYYY-MM" style={{ width: '100%' }} />
+									<DatePicker picker="month" format="YYYY-MM" className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
-								<Form.Item style={{ marginBottom: 8 }} name="endDate" label="结束日期">
-									<DatePicker picker="month" format="YYYY-MM" style={{ width: '100%' }} />
+								<Form.Item className={styles.modalFormItem} name="endDate" label="结束日期">
+									<DatePicker picker="month" format="YYYY-MM" className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 						</Row>

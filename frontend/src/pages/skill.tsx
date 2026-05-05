@@ -218,18 +218,18 @@ export default function Skill() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
+			<Content className={styles.content}>
 				<Spin spinning={loading}>
 					<div className={styles.toolbar}>
-						<div style={{ display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={4} style={{ margin: 0 }}>
+						<div className={styles.toolbarTitle}>
+							<Typography.Title level={4} className={styles.pageTitle}>
 								<CodeOutlined /> 技能管理
 							</Typography.Title>
 							<Typography.Text type="secondary">展示技术栈与技能水平</Typography.Text>
 						</div>
 					</div>
 
-					<Space style={{ marginBottom: 16 }}>
+					<Space className={styles.actionBar}>
 						{pageList.length > 0 && (
 							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
 								全选
@@ -255,46 +255,36 @@ export default function Skill() {
 										hoverable
 										size="small"
 										onClick={() => _handleCheck(!checkedIdxes.has(index), index)}
-										style={{ borderTop: `4px solid ${item.color || '#1890ff'}` }}
+										className={styles.skillCard}
+										style={{ borderTopColor: item.color || '#1890ff' }}
 										actions={[<EditOutlined key="edit" onClick={(e) => openEditModal(e, index)} />]}
 									>
-										<Checkbox style={{ position: 'absolute', right: 16, top: 16, zIndex: 1 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
-										<div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+										<Checkbox className={styles.cardCheckbox} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
+										<div className={styles.skillHeader}>
 											{item.icon && (
-												<div
-													style={{
-														width: 48,
-														height: 48,
-														display: 'flex',
-														alignItems: 'center',
-														justifyContent: 'center',
-														background: '#f5f5f5',
-														borderRadius: 12,
-														marginRight: 12
-													}}
-												>
+												<div className={styles.skillIconWrapper}>
 													<Icon icon={item.icon} width={32} height={32} />
 												</div>
 											)}
-											<div style={{ flex: 1 }}>
-												<Typography.Title level={5} style={{ margin: 0 }}>
+											<div className={styles.skillInfo}>
+												<Typography.Title level={5} className={styles.skillName}>
 													{item.name}
 												</Typography.Title>
-												<Tag color={categoryMap[item.category]?.color} style={{ marginTop: 4 }}>
+												<Tag className={styles.categoryTag} color={categoryMap[item.category]?.color}>
 													{categoryMap[item.category]?.label}
 												</Tag>
 											</div>
 										</div>
 
-										<Typography.Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 12, marginBottom: 12, color: '#666' }}>
+										<Typography.Paragraph ellipsis={{ rows: 2 }} className={styles.skillDescription}>
 											{item.description}
 										</Typography.Paragraph>
 
-										<div style={{ marginBottom: 8 }}>
-											<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-												<span style={{ fontSize: 12 }}>经验</span>
+										<div className={styles.experienceWrapper}>
+											<div className={styles.experienceHeader}>
+												<span className={styles.experienceLabel}>经验</span>
 												<Tooltip title={getExperienceText(item.experience)}>
-													<span style={{ fontSize: 12, color: '#999' }}>{getExperienceText(item.experience)}</span>
+													<span className={styles.experienceValue}>{getExperienceText(item.experience)}</span>
 												</Tooltip>
 											</div>
 											<Progress
@@ -302,7 +292,7 @@ export default function Skill() {
 												size="small"
 												strokeColor={item.color}
 												format={() => (
-													<Tag style={{ borderRadius: 12 }} color={levelMap[item.level]?.color}>
+													<Tag className={styles.levelTag} color={levelMap[item.level]?.color}>
 														{levelMap[item.level]?.label}
 													</Tag>
 												)}
@@ -310,7 +300,7 @@ export default function Skill() {
 										</div>
 										<Space wrap size={[4, 0]}>
 											{item.certifications?.map((tag) => (
-												<Tag key={tag} color="green" style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+												<Tag key={tag} color="green" className={styles.certificationTag}>
 													#{tag}
 												</Tag>
 											))}
@@ -320,11 +310,11 @@ export default function Skill() {
 							))}
 						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description="快来添加你的第一个技能~" />
+						<Empty className={styles.empty} description="快来添加你的第一个技能~" />
 					)}
 
 					{skillList.length > 0 && (
-						<Row justify="center" style={{ marginTop: 32 }}>
+						<Row justify="center" className={styles.paginationWrapper}>
 							<Pagination
 								size="small"
 								showQuickJumper
@@ -334,7 +324,7 @@ export default function Skill() {
 								total={skillList.length}
 								onChange={onPageChange}
 								pageSizeOptions={[12, 24, 48, 96]}
-								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+								className={styles.pagination}
 							/>
 						</Row>
 					)}
@@ -358,12 +348,12 @@ export default function Skill() {
 						</Form.Item>
 						<Row gutter={16}>
 							<Col xs={24} md={12}>
-								<Form.Item name="name" label="技能名称" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="name" label="技能名称" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input placeholder="输入技能名称, 如: React" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="category" label="技能分类" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="category" label="技能分类" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Select
 										options={[
 											{ label: '前端开发', value: 'frontend' },
@@ -376,7 +366,7 @@ export default function Skill() {
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="level" label="技能等级" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="level" label="技能等级" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Select
 										options={[
 											{ label: '初级', value: 'beginner' },
@@ -388,12 +378,12 @@ export default function Skill() {
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="color" label="主题颜色" style={{ marginBottom: 8 }}>
-									<Input type="color" placeholder="#1890ff" />
+								<Form.Item name="color" label="主题颜色" className={styles.modalFormItem}>
+									<Input type="color" placeholder="#1890ff" className={styles.pointer} />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="description" label="技能描述" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="description" label="技能描述" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input.TextArea rows={3} placeholder="描述应用场景和技术亮点..." />
 								</Form.Item>
 							</Col>
@@ -409,23 +399,23 @@ export default function Skill() {
 										</>
 									}
 									rules={[{ required: true }]}
-									style={{ marginBottom: 8 }}
+									className={styles.modalFormItem}
 								>
 									<Input placeholder="例如: logos:javascript" suffix={iconValue ? <Icon icon={iconValue} width={20} height={20} /> : <span />} />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="experienceYears" label="经验年限" style={{ marginBottom: 8 }} rules={[{ required: true }]}>
-									<InputNumber min={0} max={100} style={{ width: '100%' }} placeholder="输入经验年限" />
+								<Form.Item name="experienceYears" label="经验年限" className={styles.modalFormItem} rules={[{ required: true }]}>
+									<InputNumber min={0} max={100} className={styles.fullWidth} placeholder="输入经验年限" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="experienceMonths" label="经验月数" style={{ marginBottom: 8 }} rules={[{ required: true }]}>
-									<InputNumber min={0} max={11} style={{ width: '100%' }} placeholder="输入经验月数" />
+								<Form.Item name="experienceMonths" label="经验月数" className={styles.modalFormItem} rules={[{ required: true }]}>
+									<InputNumber min={0} max={11} className={styles.fullWidth} placeholder="输入经验月数" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="certifications" label="奖项证书" style={{ marginBottom: 8 }}>
+								<Form.Item name="certifications" label="奖项证书" className={styles.modalFormItem}>
 									<Select mode="tags" placeholder="输入竞赛奖项或证书名称" />
 								</Form.Item>
 							</Col>

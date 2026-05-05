@@ -206,18 +206,18 @@ export default function Music() {
 		<>
 			{msgContextHolder}
 			<Layout className={styles['layout-container']}>
-				<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
+				<Content className={styles.content}>
 					<Spin spinning={loading}>
 						<div className={styles.toolbar}>
-							<div style={{ display: 'flex', flexDirection: 'column' }}>
-								<Typography.Title level={4} style={{ margin: 0 }}>
+							<div className={styles.toolbarTitle}>
+								<Typography.Title level={4} className={styles.pageTitle}>
 									<CustomerServiceOutlined /> 歌单管理
 								</Typography.Title>
 								<Typography.Text type="secondary">管理音乐播放器列表</Typography.Text>
 							</div>
 						</div>
 
-						<Space style={{ marginBottom: 16 }}>
+						<Space className={styles.actionBar}>
 							{pageList.length > 0 && (
 								<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
 									全选
@@ -244,12 +244,12 @@ export default function Music() {
 											size="small"
 											onClick={() => _handleCheck(!checkedIdxes.has(index), index)}
 											cover={
-												<div style={{ height: 140, overflow: 'hidden', position: 'relative', background: '#f5f5f5' }}>
+												<div className={styles.coverContainer}>
 													{item.cover ? (
-														<img loading="lazy" alt={item.title} src={item.cover} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+														<img loading="lazy" alt={item.title} src={item.cover} className={styles.coverImage} />
 													) : (
-														<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-															<PictureOutlined style={{ fontSize: 40, color: '#ccc' }} />
+														<div className={styles.coverPlaceholder}>
+															<PictureOutlined className={styles.coverPlaceholderIcon} />
 														</div>
 													)}
 												</div>
@@ -261,32 +261,28 @@ export default function Music() {
 												</a>
 											]}
 										>
-											<Checkbox
-												style={{ position: 'absolute', right: 8, top: 8, zIndex: 1, opacity: checkedIdxes.has(index) ? 1 : 0.4 }}
-												checked={checkedIdxes.has(index)}
-												onChange={(e) => onCheckChange(e, index)}
-											/>
+											<Checkbox className={styles.cardCheckbox} style={{ opacity: checkedIdxes.has(index) ? 1 : 0.4 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
 											<Card.Meta
 												title={item.title}
 												description={
-													<Typography.Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 12, marginBottom: 8 }}>
+													<Typography.Paragraph ellipsis={{ rows: 2 }} className={styles.cardDescription}>
 														{item.artist}
 													</Typography.Paragraph>
 												}
 											/>
-											<Space wrap size={[4, 0]} style={{ marginTop: 8 }}>
-												<Tag style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{formatDuration(item.duration)}</Tag>
+											<Space wrap size={[4, 0]} className={styles.tagSpace}>
+												<Tag className={styles.durationTag}>{formatDuration(item.duration)}</Tag>
 											</Space>
 										</Card>
 									</Col>
 								))}
 							</Row>
 						) : (
-							<Empty style={{ marginTop: 60 }} description="暂未添加歌曲~" />
+							<Empty className={styles.empty} description="暂未添加歌曲~" />
 						)}
 
 						{musicList.length > 0 && (
-							<Row justify="center" style={{ marginTop: 32 }}>
+							<Row justify="center" className={styles.paginationWrapper}>
 								<Pagination
 									size="small"
 									showQuickJumper
@@ -296,7 +292,7 @@ export default function Music() {
 									total={musicList.length}
 									onChange={onPageChange}
 									pageSizeOptions={[12, 24, 48, 96]}
-									style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+									className={styles.pagination}
 								/>
 							</Row>
 						)}
@@ -320,24 +316,24 @@ export default function Music() {
 							</Form.Item>
 							<Row gutter={[8, 8]}>
 								<Col xs={24} md={12}>
-									<Form.Item name="title" label="歌曲名称" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+									<Form.Item name="title" label="歌曲名称" rules={[{ required: true }]} className={styles.modalFormItem}>
 										<Input placeholder="输入歌曲名称" />
 									</Form.Item>
 								</Col>
 								<Col xs={24} md={6}>
-									<Form.Item name="artist" label="艺术家" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+									<Form.Item name="artist" label="艺术家" rules={[{ required: true }]} className={styles.modalFormItem}>
 										<Input placeholder="输入艺术家名称" />
 									</Form.Item>
 								</Col>
 								<Col xs={24} md={6}>
-									<Form.Item name="duration" label="时长(秒)" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
-										<InputNumber min={1} max={600} style={{ width: '100%' }} placeholder="单位为秒" />
+									<Form.Item name="duration" label="时长(秒)" rules={[{ required: true }]} className={styles.modalFormItem}>
+										<InputNumber min={1} className={styles.fullWidth} placeholder="单位为秒" />
 									</Form.Item>
 								</Col>
 								<Col span={24}>
-									<div style={{ display: 'flex', flexDirection: screens.md ? 'row' : 'column', gap: screens.md ? 8 : 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
-										<Form.Item style={{ flex: 1, marginBottom: 8 }} name="cover" label="封面图片" rules={[{ required: true }]}>
-											<Space.Compact style={{ width: '100%' }}>
+									<div className={styles.modalImageWrapper}>
+										<Form.Item className={styles.modalFormItem} name="cover" label="封面图片" rules={[{ required: true }]}>
+											<Space.Compact className={styles.fullWidth}>
 												<Form.Item name="cover" noStyle>
 													<Input placeholder="输入图片链接" />
 												</Form.Item>
@@ -348,23 +344,25 @@ export default function Music() {
 												</Upload>
 											</Space.Compact>
 										</Form.Item>
-										{coverUrlValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} src={coverUrlValue} style={{ objectFit: 'contain' }} />}
+										{coverUrlValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} className={styles.modalImage} src={coverUrlValue} />}
 									</div>
 								</Col>
 								<Col span={24}>
-									<Form.Item style={{ marginBottom: 8 }} name="url" label="音频文件" rules={[{ required: true }]}>
-										<Space.Compact style={{ width: '100%' }}>
-											<Form.Item name="url" noStyle>
-												<Input placeholder="输入音频链接" />
-											</Form.Item>
-											<Upload showUploadList={false} beforeUpload={uploadMusic} accept={audioAccept}>
-												<Button loading={loading} icon={<UploadOutlined />}>
-													上传音频
-												</Button>
-											</Upload>
-										</Space.Compact>
-									</Form.Item>
-									{musicUrlValue && <audio controls src={musicUrlValue} style={{ width: '100%', height: 30, marginTop: 8 }} />}
+									<div className={styles.audioWrapper}>
+										<Form.Item className={styles.modalFormItem} name="url" label="音频文件" rules={[{ required: true }]}>
+											<Space.Compact className={styles.fullWidth}>
+												<Form.Item name="url" noStyle>
+													<Input placeholder="输入音频链接" />
+												</Form.Item>
+												<Upload showUploadList={false} beforeUpload={uploadMusic} accept={audioAccept}>
+													<Button loading={loading} icon={<UploadOutlined />}>
+														上传音频
+													</Button>
+												</Upload>
+											</Space.Compact>
+										</Form.Item>
+										{musicUrlValue && <audio controls src={musicUrlValue} className={styles.audioPlayer} />}
+									</div>
 								</Col>
 							</Row>
 						</Form>

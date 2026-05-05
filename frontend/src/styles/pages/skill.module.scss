@@ -12,3 +12,128 @@
 		}
 	}
 }
+
+.pointer {
+	cursor: pointer;
+}
+
+.content {
+	padding: 24px;
+	overflow-y: auto;
+	height: 100vh;
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+}
+
+.toolbarTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.pageTitle {
+	margin: 0;
+}
+
+.actionBar {
+	margin-bottom: 16px;
+}
+
+.skillCard {
+	border-top-width: 4px;
+	border-top-style: solid;
+}
+
+.cardCheckbox {
+	position: absolute;
+	right: 16px;
+	top: 16px;
+	z-index: 1;
+}
+
+.skillHeader {
+	display: flex;
+	align-items: center;
+	margin-bottom: 12px;
+}
+
+.skillIconWrapper {
+	width: 48px;
+	height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #f5f5f5;
+	border-radius: 12px;
+	margin-right: 12px;
+}
+
+.skillInfo {
+	flex: 1;
+}
+
+.skillName {
+	margin: 0;
+}
+
+.categoryTag {
+	margin-top: 4px;
+}
+
+.skillDescription {
+	font-size: 12px;
+	margin-bottom: 12px;
+	color: #666;
+}
+
+.experienceWrapper {
+	margin-bottom: 8px;
+}
+
+.experienceHeader {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 4px;
+}
+
+.experienceLabel {
+	font-size: 12px;
+}
+
+.experienceValue {
+	font-size: 12px;
+	color: #999;
+}
+
+.levelTag {
+	border-radius: 12px;
+}
+
+.certificationTag {
+	max-width: 200px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.empty {
+	margin-top: 60px;
+}
+
+.paginationWrapper {
+	margin-top: 32px;
+}
+
+.pagination {
+	margin: 30px auto;
+	white-space: nowrap;
+}
+
+.modalFormItem {
+	margin-bottom: 8px;
+}
+
+.fullWidth {
+	width: 100%;
+}

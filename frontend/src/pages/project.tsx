@@ -30,7 +30,7 @@ import { EditOutlined, DeleteOutlined, ProjectOutlined, GithubOutlined, CodeOutl
 import dayjs from 'dayjs'
 import { getProjectConfig, writeProjectConfig, uploadProjectImages } from '../services/project'
 import { throttle } from '../utils/util'
-import styles from '../styles/pages/friend.module.scss'
+import styles from '../styles/pages/project.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import { imageAccept } from '../configs/uploadConfig'
 
@@ -205,18 +205,18 @@ export default function Project() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
+			<Content className={styles.content}>
 				<Spin spinning={loading}>
 					<div className={styles.toolbar}>
-						<div style={{ display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={4} style={{ margin: 0 }}>
+						<div className={styles.toolbarTitle}>
+							<Typography.Title level={4} className={styles.pageTitle}>
 								<ProjectOutlined /> 项目管理
 							</Typography.Title>
 							<Typography.Text type="secondary">展示项目作品集</Typography.Text>
 						</div>
 					</div>
 
-					<Space style={{ marginBottom: 16 }}>
+					<Space className={styles.actionBar}>
 						{pageList.length > 0 && (
 							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
 								全选
@@ -243,16 +243,16 @@ export default function Project() {
 										size="small"
 										onClick={() => _handleCheck(!checkedIdxes.has(index), index)}
 										cover={
-											<div style={{ height: 140, overflow: 'hidden', position: 'relative', background: '#f5f5f5' }}>
+											<div className={styles.coverContainer}>
 												{item.image ? (
-													<img loading="lazy" alt={item.title} src={item.image} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+													<img loading="lazy" alt={item.title} src={item.image} className={styles.coverImage} />
 												) : (
-													<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-														<ProjectOutlined style={{ fontSize: 40, color: '#ccc' }} />
+													<div className={styles.coverPlaceholder}>
+														<ProjectOutlined className={styles.coverPlaceholderIcon} />
 													</div>
 												)}
 												{item.featured && (
-													<Tag color="blue" variant="solid" style={{ position: 'absolute', top: 8, left: 8 }}>
+													<Tag color="blue" variant="solid" className={styles.featuredTag}>
 														精选
 													</Tag>
 												)}
@@ -260,39 +260,36 @@ export default function Project() {
 										}
 										actions={[
 											<EditOutlined key="edit" onClick={(e) => openEditModal(e, index)} />,
-											<a key="link" href={item.sourceCode} target="_blank" onClick={(e) => e.stopPropagation()}>
+											<a key="source" href={item.sourceCode} target="_blank" onClick={(e) => e.stopPropagation()}>
 												<GithubOutlined />
 											</a>,
-											<a key="link" href={item.visitUrl || item.liveDemo} target="_blank" onClick={(e) => e.stopPropagation()}>
+											<a key="visit" href={item.visitUrl || item.liveDemo} target="_blank" onClick={(e) => e.stopPropagation()}>
 												<RocketOutlined />
 											</a>
 										]}
 									>
-										<Checkbox style={{ position: 'absolute', right: 8, top: 8, zIndex: 1 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
+										<Checkbox className={styles.cardCheckbox} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
 										<Card.Meta
 											title={item.title}
 											description={
-												<Typography.Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 12, height: 40, marginBottom: 8 }}>
+												<Typography.Paragraph ellipsis={{ rows: 2 }} className={styles.cardDescription}>
 													{item.description}
 												</Typography.Paragraph>
 											}
 										/>
-										<Space wrap size={[4, 0]} style={{ marginTop: 8 }}>
-											<Tag
-												color={item.status === 'completed' ? 'green' : item.status === 'in-progress' ? 'gold' : 'default'}
-												style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-											>
+										<Space wrap size={[4, 0]} className={styles.tagSpace}>
+											<Tag color={item.status === 'completed' ? 'green' : item.status === 'in-progress' ? 'gold' : 'default'} className={styles.statusTag}>
 												{item.status === 'completed' ? '已完成' : item.status === 'in-progress' ? '进行中' : '计划中'}
 											</Tag>
 											{item.techStack?.map((tech) => (
-												<Tag key={tech} color="geekblue" style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+												<Tag key={tech} color="geekblue" className={styles.techTag}>
 													{tech}
 												</Tag>
 											))}
 										</Space>
 										<Space wrap size={[4, 0]}>
 											{item.tags?.map((tag) => (
-												<Tag key={tag} color="purple" style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+												<Tag key={tag} color="purple" className={styles.tag}>
 													#{tag}
 												</Tag>
 											))}
@@ -302,11 +299,11 @@ export default function Project() {
 							))}
 						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description="快来发布你的第一个项目~" />
+						<Empty className={styles.empty} description="快来发布你的第一个项目~" />
 					)}
 
 					{projectList.length > 0 && (
-						<Row justify="center" style={{ marginTop: 32 }}>
+						<Row justify="center" className={styles.paginationWrapper}>
 							<Pagination
 								size="small"
 								showQuickJumper
@@ -316,7 +313,7 @@ export default function Project() {
 								total={projectList.length}
 								onChange={onPageChange}
 								pageSizeOptions={[12, 24, 48, 96]}
-								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+								className={styles.pagination}
 							/>
 						</Row>
 					)}
@@ -340,12 +337,12 @@ export default function Project() {
 						</Form.Item>
 						<Row gutter={16}>
 							<Col xs={24} md={12}>
-								<Form.Item name="title" label="项目名称" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="title" label="项目名称" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input placeholder="例如：Mizuki Blog" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="category" label="分类" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="category" label="分类" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Select
 										options={[
 											{ label: '网页应用', value: 'web' },
@@ -353,18 +350,18 @@ export default function Project() {
 											{ label: '桌面应用', value: 'desktop' },
 											{ label: 'Other 其他', value: 'other' }
 										]}
-									></Select>
+									/>
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="description" label="项目描述" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="description" label="项目描述" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input.TextArea rows={3} placeholder="简单介绍一下这个项目..." />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<div style={{ display: 'flex', flexDirection: screens.md ? 'row' : 'column', gap: screens.md ? 8 : 0, overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
-									<Form.Item style={{ flex: 1, marginBottom: 8 }} name="image" label="设备图片" rules={[{ required: true }]}>
-										<Space.Compact style={{ width: '100%' }}>
+								<div className={styles.modalImageWrapper}>
+									<Form.Item className={styles.modalFormItem} name="image" label="设备图片" rules={[{ required: true }]}>
+										<Space.Compact className={styles.fullWidth}>
 											<Form.Item name="image" noStyle>
 												<Input placeholder="输入图片外链" />
 											</Form.Item>
@@ -375,11 +372,11 @@ export default function Project() {
 											</Upload>
 										</Space.Compact>
 									</Form.Item>
-									{imageUrlValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} src={imageUrlValue} style={{ objectFit: 'contain' }} />}
+									{imageUrlValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} className={styles.modalImage} src={imageUrlValue} />}
 								</div>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="status" label="项目状态" style={{ marginBottom: 8 }}>
+								<Form.Item name="status" label="项目状态" className={styles.modalFormItem}>
 									<Select
 										options={[
 											{ label: '已完成', value: 'completed' },
@@ -390,37 +387,37 @@ export default function Project() {
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="visitUrl" label="预览地址" style={{ marginBottom: 8 }}>
+								<Form.Item name="visitUrl" label="预览地址" className={styles.modalFormItem}>
 									<Input prefix={<RocketOutlined />} placeholder="输入预览地址" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="sourceCode" label="源码地址" style={{ marginBottom: 8 }}>
+								<Form.Item name="sourceCode" label="源码地址" className={styles.modalFormItem}>
 									<Input prefix={<GithubOutlined />} placeholder="GitHub Repo URL" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="startDate" label="开始日期" style={{ marginBottom: 8 }} rules={[{ required: true }]}>
-									<DatePicker style={{ width: '100%' }} />
+								<Form.Item name="startDate" label="开始日期" className={styles.modalFormItem} rules={[{ required: true }]}>
+									<DatePicker className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="endDate" label="结束日期" style={{ marginBottom: 8 }}>
-									<DatePicker style={{ width: '100%' }} />
+								<Form.Item name="endDate" label="结束日期" className={styles.modalFormItem}>
+									<DatePicker className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={6}>
-								<Form.Item name="featured" label="是否精选" valuePropName="checked" style={{ marginBottom: 8 }}>
+								<Form.Item name="featured" label="是否精选" valuePropName="checked" className={styles.modalFormItem}>
 									<Switch />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="techStack" label="技术栈" style={{ marginBottom: 8 }}>
+								<Form.Item name="techStack" label="技术栈" className={styles.modalFormItem}>
 									<Select mode="tags" prefix={<CodeOutlined />} placeholder="添加技术栈, 如: React" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="tags" label="标签" style={{ marginBottom: 8 }}>
+								<Form.Item name="tags" label="标签" className={styles.modalFormItem}>
 									<Select mode="tags" placeholder="添加项目标签" />
 								</Form.Item>
 							</Col>

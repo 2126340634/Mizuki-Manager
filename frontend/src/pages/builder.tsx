@@ -136,20 +136,20 @@ export default function Builder() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto' }}>
+			<Content className={styles.content}>
 				{/* 顶部标题与操作栏 */}
 				<div className={styles.toolbar}>
-					<div style={{ display: 'flex', flexDirection: 'column' }}>
-						<Typography.Title level={4} style={{ margin: 0 }}>
+					<div className={styles.toolbarTitle}>
+						<Typography.Title level={4} className={styles.pageTitle}>
 							<RocketOutlined /> 构建部署
 						</Typography.Title>
 						<Typography.Text type="secondary">管理项目构建与生产环境发布</Typography.Text>
 					</div>
 				</div>
 
-				<Alert style={{ marginBottom: 8 }} title="构建并同步资源时，请勿刷新或切换页面以免丢失日志。" type="info" showIcon closable />
+				<Alert className={styles.alert} title="构建并同步资源时，请勿刷新或切换页面以免丢失日志。" type="info" showIcon closable />
 
-				<Space style={{ float: 'right' }}>
+				<Space className={styles.buttonGroup}>
 					{log.length > 0 && (
 						<Popconfirm placement="bottom" title="确定清空日志吗？" okText="确定" cancelText="取消" onConfirm={clearLogCache}>
 							<Button icon={<DeleteOutlined />} disabled={loading}>
@@ -176,7 +176,7 @@ export default function Builder() {
 						<div ref={logEndRef} className={styles['log-end']} />
 					</div>
 				) : (
-					<Empty style={{ marginTop: 120 }} description="暂无构建日志，点击右上角“一键部署”开始" />
+					<Empty className={styles.empty} description="暂无构建日志，点击右上角“一键部署”开始" />
 				)}
 			</Content>
 		</Layout>

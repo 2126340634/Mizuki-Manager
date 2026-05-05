@@ -35,3 +35,26 @@
 	border-radius: 6px;
 	margin-top: 8px;
 }
+
+.title {
+	font-weight: 800;
+	margin-bottom: 8px;
+}
+
+.captchaWrapper {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+.captchaImage {
+	width: 120px;
+	height: 40px;
+	border-radius: 4px;
+	cursor: pointer;
+	object-fit: contain;
+}
+
+.forgotLink {
+	cursor: pointer;
+}

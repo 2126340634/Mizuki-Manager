@@ -32,3 +32,110 @@
 		}
 	}
 }
+
+.content {
+	padding: 24px;
+	overflow-y: auto;
+	height: 100vh;
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+}
+
+.toolbarTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.pageTitle {
+	margin: 0;
+}
+
+.checkbox {
+	white-space: nowrap;
+}
+
+.animeListRow {
+	margin-top: 16px;
+}
+
+.coverImage {
+	object-fit: cover;
+	border-radius: 8px 8px 0 0;
+}
+
+.coverCheckbox {
+	position: absolute;
+	left: 8px;
+	top: 4px;
+}
+
+.cardTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.animeTitle {
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.animeDescription {
+	font-weight: lighter;
+	color: #999;
+}
+
+.cardDescription {
+	width: 100%;
+}
+
+.ratingWrapper {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.rating {
+	color: #faad14;
+	font-size: 16px;
+}
+
+.starIcon {
+	margin-right: 4px;
+}
+
+.empty {
+	margin-top: 60px;
+}
+
+.pagination {
+	margin: 30px auto;
+	white-space: nowrap;
+}
+
+.modalFormItem {
+	width: 100%;
+	margin-bottom: 8px;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+.coverUploadWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	overflow: hidden;
+	white-space: pre-wrap;
+
+	@media (min-width: 768px) {
+		flex-direction: row;
+		gap: 8px;
+	}
+}
+
+.modalCoverImage {
+	object-fit: contain;
+}

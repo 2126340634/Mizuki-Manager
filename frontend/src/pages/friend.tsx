@@ -162,11 +162,11 @@ export default function Friend() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
+			<Content className={styles.content}>
 				<Spin spinning={loading}>
 					<div className={styles.toolbar}>
-						<div style={{ display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={4} style={{ margin: 0 }}>
+						<div className={styles.toolbarTitle}>
+							<Typography.Title level={4} className={styles.pageTitle}>
 								<TeamOutlined /> 友链管理
 							</Typography.Title>
 							<Typography.Text type="secondary">发现更多优质网站</Typography.Text>
@@ -192,16 +192,16 @@ export default function Friend() {
 					</Space>
 
 					{pageList.length > 0 ? (
-						<Row gutter={[8, 8]} style={{ marginTop: 16 }}>
+						<Row gutter={[8, 8]} className={styles.friendListRow}>
 							{pageList.map((item, index) => (
 								<Col key={item.id} xs={24} sm={12} lg={8} xl={6}>
 									<Card hoverable size="small" onClick={() => _handleCheck(!checkedIdxes.has(index), index)} actions={[<EditOutlined key="edit" onClick={(e) => openEditModal(e, index)} />]}>
-										<div style={{ position: 'relative' }}>
-											<Checkbox style={{ position: 'absolute', right: 0, top: 0, zIndex: 1 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
-											<Space align="start" style={{ marginBottom: 8 }}>
+										<div className={styles.cardContent}>
+											<Checkbox className={styles.cardCheckbox} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
+											<Space align="start" className={styles.friendHeader}>
 												<Avatar src={item.imgurl} size={48} icon={<UserOutlined />} />
 												<div>
-													<Typography.Text strong style={{ fontSize: 16 }}>
+													<Typography.Text strong className={styles.friendTitle}>
 														{item.title}
 													</Typography.Text>
 													<br />
@@ -211,14 +211,14 @@ export default function Friend() {
 												</div>
 											</Space>
 
-											<Typography.Paragraph ellipsis={{ rows: 2 }} style={{ fontSize: 14, color: '#666', minHeight: 40 }}>
+											<Typography.Paragraph ellipsis={{ rows: 2 }} className={styles.friendDesc}>
 												{item.desc}
 											</Typography.Paragraph>
 
 											{item.tags && item.tags.length > 0 && (
-												<Space wrap style={{ marginTop: 8 }}>
+												<Space wrap className={styles.tagSpace}>
 													{item.tags.map((tag: string) => (
-														<Tag key={tag} color="blue" style={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+														<Tag key={tag} color="blue" className={styles.tag}>
 															#{tag}
 														</Tag>
 													))}
@@ -230,7 +230,7 @@ export default function Friend() {
 							))}
 						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description="目前还没有友链哦" />
+						<Empty className={styles.empty} description="目前还没有友链哦" />
 					)}
 
 					{friendList.length > 0 && (
@@ -244,7 +244,7 @@ export default function Friend() {
 								total={friendList.length}
 								onChange={onPageChange}
 								pageSizeOptions={[12, 24, 48, 96]}
-								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+								className={styles.pagination}
 							/>
 						</Row>
 					)}
@@ -268,33 +268,33 @@ export default function Friend() {
 						</Form.Item>
 						<Row gutter={8}>
 							<Col xs={24} md={12}>
-								<Form.Item name="title" label="站点名称" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="title" label="站点名称" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input placeholder="输入站点名称" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={12}>
-								<Form.Item name="siteurl" label="站点链接" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="siteurl" label="站点链接" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input prefix={<LinkOutlined />} placeholder="输入站点提供的链接" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<div style={{ display: 'flex', whiteSpace: 'nowrap', alignItems: 'center', flexDirection: screens.md ? 'row' : 'column', gap: 8 }}>
-									<Form.Item name="imgurl" label="图标链接" rules={[{ required: true }]} style={{ marginBottom: 8, width: '100%' }}>
-										<Space.Compact style={{ width: '100%' }}>
+								<div className={styles.modalImageWrapper}>
+									<Form.Item name="imgurl" label="图标链接" rules={[{ required: true }]} className={styles.modalFormItem}>
+										<Space.Compact className={styles.fullWidth}>
 											<Input value={imgUrlValue} placeholder="请输入站点提供的图标外链" onChange={(e) => form.setFieldsValue({ imgurl: e.target.value })} />
 										</Space.Compact>
 									</Form.Item>
-									{imgUrlValue && <Avatar shape="square" src={imgUrlValue} style={{ width: 88, height: 80, border: '1px solid #eee' }} />}
+									{imgUrlValue && <Avatar shape="square" src={imgUrlValue} className={styles.modalAvatar} />}
 								</div>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="desc" label="站点描述" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="desc" label="站点描述" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input.TextArea placeholder="简单介绍一下对方..." rows={3} />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="tags" label="标签" style={{ marginBottom: 8 }}>
-									<Select mode="tags" placeholder="添加标签" style={{ width: '100%' }} />
+								<Form.Item name="tags" label="标签" className={styles.modalFormItem}>
+									<Select mode="tags" placeholder="添加标签" className={styles.fullWidth} />
 								</Form.Item>
 							</Col>
 						</Row>

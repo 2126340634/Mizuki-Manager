@@ -4,6 +4,7 @@ import { SaveOutlined, UploadOutlined, ReloadOutlined, InfoCircleOutlined } from
 import { getAboutContent, updateAboutContent, replaceAboutFile } from '../services/about'
 import { debounce, throttle } from '../utils/util'
 import { useAboutContentDB } from '../hooks/useAboutContentDB'
+import styles from '../styles/pages/about.module.scss'
 
 export default function About() {
 	const [content, setContent] = useState('')
@@ -94,13 +95,13 @@ export default function About() {
 	return (
 		<Card
 			title={
-				<span style={{ marginLeft: 24 }}>
+				<span className={styles.cardTitle}>
 					<InfoCircleOutlined /> 关于页面
 				</span>
 			}
-			style={{ width: '100%' }}
+			className={styles.card}
 			extra={
-				<Space.Compact style={{ marginLeft: 10 }}>
+				<Space.Compact className={styles.cardExtra}>
 					<Upload showUploadList={false} beforeUpload={handleReplace} accept=".md">
 						<Button loading={loading} icon={<UploadOutlined />}>
 							上传
@@ -113,7 +114,7 @@ export default function About() {
 			}
 		>
 			<Spin spinning={loading}>
-				<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+				<div className={styles.editorHeader}>
 					<Typography.Text type="secondary">编辑 Markdown 文档</Typography.Text>
 					{showReload && (
 						<Popconfirm title="确定将当前草稿重载为原有文档内容?" okText="确定" cancelText="取消" onConfirm={reloadContent} placement="bottom">
@@ -123,7 +124,7 @@ export default function About() {
 						</Popconfirm>
 					)}
 				</div>
-				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 25 }} style={{ fontFamily: 'monospace', maxHeight: 'calc(100vh - 141px)' }} placeholder="输入关于内容" />
+				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 25 }} className={styles.editorTextarea} placeholder="输入关于内容" />
 			</Spin>
 		</Card>
 	)

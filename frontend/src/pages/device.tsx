@@ -201,11 +201,11 @@ export default function Device() {
 
 	return (
 		<Layout className={styles['layout-container']}>
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto', height: '100vh' }}>
+			<Content className={styles.content}>
 				<Spin spinning={loading}>
 					<div className={styles.toolbar}>
-						<div style={{ display: 'flex', flexDirection: 'column' }}>
-							<Typography.Title level={4} style={{ margin: 0 }}>
+						<div className={styles.toolbarTitle}>
+							<Typography.Title level={4} className={styles.pageTitle}>
 								<BoxPlotOutlined /> 设备清单
 							</Typography.Title>
 							<Typography.Text type="secondary">管理数码设备</Typography.Text>
@@ -231,7 +231,7 @@ export default function Device() {
 					</Space>
 
 					{pageList.length > 0 ? (
-						<Row gutter={[4, 4]} style={{ marginTop: 16 }}>
+						<Row gutter={[4, 4]} className={styles.deviceListRow}>
 							{pageList.map((item, index) => (
 								<Col key={index} xs={12} sm={8} md={12} lg={6}>
 									<Card
@@ -239,15 +239,11 @@ export default function Device() {
 										size="small"
 										cover={
 											<div className={styles.cover} onClick={(e) => e.stopPropagation()}>
-												{item.image && <Image loading="lazy" height="100%" width="100%" style={{ objectFit: 'cover' }} src={item.image} />}
+												{item.image && <Image loading="lazy" height="100%" width="100%" className={styles.coverImage} src={item.image} />}
 												<Tag color="black" className={styles.tag}>
 													{item.category}
 												</Tag>
-												<Checkbox
-													style={{ position: 'absolute', left: 8, top: 4, opacity: checkedIdxes.has(index) ? 1 : 0.4 }}
-													checked={checkedIdxes.has(index)}
-													onChange={(e) => onCheckChange(e, index)}
-												/>
+												<Checkbox className={styles.coverCheckbox} style={{ opacity: checkedIdxes.has(index) ? 1 : 0.4 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
 											</div>
 										}
 										actions={[
@@ -260,16 +256,16 @@ export default function Device() {
 									>
 										<Card.Meta
 											title={
-												<Typography.Text ellipsis={{ tooltip: item.name }} style={{ fontSize: 14, fontWeight: 'bold' }}>
+												<Typography.Text ellipsis={{ tooltip: item.name }} className={styles.deviceName}>
 													{item.name}
 												</Typography.Text>
 											}
 											description={
-												<Space orientation="vertical" style={{ width: '100%' }}>
+												<Space orientation="vertical" className={styles.cardDescription}>
 													<Typography.Text type="secondary" ellipsis>
 														{item.specs}
 													</Typography.Text>
-													<Typography.Text type="secondary" style={{ fontSize: 12 }} ellipsis={{ tooltip: item.description }}>
+													<Typography.Text type="secondary" className={styles.deviceDescription} ellipsis={{ tooltip: item.description }}>
 														{item.description}
 													</Typography.Text>
 												</Space>
@@ -280,7 +276,7 @@ export default function Device() {
 							))}
 						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description="暂无设备数据" />
+						<Empty className={styles.empty} description="暂无设备数据" />
 					)}
 
 					{deviceList.length > 0 && (
@@ -294,7 +290,7 @@ export default function Device() {
 								total={deviceList.length}
 								onChange={onPageChange}
 								pageSizeOptions={[12, 24, 48, 96]}
-								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+								className={styles.pagination}
 							/>
 						</Row>
 					)}
@@ -315,24 +311,24 @@ export default function Device() {
 					<Form form={form} layout="vertical">
 						<Row gutter={[8, 0]}>
 							<Col xs={24} md={16}>
-								<Form.Item name="name" label="设备名称" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="name" label="设备名称" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input placeholder="输入设备名称" />
 								</Form.Item>
 							</Col>
 							<Col xs={24} md={8}>
-								<Form.Item name="category" label={`分类(默认为${DEFAULT_CATEGORY})`} style={{ marginBottom: 8 }}>
+								<Form.Item name="category" label={`分类(默认为${DEFAULT_CATEGORY})`} className={styles.modalFormItem}>
 									<Input placeholder="如: OnePlus" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="specs" label="规格配置" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="specs" label="规格配置" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input placeholder="如: Gray / 16G + 1TB" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<div style={{ display: 'flex', flexDirection: screens.md ? 'row' : 'column', gap: screens.md ? 8 : 0, overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
-									<Form.Item style={{ flex: 1, marginBottom: 8 }} name="image" label="设备图片" rules={[{ required: true }]}>
-										<Space.Compact style={{ width: '100%' }}>
+								<div className={styles.modalImageWrapper}>
+									<Form.Item className={styles.modalFormItem} name="image" label="设备图片" rules={[{ required: true }]}>
+										<Space.Compact className={styles.fullWidth}>
 											<Form.Item name="image" noStyle>
 												<Input placeholder="输入图片外链" />
 											</Form.Item>
@@ -343,16 +339,16 @@ export default function Device() {
 											</Upload>
 										</Space.Compact>
 									</Form.Item>
-									{imageValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} src={imageValue} style={{ objectFit: 'contain' }} />}
+									{imageValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} className={styles.modalImage} src={imageValue} />}
 								</div>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="link" label="产品链接" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="link" label="产品链接" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input placeholder="输入跳转外链" />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
-								<Form.Item name="description" label="详细描述" rules={[{ required: true }]} style={{ marginBottom: 8 }}>
+								<Form.Item name="description" label="详细描述" rules={[{ required: true }]} className={styles.modalFormItem}>
 									<Input.TextArea placeholder="输入详细描述" rows={3} />
 								</Form.Item>
 							</Col>

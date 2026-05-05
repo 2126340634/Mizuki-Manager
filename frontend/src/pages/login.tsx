@@ -67,7 +67,7 @@ export default function Login() {
 			<div className={styles.loginContainer}>
 				<Card className={styles.loginCard}>
 					<div className={styles.header}>
-						<Title level={2} style={{ color: themeColor, fontWeight: 800 }}>
+						<Title level={2} className={styles.title} style={{ color: themeColor, fontWeight: 800 }}>
 							MIZUKI MANAGER
 						</Title>
 						<Text type="secondary">Mizuki 博客管理器</Text>
@@ -81,21 +81,9 @@ export default function Login() {
 						</Form.Item>
 						{captchaBase64 && (
 							<Form.Item name="captcha" rules={[{ required: true, message: '请输入验证码' }]}>
-								<div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+								<div className={styles.captchaWrapper}>
 									<Input placeholder="请输入验证码" autoComplete="off" />
-									<img
-										onClick={refreshCaptcha}
-										loading="lazy"
-										src={captchaBase64}
-										style={{
-											width: 120,
-											height: 40,
-											borderRadius: 4,
-											cursor: 'pointer',
-											objectFit: 'contain'
-										}}
-										alt="验证码"
-									/>
+									<img onClick={refreshCaptcha} loading="lazy" src={captchaBase64} className={styles.captchaImage} alt="验证码" />
 								</div>
 							</Form.Item>
 						)}
@@ -104,7 +92,7 @@ export default function Login() {
 								<Form.Item name="remember" valuePropName="checked" noStyle>
 									<Checkbox>记住我</Checkbox>
 								</Form.Item>
-								<a style={{ color: themeColor }} onClick={() => msgApi.warning('默认账号密码在 .env 环境变量配置文件中更改')}>
+								<a style={{ color: themeColor }} className={styles.forgotLink} onClick={() => msgApi.warning('默认账号密码在 .env 环境变量配置文件中更改')}>
 									忘记密码？
 								</a>
 							</div>

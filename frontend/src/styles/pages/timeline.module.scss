@@ -12,3 +12,168 @@
 		}
 	}
 }
+
+.pointer {
+	cursor: pointer;
+}
+
+.content {
+	padding: 24px;
+	overflow-y: auto;
+	height: 100vh;
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+}
+
+.toolbarTitle {
+	display: flex;
+	flex-direction: column;
+}
+
+.pageTitle {
+	margin: 0;
+}
+
+.actionBar {
+	margin-bottom: 16px;
+}
+
+.timelineCard {
+	margin-bottom: 16px;
+	border-left-width: 4px;
+	border-left-style: solid;
+}
+
+.cardCheckbox {
+	position: absolute;
+	right: 16px;
+	top: 16px;
+	z-index: 1;
+}
+
+.tagWrapper {
+	margin-bottom: 12px;
+}
+
+.featuredTag,
+.currentTag,
+.typeTag {
+	border-radius: 12px;
+}
+
+.timelineTitle {
+	margin-bottom: 4px;
+}
+
+.metaInfo {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 8px;
+	flex-wrap: wrap;
+}
+
+.metaText {
+	font-size: 12px;
+}
+
+.dateText {
+	font-size: 12px;
+	display: block;
+	margin-bottom: 8px;
+}
+
+.descriptionText {
+	font-size: 12px;
+	margin-bottom: 8px;
+	color: #666;
+}
+
+.sectionWrapper {
+	margin-bottom: 4px;
+}
+
+.sectionLabel {
+	font-size: 12px;
+}
+
+.achievementTag {
+	font-size: 10px;
+	max-width: 200px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.bulletDot {
+	font-size: 8px;
+	color: #00c00a;
+}
+
+.skillWrapper {
+	margin-bottom: 4px;
+}
+
+.skillTag {
+	font-size: 10px;
+	max-width: 200px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.linkTag {
+	font-size: 10px;
+	max-width: 200px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.empty {
+	margin-top: 60px;
+}
+
+.paginationWrapper {
+	margin-top: 32px;
+}
+
+.pagination {
+	margin: 30px auto;
+	white-space: nowrap;
+}
+
+.modalFormItem {
+	margin-bottom: 8px;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+.linksLabel {
+	margin-bottom: 8px;
+}
+
+.linkRow {
+	margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	width: 100%;
+}
+
+.linkNameInput {
+	margin-bottom: 0;
+}
+
+.linkUrlInput {
+	margin-bottom: 0;
+	flex: 1;
+}
+
+.linkTypeSelect {
+	margin-bottom: 0;
+	width: 100px;
+}

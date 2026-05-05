@@ -362,7 +362,7 @@ export default function Album() {
 				</div>
 			)
 		}))
-	}, [folders, curFolderPath, dropdownClick])
+	}, [folders, curFolderPath, dropdownClick, loading])
 
 	// 文件夹列表
 	const FolderMenu: React.FC = () => (
@@ -386,17 +386,17 @@ export default function Album() {
 		<Layout className={styles['layout-container']}>
 			{/* PC侧边栏 */}
 			{screens.lg ? (
-				<Sider width={280} theme="light" style={{ borderRight: '1px solid #f0f0f0' }}>
+				<Sider width={280} theme="light" className={styles.sider}>
 					{<FolderMenu />}
 				</Sider>
 			) : (
 				/* 移动端 */
-				<Drawer title="目录列表" placement="left" onClose={() => setDrawerVisible(false)} open={drawerVisible} size="80%" styles={{ body: { padding: 0 } }}>
+				<Drawer title="目录列表" placement="left" onClose={() => setDrawerVisible(false)} open={drawerVisible} size="80%" classNames={{ body: styles.drawerBody }}>
 					<FolderMenu />
 				</Drawer>
 			)}
 
-			<Content style={{ padding: screens.md ? '24px' : '8px', overflowY: 'auto' }}>
+			<Content className={styles.content}>
 				<Spin spinning={loading}>
 					{/* 顶部标题与操作栏 */}
 					<div className={styles.toolbar}>
@@ -405,12 +405,12 @@ export default function Album() {
 							<Typography.Title level={4}>{folders.find((folder) => folder.folderPath === curFolderPath)?.folderName || '选择相册目录'}</Typography.Title>
 							{curFolderPath && (
 								<Alert
-									style={{ marginBottom: 16 }}
+									className={styles.alert}
 									title={
 										<>
 											本地模式下相册内必须存在一个名为{' '}
 											<span
-												style={{ fontWeight: 'bold', textDecoration: 'underline 1px #000', cursor: 'pointer' }}
+												className={styles.coverCopyText}
 												onClick={async () => {
 													try {
 														await navigator.clipboard.writeText('cover.jpg')
@@ -435,7 +435,7 @@ export default function Album() {
 							<Space>
 								{files.length > 0 ? (
 									<Checkbox
-										style={{ whiteSpace: 'nowrap' }}
+										className={styles.checkbox}
 										onChange={onCheckAllChange}
 										indeterminate={checkedPaths.size > 0 && checkedPaths.size < files.length}
 										checked={checkedPaths.size === files.length}
@@ -464,7 +464,7 @@ export default function Album() {
 
 					{/* 文件列表 */}
 					{curFolderPath && files.length > 0 ? (
-						<Row gutter={[4, 4]} style={{ marginTop: 16, maxHeight: 'calc(100vh - 274px)', overflowY: 'auto' }}>
+						<Row gutter={[4, 4]} className={styles.fileListRow}>
 							{files.map((file, index) => (
 								<Col key={index} xs={12} sm={8} md={12} lg={6}>
 									<Card
@@ -472,7 +472,7 @@ export default function Album() {
 										size="small"
 										cover={
 											<div className={styles.cover} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-												{file.url && <Image loading="lazy" width="100%" height="100%" style={{ objectFit: 'contain' }} alt={file.filename} src={file.url} />}
+												{file.url && <Image loading="lazy" width="100%" height="100%" className={styles.coverImage} alt={file.filename} src={file.url} />}
 											</div>
 										}
 										actions={[<Checkbox checked={checkedPaths.has(file.filePath)} onChange={(e) => onCheckChange(e, file.filePath)} />]}
@@ -480,8 +480,8 @@ export default function Album() {
 									>
 										<Card.Meta
 											title={
-												<Typography.Text style={{ fontSize: 12 }} ellipsis={{ tooltip: file.filename }}>
-													<span style={{ color: '#999', fontWeight: 'lighter' }}>{file.filename === 'cover.jpg' ? '[封面]' : ''}</span> {file.filename}
+												<Typography.Text className={styles.filenameText} ellipsis={{ tooltip: file.filename }}>
+													<span className={styles.coverBadge}>{file.filename === 'cover.jpg' ? '[封面]' : ''}</span> {file.filename}
 												</Typography.Text>
 											}
 										/>
@@ -490,7 +490,7 @@ export default function Album() {
 							))}
 						</Row>
 					) : (
-						<Empty style={{ marginTop: 60 }} description={curFolderPath ? '空空如也~' : '先选择相册目录'} />
+						<Empty className={styles.empty} description={curFolderPath ? '空空如也~' : '先选择相册目录'} />
 					)}
 					{curFolderPath && pageTotal > 0 && (
 						<Row>
@@ -503,7 +503,7 @@ export default function Album() {
 								total={pageTotal}
 								onChange={onPageChange}
 								pageSizeOptions={[12, 24, 48, 96]}
-								style={{ margin: '30px auto', whiteSpace: 'nowrap' }}
+								className={styles.pagination}
 							/>
 						</Row>
 					)}
@@ -525,9 +525,9 @@ export default function Album() {
 				forceRender
 			>
 				<Form form={form} layout="vertical">
-					<Row gutter={[8, 0]} style={{ marginTop: 16 }}>
+					<Row gutter={[8, 0]} className={styles.modalFormRow}>
 						<Col xs={12} md={5}>
-							<Form.Item style={{ marginBottom: 8 }} label="模式" name="mode">
+							<Form.Item className={styles.formItem} label="模式" name="mode">
 								<Select
 									options={[
 										{ value: '', label: '本地模式' },
@@ -538,42 +538,42 @@ export default function Album() {
 						</Col>
 
 						<Col xs={12} md={4}>
-							<Form.Item style={{ marginBottom: 8 }} label="隐藏相册" name="hidden" valuePropName="checked">
+							<Form.Item className={styles.formItem} label="隐藏相册" name="hidden" valuePropName="checked">
 								<Switch checkedChildren="隐藏" unCheckedChildren="显示" />
 							</Form.Item>
 						</Col>
 
 						<Col xs={24} md={15}>
-							<Form.Item style={{ marginBottom: 8 }} label="相册标题" name="title">
+							<Form.Item className={styles.formItem} label="相册标题" name="title">
 								<Input placeholder="输入相册标题" />
 							</Form.Item>
 						</Col>
 
 						<Col xs={24}>
-							<Form.Item style={{ marginBottom: 8 }} label="相册描述" name="description">
+							<Form.Item className={styles.formItem} label="相册描述" name="description">
 								<Input.TextArea placeholder="输入相册描述" rows={3} showCount />
 							</Form.Item>
 						</Col>
 
 						<Col xs={12} md={currentMode === 'external' ? 5 : 12}>
-							<Form.Item style={{ marginBottom: 8 }} label="创建日期" name="date">
-								<DatePicker placeholder="选择创建日期" style={{ width: '100%' }} format="YYYY-MM-DD" />
+							<Form.Item className={styles.formItem} label="创建日期" name="date">
+								<DatePicker placeholder="选择创建日期" className={styles.fullWidth} format="YYYY-MM-DD" />
 							</Form.Item>
 						</Col>
 						<Col xs={12} md={currentMode === 'external' ? 7 : 12}>
-							<Form.Item style={{ marginBottom: 8 }} label="拍摄地点" name="location">
+							<Form.Item className={styles.formItem} label="拍摄地点" name="location">
 								<Input placeholder="输入拍摄地点" />
 							</Form.Item>
 						</Col>
 
 						<Col xs={24} md={currentMode === 'external' ? 12 : 24}>
-							<Form.Item style={{ marginBottom: 8 }} label="标签" name="tags">
+							<Form.Item className={styles.formItem} label="标签" name="tags">
 								<Select mode="tags" placeholder="输入标签" tokenSeparators={[',', ';', '，', '；']} />
 							</Form.Item>
 						</Col>
 
 						<Col xs={12} md={currentMode === 'external' ? 5 : 12}>
-							<Form.Item style={{ marginBottom: 8 }} label="布局方式" name="layout">
+							<Form.Item className={styles.formItem} label="布局方式" name="layout">
 								<Select
 									options={[
 										{ value: 'grid', label: '网格布局' },
@@ -583,7 +583,7 @@ export default function Album() {
 							</Form.Item>
 						</Col>
 						<Col xs={12} md={currentMode === 'external' ? 7 : 12}>
-							<Form.Item style={{ marginBottom: 8 }} label="列数" name="columns">
+							<Form.Item className={styles.formItem} label="列数" name="columns">
 								<Select
 									options={[
 										{ value: 1, label: '1列' },
@@ -597,7 +597,7 @@ export default function Album() {
 						{currentMode === 'external' && (
 							<>
 								<Col xs={24} md={12}>
-									<Form.Item style={{ marginBottom: 8 }} label="封面图片链接" name="cover" rules={[{ required: true }]}>
+									<Form.Item className={styles.formItem} label="封面图片链接" name="cover" rules={[{ required: true }]}>
 										<Input placeholder="输入封面图片URL" />
 									</Form.Item>
 								</Col>
@@ -606,18 +606,18 @@ export default function Album() {
 									<Form.List name="photos">
 										{(fields, { add, remove }) => (
 											<>
-												<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-													<span style={{ fontWeight: 500 }}>相册图片列表</span>
+												<div className={styles.photosHeader}>
+													<span className={styles.photosTitle}>相册图片列表</span>
 													<Button loading={loading} type="dashed" onClick={() => add({ src: '', alt: '' })} icon={<PlusOutlined />}>
 														添加图片
 													</Button>
 												</div>
 
-												<div style={{ overflowY: 'auto', maxHeight: 420, display: 'grid', gridTemplateColumns: screens.md ? 'repeat(2, 1fr)' : '1fr', gap: 4 }}>
+												<div className={styles.photosList}>
 													{fields.map(({ key, name, ...restField }, index) => (
-														<div key={key} style={{ marginBottom: 8, padding: 12, border: '1px solid #d9d9d9', borderRadius: 6 }}>
-															<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-																<span style={{ fontWeight: 500 }}>图片 {index + 1}</span>
+														<div key={key} className={styles.photoItem}>
+															<div className={styles.photoItemHeader}>
+																<span className={styles.photoItemTitle}>图片 {index + 1}</span>
 																{fields.length > 1 && <Button type="text" danger icon={<DeleteOutlined />} onClick={() => remove(name)} />}
 															</div>
 
@@ -631,12 +631,12 @@ export default function Album() {
 																				<Col xs={src ? 16 : 24}>
 																					<Row gutter={[0, 12]}>
 																						<Col xs={24}>
-																							<Form.Item {...restField} name={[name, 'src']} label="图片链接" style={{ margin: 0 }} rules={[{ required: index > 0 }]}>
+																							<Form.Item {...restField} name={[name, 'src']} label="图片链接" className={styles.photoFormItem} rules={[{ required: index > 0 }]}>
 																								<Input placeholder="输入图片URL" />
 																							</Form.Item>
 																						</Col>
 																						<Col xs={24}>
-																							<Form.Item {...restField} name={[name, 'alt']} label="图片描述" style={{ margin: 0 }}>
+																							<Form.Item {...restField} name={[name, 'alt']} label="图片描述" className={styles.photoFormItem}>
 																								<Input placeholder="输入图片描述" />
 																							</Form.Item>
 																						</Col>
@@ -644,7 +644,7 @@ export default function Album() {
 																				</Col>
 																				{src && (
 																					<Col xs={8}>
-																						<Image loading="lazy" height="100%" width="100%" style={{ objectFit: 'contain' }} alt={alt} src={src} />
+																						<Image loading="lazy" height="100%" width="100%" className={styles.photoPreview} alt={alt} src={src} />
 																					</Col>
 																				)}
 																			</>
