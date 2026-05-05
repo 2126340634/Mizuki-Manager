@@ -381,7 +381,9 @@ export default function Anime() {
 												<Input placeholder="输入图片外链" />
 											</Form.Item>
 											<Upload showUploadList={false} beforeUpload={uploadCover} accept={imageAccept}>
-												<Button icon={<UploadOutlined />}>上传</Button>
+												<Button loading={loading} icon={<UploadOutlined />}>
+													上传
+												</Button>
 											</Upload>
 										</Space.Compact>
 									</Form.Item>

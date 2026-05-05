@@ -103,14 +103,14 @@ function PostList() {
 			render: (filename: string) => (
 				<Space>
 					<Tooltip title="编辑" placement="bottom">
-						<Button type="link" icon={<EditOutlined />} onClick={() => navigate(`/post/edit/${filename}`)} />
+						<Button loading={loading} type="link" icon={<EditOutlined />} onClick={() => navigate(`/post/edit/${filename}`)} />
 					</Tooltip>
 					<Tooltip title="查看" placement="bottom">
-						<Button type="link" icon={<EyeOutlined />} onClick={() => navigate(`/post/view/${filename}`)} />
+						<Button loading={loading} type="link" icon={<EyeOutlined />} onClick={() => navigate(`/post/view/${filename}`)} />
 					</Tooltip>
 					<Popconfirm title="确定删除？" onConfirm={() => removePost(filename)}>
 						<Tooltip title="删除" placement="bottom">
-							<Button type="link" danger icon={<DeleteOutlined />} />
+							<Button loading={loading} type="link" danger icon={<DeleteOutlined />} />
 						</Tooltip>
 					</Popconfirm>
 				</Space>
@@ -129,9 +129,11 @@ function PostList() {
 			extra={
 				<Space.Compact style={{ marginLeft: 10 }}>
 					<Upload showUploadList={false} beforeUpload={uploadPost} accept=".md">
-						<Button icon={<UploadOutlined />}>上传</Button>
+						<Button loading={loading} icon={<UploadOutlined />}>
+							上传
+						</Button>
 					</Upload>
-					<Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/post/edit/new')}>
+					<Button loading={loading} type="primary" icon={<PlusOutlined />} onClick={() => navigate('/post/edit/new')}>
 						新建
 					</Button>
 				</Space.Compact>
@@ -303,6 +305,9 @@ function PostEditor(props: PostEditorProps) {
 						setShowReload(true)
 					}
 				}
+			} else {
+				// 无缓存直接获取
+				getContent()
 			}
 		})
 	}, [])
@@ -322,7 +327,11 @@ function PostEditor(props: PostEditorProps) {
 							如何编写文章？
 						</a>
 						<Space.Compact>
-							{!isNewRef.current && <Button onClick={handleRename}>重命名</Button>}
+							{!isNewRef.current && (
+								<Button loading={loading} onClick={handleRename}>
+									重命名
+								</Button>
+							)}
 							<Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={throttledSave}>
 								保存
 							</Button>
@@ -336,7 +345,7 @@ function PostEditor(props: PostEditorProps) {
 					<Typography.Text type="secondary">{filenameRef.current}</Typography.Text>
 					{isEditingRef.current && showReload && (
 						<Popconfirm title={isNewRef.current ? '确定要恢复为新建的默认内容？' : '确定要重载为最新内容？'} onConfirm={reloadContent}>
-							<Button size="small" icon={<ReloadOutlined />}>
+							<Button loading={loading} size="small" icon={<ReloadOutlined />}>
 								{isNewRef.current ? '恢复默认' : '内容重载'}
 							</Button>
 						</Popconfirm>

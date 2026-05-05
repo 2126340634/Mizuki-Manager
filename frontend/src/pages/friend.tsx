@@ -181,10 +181,12 @@ export default function Friend() {
 						)}
 						{checkedIdxes.size > 0 && (
 							<Popconfirm title="确定删除选中的友链吗?" onConfirm={removeFriends} okText="确定" cancelText="取消">
-								<Button icon={<DeleteOutlined />}>删除</Button>
+								<Button loading={loading} icon={<DeleteOutlined />}>
+									删除
+								</Button>
 							</Popconfirm>
 						)}
-						<Button icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
+						<Button loading={loading} icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
 							新增友链
 						</Button>
 					</Space>

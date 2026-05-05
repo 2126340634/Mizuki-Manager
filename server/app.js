@@ -22,7 +22,11 @@ app.use('/mizuki', (req, res, next) => {
 
 	// 防止越出项目根目录访问
 	if (!realPath.startsWith(SAFE_PATH)) {
-		return res.status(403).json({ code: 403, success: false, message: '非法路径访问' })
+		return res.status(403).json({
+			code: 403,
+			success: false,
+			message: '非法路径访问'
+		})
 	}
 	next()
 })
@@ -48,7 +52,12 @@ mizukiRouter.use('/builder', routes.builder)
 
 // 404
 mizukiRouter.use((req, res) => {
-	res.status(404).json({ code: 404, success: false, message: '无效的资源路径', error: 'Route not found' })
+	res.status(404).json({
+		code: 404,
+		success: false,
+		message: '无效的资源路径',
+		error: 'Route not found'
+	})
 })
 
 app.use('/mizuki', mizukiRouter)
@@ -62,7 +71,7 @@ if (isProd) {
 	const distDir = path.resolve(__dirname, '../frontend/dist')
 	app.use(express.static(distDir))
 	app.use((req, res) => {
-		res.sendFile(path.resolve(distDir, 'index.html'), (err) => {
+		res.sendFile(path.resolve(distDir, 'index.html'), err => {
 			if (err) console.error(err)
 		})
 	})
@@ -70,7 +79,12 @@ if (isProd) {
 
 app.use((err, req, res, next) => {
 	if (err) console.error(err)
-	res.status(500).json({ code: 500, success: false, message: '服务器内部错误', error: 'Internal Server Error' })
+	res.status(500).json({
+		code: 500,
+		success: false,
+		message: '服务器内部错误',
+		error: 'Internal Server Error'
+	})
 })
 
 app.listen(config.PORT, () => {

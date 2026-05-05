@@ -20,8 +20,15 @@ class AuthManager {
 	 * @returns {{text: string, base64: string}}
 	 */
 	_generateCaptcha() {
-		const captcha = svgCaptcha.create({ size: 4, noise: 3, color: true })
-		return { text: captcha.text, base64: `data:image/svg+xml;base64,${Buffer.from(captcha.data).toString('base64')}` }
+		const captcha = svgCaptcha.create({
+			size: 4,
+			noise: 3,
+			color: true
+		})
+		return {
+			text: captcha.text,
+			base64: `data:image/svg+xml;base64,${Buffer.from(captcha.data).toString('base64')}`
+		}
 	}
 	/**
 	 * @description 刷新验证码
@@ -30,17 +37,30 @@ class AuthManager {
 	 */
 	refreshCaptcha(username) {
 		try {
-			const current = this.loginMap.get(username) || { failCount: 0 }
+			const current = this.loginMap.get(username) || {
+				failCount: 0
+			}
 			const newCaptcha = this._generateCaptcha()
 			this.loginMap.set(username, {
 				...current,
 				captcha: newCaptcha.text,
 				expireAt: Date.now() + CAPTCHA_EXPIRE
 			})
-			return { code: 200, success: true, data: { captchaBase64: newCaptcha.base64 } }
+			return {
+				code: 200,
+				success: true,
+				data: {
+					captchaBase64: newCaptcha.base64
+				}
+			}
 		} catch (err) {
 			console.error(err)
-			return { code: 500, success: false, message: '刷新验证码失败', error: err }
+			return {
+				code: 500,
+				success: false,
+				message: '刷新验证码失败',
+				error: err
+			}
 		}
 	}
 	/**
@@ -52,13 +72,20 @@ class AuthManager {
 	 * @returns {{ code: number, success: boolean, message?: string, data?: any, error?: any}}
 	 */
 	login(username, password, captcha = '') {
-		if (!username || !password) return { code: 400, success: false, message: '账号或密码不能为空' }
+		if (!username || !password)
+			return {
+				code: 400,
+				success: false,
+				message: '账号或密码不能为空'
+			}
 		try {
 			const attempt = this.loginMap.get(username)
 			if (attempt && Date.now() > attempt.expireAt) {
 				this.loginMap.delete(username) // 到期取消验证码,清理对应内存
 			}
-			const current = this.loginMap.get(username) || { failCount: 0 }
+			const current = this.loginMap.get(username) || {
+				failCount: 0
+			}
 			const needCaptcha = this._shouldUseCaptcha(current.failCount)
 			// 需要验证码
 			if (needCaptcha) {
@@ -66,19 +93,41 @@ class AuthManager {
 				if (!captcha || captcha?.toUpperCase() !== realCaptcha?.toUpperCase()) {
 					// 验证失败,生成新的验证码
 					const newCaptcha = this._generateCaptcha()
-					this.loginMap.set(username, { ...current, captcha: newCaptcha.text, expireAt: Date.now() + CAPTCHA_EXPIRE })
-					return { code: 403, success: false, message: '请输入正确的验证码', data: { captchaBase64: newCaptcha.base64 } }
+					this.loginMap.set(username, {
+						...current,
+						captcha: newCaptcha.text,
+						expireAt: Date.now() + CAPTCHA_EXPIRE
+					})
+					return {
+						code: 403,
+						success: false,
+						message: '请输入正确的验证码',
+						data: {
+							captchaBase64: newCaptcha.base64
+						}
+					}
 				}
 			}
 			// 登录成功
 			if (username === USERNAME && password === PASSWORD) {
 				this.loginMap.delete(username) // 登录成功释放对应内存
-				const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
+				const token = jwt.sign(
+					{
+						username
+					},
+					JWT_SECRET,
+					{
+						expiresIn: JWT_EXPIRES_IN
+					}
+				)
 				return {
 					code: 200,
 					success: true,
 					message: '登录成功',
-					data: { token, expiresIn: JWT_EXPIRES_IN }
+					data: {
+						token,
+						expiresIn: JWT_EXPIRES_IN
+					}
 				}
 			}
 			// 账号密码错误
@@ -91,10 +140,22 @@ class AuthManager {
 				captcha: newCaptcha.text,
 				expireAt: needNewCaptcha ? Date.now() + CAPTCHA_EXPIRE : undefined
 			})
-			return { code: 403, success: false, message: '用户名或密码错误', data: { captchaBase64: newCaptcha.base64 } }
+			return {
+				code: 403,
+				success: false,
+				message: '用户名或密码错误',
+				data: {
+					captchaBase64: newCaptcha.base64
+				}
+			}
 		} catch (err) {
 			console.error(err)
-			return { code: 500, success: false, message: '登录失败', error: err }
+			return {
+				code: 500,
+				success: false,
+				message: '登录失败',
+				error: err
+			}
 		}
 	}
 }

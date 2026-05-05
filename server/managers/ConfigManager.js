@@ -17,19 +17,28 @@ class ConfigManager extends BaseManager {
 	}
 	// 上传图标或Logo
 	async uploadHomeImages(files) {
-		return await super.uploadFiles(this.homeDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.homeDir, files, file => isImage(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 上传PC壁纸
 	async uploadPCWallpapers(files) {
-		return await super.uploadFiles(this.pcWallpapersDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.pcWallpapersDir, files, file => isImage(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 上传到移动端壁纸
 	async uploadMobileWallpapers(files) {
-		return await super.uploadFiles(this.mobileWallpapersDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.mobileWallpapersDir, files, file => isImage(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 上传到头像目录
 	async uploadAvatarImages(files) {
-		return await super.uploadFiles(this.avatarDir, files, (file) => isImage(file.originalname), { basePath: 'src', skipIfExists: true })
+		return await super.uploadFiles(this.avatarDir, files, file => isImage(file.originalname), {
+			basePath: 'src',
+			skipIfExists: true
+		})
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
@@ -43,13 +52,13 @@ class ConfigManager extends BaseManager {
 	_getImagePaths(data) {
 		if (!isObject(data)) return
 		const imagePaths = []
-		const _getPath = (path) => {
+		const _getPath = path => {
 			if (path?.startsWith('/')) {
 				path = path.substring(1)
 			}
 			return path
 		}
-		const _solvePublicPath = (imagePath) => {
+		const _solvePublicPath = imagePath => {
 			if (!imagePath) return ''
 			// imagePath格式为"assets/mobile-banner(desktop-banner)/xxx.png"
 			imagePath = _getPath(imagePath)
@@ -86,11 +95,16 @@ class ConfigManager extends BaseManager {
 	}
 	// 解析ast树获取关键字段数据
 	async getConfigData() {
-		return await super.getConfigData(this.configDir, this.configFilename, undefined, { wrap: true })
+		return await super.getConfigData(this.configDir, this.configFilename, undefined, {
+			wrap: true
+		})
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.configDir, this.configFilename, data, undefined, { unwrap: true, beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.configDir, this.configFilename, data, undefined, {
+			unwrap: true,
+			beforeWrite: async () => await this._clearOldImages(data)
+		})
 	}
 }
 

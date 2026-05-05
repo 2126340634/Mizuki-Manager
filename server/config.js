@@ -77,7 +77,12 @@ module.exports = {
 		columns: 3,
 		// 外链模式参数
 		cover: '',
-		photos: [{ src: '', alt: '' }]
+		photos: [
+			{
+				src: '',
+				alt: ''
+			}
+		]
 	},
 	// 相册文件格式
 	IMAGE_FORMATS: ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.bmp', '.tiff', '.tif'],

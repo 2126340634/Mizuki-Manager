@@ -13,7 +13,9 @@ class ProjectManager extends BaseManager {
 	}
 	// 上传项目封面图片(支持批量)
 	async uploadImages(files) {
-		return await super.uploadFiles(this.projectsDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.projectsDir, files, file => isImage(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
@@ -25,7 +27,7 @@ class ProjectManager extends BaseManager {
 		if (!isObject(data)) return []
 		const imagePaths = []
 		const projects = data?.projectsData || []
-		projects.forEach((p) => {
+		projects.forEach(p => {
 			let imagePath = p?.image || '' // 格式为"/images/project/xxx.png"
 			if (imagePath.startsWith('/')) {
 				imagePath = imagePath.substring(1)
@@ -42,7 +44,9 @@ class ProjectManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, {
+			beforeWrite: async () => await this._clearOldImages(data)
+		})
 	}
 }
 

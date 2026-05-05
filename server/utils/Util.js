@@ -18,7 +18,10 @@ async function ensureDirExist(directory, { create = true } = {}) {
 		await fs.promises.access(directory)
 		return true
 	} catch {
-		if (create) await fs.promises.mkdir(directory, { recursive: true })
+		if (create)
+			await fs.promises.mkdir(directory, {
+				recursive: true
+			})
 		return false
 	}
 }
@@ -46,17 +49,17 @@ function isObject(val) {
 // 判断为图片
 function isImage(filename) {
 	if (typeof filename !== 'string' || !filename) return false
-	return config.IMAGE_FORMATS.some((format) => filename.endsWith(format))
+	return config.IMAGE_FORMATS.some(format => filename.endsWith(format))
 }
 // 判断为音乐
 function isMusic(filename) {
 	if (typeof filename !== 'string' || !filename) return false
-	return config.MUSIC_FORMATS.some((format) => filename.endsWith(format))
+	return config.MUSIC_FORMATS.some(format => filename.endsWith(format))
 }
 // 判断为Markdown文档
 function isMarkdown(filename) {
 	if (typeof filename !== 'string' || !filename) return false
-	return config.MARKDOWN_FORMATS.some((format) => filename.endsWith(format))
+	return config.MARKDOWN_FORMATS.some(format => filename.endsWith(format))
 }
 // 文件命名校验
 function isLegalFilename(filename) {
@@ -64,4 +67,15 @@ function isLegalFilename(filename) {
 	return /^[a-zA-Z0-9_\-\s]{1,100}$/.test(filename)
 }
 
-module.exports = { fileExists, ensureDirExist, readFile, deleteFile, writeFile, isObject, isImage, isMusic, isMarkdown, isLegalFilename }
+module.exports = {
+	fileExists,
+	ensureDirExist,
+	readFile,
+	deleteFile,
+	writeFile,
+	isObject,
+	isImage,
+	isMusic,
+	isMarkdown,
+	isLegalFilename
+}

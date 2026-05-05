@@ -225,12 +225,12 @@ export default function Music() {
 							)}
 							{checkedIdxes.size > 0 && (
 								<Popconfirm title="确定删除选中的歌曲吗?" onConfirm={removeSongs} okText="确定" cancelText="取消">
-									<Button danger icon={<DeleteOutlined />}>
+									<Button loading={loading} danger icon={<DeleteOutlined />}>
 										删除
 									</Button>
 								</Popconfirm>
 							)}
-							<Button icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
+							<Button loading={loading} icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
 								新增歌曲
 							</Button>
 						</Space>
@@ -342,7 +342,9 @@ export default function Music() {
 													<Input placeholder="输入图片链接" />
 												</Form.Item>
 												<Upload showUploadList={false} beforeUpload={uploadCover} accept={imageAccept}>
-													<Button icon={<UploadOutlined />}>上传封面</Button>
+													<Button loading={loading} icon={<UploadOutlined />}>
+														上传封面
+													</Button>
 												</Upload>
 											</Space.Compact>
 										</Form.Item>
@@ -356,7 +358,9 @@ export default function Music() {
 												<Input placeholder="输入音频链接" />
 											</Form.Item>
 											<Upload showUploadList={false} beforeUpload={uploadMusic} accept={audioAccept}>
-												<Button icon={<UploadOutlined />}>上传音频</Button>
+												<Button loading={loading} icon={<UploadOutlined />}>
+													上传音频
+												</Button>
 											</Upload>
 										</Space.Compact>
 									</Form.Item>

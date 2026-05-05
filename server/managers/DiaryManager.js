@@ -13,11 +13,18 @@ class DiaryManager extends BaseManager {
 	}
 	// 上传日记图片(支持批量)
 	async uploadImages(files) {
-		return await super.uploadFiles(this.diariesDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.diariesDir, files, file => isImage(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
-		if (!isObject(data) || !Object.keys(data).length) return { code: 400, success: false, message: '请传入data' }
+		if (!isObject(data) || !Object.keys(data).length)
+			return {
+				code: 400,
+				success: false,
+				message: '请传入data'
+			}
 		const configImagePaths = this._getImagePaths(data)
 		return await super.clearOldImages(configImagePaths, this.diariesDir)
 	}
@@ -26,9 +33,9 @@ class DiaryManager extends BaseManager {
 		if (!isObject(data)) return
 		const imagePaths = []
 		const diaries = data?.diaryData || []
-		diaries.forEach((d) => {
+		diaries.forEach(d => {
 			const images = d?.images || []
-			images.forEach((imagePath) => {
+			images.forEach(imagePath => {
 				let p = imagePath
 				if (p.startsWith('/')) {
 					p = p.substring(1)
@@ -46,7 +53,9 @@ class DiaryManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, {
+			beforeWrite: async () => await this._clearOldImages(data)
+		})
 	}
 }
 

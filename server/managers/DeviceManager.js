@@ -13,7 +13,9 @@ class DeviceManager extends BaseManager {
 	}
 	// 上传设备图片(支持批量)
 	async uploadImages(files) {
-		return await super.uploadFiles(this.devicesDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.devicesDir, files, file => isImage(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
@@ -25,9 +27,9 @@ class DeviceManager extends BaseManager {
 		if (!isObject(data)) return
 		const imagePaths = []
 		const devices = data?.devicesData || {}
-		Object.keys(devices).forEach((key) => {
+		Object.keys(devices).forEach(key => {
 			const device = devices[key] || []
-			device.forEach((d) => {
+			device.forEach(d => {
 				let imagePath = d?.image || '' // 格式为"/images/device/xxx.png"
 				if (imagePath.startsWith('/')) {
 					imagePath = imagePath.substring(1)
@@ -45,7 +47,9 @@ class DeviceManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, {
+			beforeWrite: async () => await this._clearOldImages(data)
+		})
 	}
 }
 

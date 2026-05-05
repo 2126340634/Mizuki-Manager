@@ -237,12 +237,12 @@ export default function Skill() {
 						)}
 						{checkedIdxes.size > 0 && (
 							<Popconfirm title="确定删除选中的技能吗?" onConfirm={removeSkills} okText="确定" cancelText="取消">
-								<Button danger icon={<DeleteOutlined />}>
+								<Button loading={loading} danger icon={<DeleteOutlined />}>
 									删除
 								</Button>
 							</Popconfirm>
 						)}
-						<Button icon={<PlusOutlined />} onClick={() => openEditModal(undefined, -1)}>
+						<Button loading={loading} icon={<PlusOutlined />} onClick={() => openEditModal(undefined, -1)}>
 							添加技能
 						</Button>
 					</Space>

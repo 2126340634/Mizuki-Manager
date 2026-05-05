@@ -357,7 +357,7 @@ export default function Album() {
 			extra: curFolderPath === folder.folderPath && (
 				<div onClick={(e) => e.stopPropagation()}>
 					<Dropdown menu={{ items: dropdownOpts, onClick: dropdownClick }} trigger={['click']}>
-						{<Button icon={<EllipsisOutlined />} type="text" />}
+						{<Button loading={loading} icon={<EllipsisOutlined />} type="text" />}
 					</Dropdown>
 				</div>
 			)
@@ -368,7 +368,7 @@ export default function Album() {
 	const FolderMenu: React.FC = () => (
 		<>
 			<div style={{ padding: '16px' }}>
-				<Button type="dashed" block icon={<PlusOutlined />} onClick={addFolder}>
+				<Button loading={loading} type="dashed" block icon={<PlusOutlined />} onClick={addFolder}>
 					新建目录
 				</Button>
 			</div>
@@ -401,7 +401,7 @@ export default function Album() {
 					{/* 顶部标题与操作栏 */}
 					<div className={styles.toolbar}>
 						<div>
-							{!screens.lg && <Button className={styles['toolbar-directory']} icon={<FolderOpenOutlined />} onClick={() => setDrawerVisible(true)} />}
+							{!screens.lg && <Button loading={loading} className={styles['toolbar-directory']} icon={<FolderOpenOutlined />} onClick={() => setDrawerVisible(true)} />}
 							<Typography.Title level={4}>{folders.find((folder) => folder.folderPath === curFolderPath)?.folderName || '选择相册目录'}</Typography.Title>
 							{curFolderPath && (
 								<Alert
@@ -608,7 +608,7 @@ export default function Album() {
 											<>
 												<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
 													<span style={{ fontWeight: 500 }}>相册图片列表</span>
-													<Button type="dashed" onClick={() => add({ src: '', alt: '' })} icon={<PlusOutlined />}>
+													<Button loading={loading} type="dashed" onClick={() => add({ src: '', alt: '' })} icon={<PlusOutlined />}>
 														添加图片
 													</Button>
 												</div>

@@ -224,12 +224,12 @@ export default function Project() {
 						)}
 						{checkedIdxes.size > 0 && (
 							<Popconfirm title="确定删除选中的项目吗?" onConfirm={removeProjects} okText="确定" cancelText="取消">
-								<Button danger icon={<DeleteOutlined />}>
+								<Button loading={loading} danger icon={<DeleteOutlined />}>
 									删除
 								</Button>
 							</Popconfirm>
 						)}
-						<Button icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
+						<Button loading={loading} icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
 							新增项目
 						</Button>
 					</Space>
@@ -369,7 +369,9 @@ export default function Project() {
 												<Input placeholder="输入图片外链" />
 											</Form.Item>
 											<Upload showUploadList={false} beforeUpload={handleUpload} accept={imageAccept}>
-												<Button icon={<UploadOutlined />}>上传</Button>
+												<Button loading={loading} icon={<UploadOutlined />}>
+													上传
+												</Button>
 											</Upload>
 										</Space.Compact>
 									</Form.Item>

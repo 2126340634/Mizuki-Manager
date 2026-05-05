@@ -210,7 +210,9 @@ export default function Diary() {
 						)}
 						{checkedIdxes.size > 0 && (
 							<Popconfirm title="确定删除选中的日记吗?" onConfirm={removeDiary} okText="确定" cancelText="取消">
-								<Button icon={<DeleteOutlined />}>删除</Button>
+								<Button loading={loading} icon={<DeleteOutlined />}>
+									删除
+								</Button>
 							</Popconfirm>
 						)}
 						<Button icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
@@ -323,7 +325,9 @@ export default function Diary() {
 								<Form.Item label="添加图片" style={{ marginBottom: 8 }}>
 									<Space wrap>
 										<Upload showUploadList={false} beforeUpload={handleUpload} accept={imageAccept} multiple>
-											<Button icon={<UploadOutlined />}>上传图片</Button>
+											<Button loading={loading} icon={<UploadOutlined />}>
+												上传图片
+											</Button>
 										</Upload>
 										<Form.Item name="images" noStyle>
 											<div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>

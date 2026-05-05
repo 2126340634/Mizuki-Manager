@@ -32,7 +32,7 @@ router.post('/upload-pc', upload.array('files'), async (req, res) => {
 })
 
 // 上传移动端壁纸(批量)
-router.post('/upload-mobile',upload.array('files'), async (req, res) => {
+router.post('/upload-mobile', upload.array('files'), async (req, res) => {
 	const result = await cm.uploadMobileWallpapers(req?.files)
 	res.status(result.code).json(result)
 })

@@ -158,7 +158,7 @@ export default function Builder() {
 						</Popconfirm>
 					)}
 					<Popconfirm placement="bottom" title="确定终止部署进程吗？" description="如遇到执行异常等情况可终止后重新部署" okText="确定" cancelText="取消" onConfirm={cancelDeploy}>
-						<Button danger icon={<SyncOutlined />}>
+						<Button loading={loading} danger icon={<SyncOutlined />}>
 							终止进程
 						</Button>
 					</Popconfirm>

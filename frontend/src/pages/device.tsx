@@ -220,10 +220,12 @@ export default function Device() {
 						)}
 						{checkedIdxes.size > 0 && (
 							<Popconfirm title="确定删除?" onConfirm={removeDevice} okText="确定" cancelText="取消">
-								<Button icon={<DeleteOutlined />}>删除</Button>
+								<Button loading={loading} icon={<DeleteOutlined />}>
+									删除
+								</Button>
 							</Popconfirm>
 						)}
-						<Button icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
+						<Button loading={loading} icon={<EditOutlined />} onClick={() => openEditModal(undefined, -1)}>
 							添加设备
 						</Button>
 					</Space>
@@ -335,7 +337,9 @@ export default function Device() {
 												<Input placeholder="输入图片外链" />
 											</Form.Item>
 											<Upload showUploadList={false} beforeUpload={uploadCover} accept={imageAccept}>
-												<Button icon={<UploadOutlined />}>上传</Button>
+												<Button loading={loading} icon={<UploadOutlined />}>
+													上传
+												</Button>
 											</Upload>
 										</Space.Compact>
 									</Form.Item>

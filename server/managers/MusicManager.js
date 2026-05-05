@@ -14,11 +14,15 @@ class ProjectManager extends BaseManager {
 	}
 	// 上传音频文件
 	async uploadMusic(file) {
-		return await super.uploadFiles(this.urlDir, [file], (file) => isMusic(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.urlDir, [file], file => isMusic(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 上传音乐封面
 	async uploadCover(file) {
-		return await super.uploadFiles(this.coverDir, [file], (file) => isImage(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.coverDir, [file], file => isImage(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 清除旧音乐(封面,音频文件)
 	async _clearOldMusic(data) {
@@ -40,7 +44,7 @@ class ProjectManager extends BaseManager {
 		const coverPaths = []
 		const urlPaths = []
 		const list = data?.LOCAL_PLAYLIST || []
-		list.forEach((item) => {
+		list.forEach(item => {
 			const coverPath = item?.cover || '' // 封面格式为"/assets/music/cover/xxx.png"
 			const urlPath = item?.url || '' // 音频格式为"/assets/music/url/xxx.mp3"
 			if (isImage(coverPath)) {
@@ -52,7 +56,10 @@ class ProjectManager extends BaseManager {
 				if (p) urlPaths.push(p)
 			}
 		})
-		return { coverPaths, urlPaths }
+		return {
+			coverPaths,
+			urlPaths
+		}
 	}
 	// 解析ast树获取关键字段数据
 	async getConfigData() {
@@ -60,7 +67,9 @@ class ProjectManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldMusic(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, {
+			beforeWrite: async () => await this._clearOldMusic(data)
+		})
 	}
 }
 

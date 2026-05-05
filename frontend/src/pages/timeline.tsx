@@ -244,12 +244,12 @@ export default function Timeline() {
 						)}
 						{checkedIdxes.size > 0 && (
 							<Popconfirm title="确定删除选中的时间线条目吗?" onConfirm={removeTimelineItems} okText="确定" cancelText="取消">
-								<Button danger icon={<DeleteOutlined />}>
+								<Button loading={loading} danger icon={<DeleteOutlined />}>
 									删除
 								</Button>
 							</Popconfirm>
 						)}
-						<Button icon={<PlusOutlined />} onClick={() => openEditModal(undefined, -1)}>
+						<Button loading={loading} icon={<PlusOutlined />} onClick={() => openEditModal(undefined, -1)}>
 							添加条目
 						</Button>
 					</Space>
@@ -518,10 +518,10 @@ export default function Timeline() {
 															]}
 														/>
 													</Form.Item>
-													<Button icon={<DeleteOutlined />} onClick={() => remove(field.name)} danger size="small" />
+													<Button loading={loading} icon={<DeleteOutlined />} onClick={() => remove(field.name)} danger size="small" />
 												</div>
 											))}
-											<Button type="dashed" onClick={() => add({ type: 'other' })} block icon={<PlusOutlined />}>
+											<Button loading={loading} type="dashed" onClick={() => add({ type: 'other' })} block icon={<PlusOutlined />}>
 												添加链接
 											</Button>
 										</>

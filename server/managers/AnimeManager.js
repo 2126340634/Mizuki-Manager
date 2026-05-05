@@ -13,7 +13,9 @@ class AnimeManager extends BaseManager {
 	}
 	// 上传动漫图片(支持批量)
 	async uploadImages(files) {
-		return await super.uploadFiles(this.animesDir, files, (file) => isImage(file.originalname), { skipIfExists: true })
+		return await super.uploadFiles(this.animesDir, files, file => isImage(file.originalname), {
+			skipIfExists: true
+		})
 	}
 	// 清除旧图片
 	async _clearOldImages(data) {
@@ -25,7 +27,7 @@ class AnimeManager extends BaseManager {
 		if (!isObject(data)) return
 		const imagePaths = []
 		const animes = data?.localAnimeList || []
-		animes.forEach((a) => {
+		animes.forEach(a => {
 			let imagePath = a?.cover || '' // 格式为"/assets/anime/xxx.png"
 			if (imagePath.startsWith('/')) {
 				imagePath = imagePath.substring(1)
@@ -42,7 +44,9 @@ class AnimeManager extends BaseManager {
 	}
 	// data转换为config
 	async writeConfig(data) {
-		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, { beforeWrite: async () => await this._clearOldImages(data) })
+		return await super.dataToConfig(this.dataDir, this.configFilename, data, undefined, {
+			beforeWrite: async () => await this._clearOldImages(data)
+		})
 	}
 }
 
