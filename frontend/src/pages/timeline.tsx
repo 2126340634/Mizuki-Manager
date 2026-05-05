@@ -12,7 +12,6 @@ import {
 	Space,
 	Typography,
 	Spin,
-	Grid,
 	Layout,
 	Empty,
 	Pagination,
@@ -55,7 +54,6 @@ interface TimelineItem {
 	featured?: boolean
 }
 
-const { useBreakpoint } = Grid
 const { TextArea } = Input
 
 const typeMap = {
@@ -66,7 +64,6 @@ const typeMap = {
 }
 
 export default function Timeline() {
-	const screens = useBreakpoint()
 	const [form] = Form.useForm()
 	const [loading, setLoading] = useState(false)
 	const [timelineList, setTimelineList] = useState<TimelineItem[]>([])
@@ -307,13 +304,9 @@ export default function Timeline() {
 													<EnvironmentOutlined />
 													<Typography.Text type="secondary" className={styles.metaText}>
 														{item.location}
+														{item.position ? ` · ${item.position}` : ''}
 													</Typography.Text>
 												</Space>
-											)}
-											{item.position && (
-												<Typography.Text type="secondary" className={styles.metaText}>
-													{item.position}
-												</Typography.Text>
 											)}
 										</div>
 
@@ -327,7 +320,7 @@ export default function Timeline() {
 
 										{item.achievements && item.achievements.length > 0 && (
 											<div className={styles.sectionWrapper}>
-												<span className={styles.sectionLabel}>成就荣誉</span>
+												<div className={styles.sectionLabel}>成就荣誉</div>
 												<Space wrap size={[4, 0]}>
 													{item.achievements?.map((achieve) => (
 														<Tag key={achieve} color="default" className={styles.achievementTag}>

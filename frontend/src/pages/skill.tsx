@@ -110,8 +110,22 @@ export default function Skill() {
 			const res = await getSkillConfig()
 			if (res.success) {
 				const data: Skill[] = res.data?.skillsData || []
-				setSkillList(data)
-				setPageList(data.slice((num - 1) * size, num * size) || [])
+				const sortedData = Object.values(
+					// 按catogory分类
+					data.reduce<Record<string, Skill[]>>((acc, skill) => {
+						;(acc[skill.category] ||= []).push(skill)
+						return acc
+					}, {})
+					// 扁平后按经验时长降序
+				).flatMap((list) =>
+					list.sort((a: Skill, b: Skill) => {
+						const aMonths = (a.experience.years || 0) * 12 + (a.experience.months || 0)
+						const bMonths = (b.experience.years || 0) * 12 + (b.experience.months || 0)
+						return bMonths - aMonths
+					})
+				)
+				setSkillList(sortedData)
+				setPageList(sortedData.slice((num - 1) * size, num * size))
 			}
 		} catch {
 		} finally {
@@ -384,7 +398,7 @@ export default function Skill() {
 							</Col>
 							<Col span={24}>
 								<Form.Item name="description" label="技能描述" rules={[{ required: true }]} className={styles.modalFormItem}>
-									<Input.TextArea rows={3} placeholder="描述应用场景和技术亮点..." />
+									<Input.TextArea rows={3} placeholder="描述一下技能要点..." />
 								</Form.Item>
 							</Col>
 							<Col span={24}>
