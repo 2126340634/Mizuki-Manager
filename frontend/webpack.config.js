@@ -24,8 +24,27 @@ module.exports = {
 				}
 			},
 			{
+				test: /\.module\.scss$/,
+				use: [
+					isProd ? MiniCssExtractPlugin.loader : 'style-loader',
+					{
+						loader: 'css-loader',
+						options: {
+							// 开启模块化
+							modules: {
+								localIdentName: isProd ? '[hash:base64:8]' : '[path][name]__[local]',
+								namedExport: false, // 关闭命名导出
+								exportLocalsConvention: 'camelCase' // 转换为驼峰
+							}
+						}
+					},
+					'sass-loader'
+				]
+			},
+			{
 				test: /\.scss$/,
-				use: [isProd ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader'] // 提取css
+				exclude: /\.module\.scss$/,
+				use: [isProd ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader']
 			}
 		]
 	},
