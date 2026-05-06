@@ -9,7 +9,7 @@ export default function Support() {
 				<GithubOutlined />
 				&nbsp;Mizuki Blog
 			</span>
-			<span className={styles.text} onClick={() => window.open('https://github.com/2126340634', '_blank')}>
+			<span className={styles.text} onClick={() => window.open('https://github.com/2126340634/Mizuki-Manager', '_blank')}>
 				<GithubOutlined />
 				&nbsp;Mizuki Manager
 			</span>
