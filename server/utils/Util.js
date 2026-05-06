@@ -63,8 +63,8 @@ function isMarkdown(filename) {
 }
 // 文件命名校验
 function isLegalFilename(filename) {
-	if (typeof filename !== 'string' || !filename) return false
-	return /^[a-zA-Z0-9_\-\s]{1,100}$/.test(filename)
+	if (typeof filename !== 'string') return false
+	return /^[\u4e00-\u9fa5a-zA-Z0-9_\-\s]{1,100}$/.test(filename)
 }
 
 module.exports = {
