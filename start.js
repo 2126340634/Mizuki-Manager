@@ -22,10 +22,22 @@ const getPackageCmd = command => {
 	return ['pnpm', [command]]
 }
 
+// 安装更新前端依赖
+const [installCmd, installArgs] = getPackageCmd('install')
+const installRes = spawnSync(installCmd, installArgs, {
+	stdio: 'inherit',
+	shell: true,
+	cwd: './frontend'
+})
+if (installRes.status !== 0) {
+	console.error('\n前端依赖安装更新失败！\n')
+	process.exit(1)
+}
+
 if (!isProd) {
 	// 开发环境下启动前端
-	const [cmd, args] = getPackageCmd('start')
-	const frontend = spawn(cmd, args, {
+	const [devCmd, devArgs] = getPackageCmd('start')
+	const frontend = spawn(devCmd, devArgs, {
 		stdio: 'inherit',
 		shell: true,
 		cwd: './frontend',
@@ -57,8 +69,8 @@ if (!isProd) {
 	process.on('SIGTERM', killAll)
 } else {
 	// 生产环境依赖构建文件
-	const [cmd, args] = getPackageCmd('build')
-	const buildRes = spawnSync(cmd, args, {
+	const [prodCmd, prodArgs] = getPackageCmd('build')
+	const buildRes = spawnSync(prodCmd, prodArgs, {
 		stdio: 'inherit',
 		shell: true,
 		cwd: './frontend',
@@ -77,6 +89,7 @@ if (!isProd) {
 			console.error('pm2连接失败:', err)
 			process.exit(1)
 		}
+		if (!fs.existsSync('./logs')) fs.mkdirSync('./logs')
 		pm2.start(
 			{
 				script: './server/app.js',
