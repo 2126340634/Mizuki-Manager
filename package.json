@@ -9,8 +9,7 @@
 	"scripts": {
 		"start": "node ./start.js --prod",
 		"stop": "pm2 stop mizuki-manager",
-		"dev": "node ./start.js --dev",
-		"build:frontend": "cd ./frontend & pnpm build"
+		"dev": "node ./start.js --dev"
 	},
 	"devDependencies": {
 		"@types/node": "^25.5.0",

@@ -1,5 +1,12 @@
 # Mizuki Manager
 
+## 开源声明
+
+博客开源项目 **Mizuki**，作者 [@matsuzaka-yuki](https://github.com/matsuzaka-yuki)。
+
+- Mizuki 项目：https://github.com/LyraVoid/Mizuki
+- Mizuki 协议：MIT / Apache-2.0（以原仓库为准）
+
 一个用于管理 Mizuki 静态博客项目的后台管理服务仓库。该项目包含：
 
 - `server/`：Express 后端管理服务
@@ -92,7 +99,6 @@ pnpm stop
 - `pnpm dev`：开发环境启动，包含前端和后端。
 - `pnpm start`：生产环境启动，先构建前端并启动 pm2 后端服务。
 - `pnpm stop`：停止 `pm2` 中的 `mizuki-manager` 进程。
-- `pnpm build:frontend`：仅构建前端项目。
 
 ## 后端服务说明
 
@@ -146,7 +152,7 @@ Authorization: Bearer <token>
 
 ## 常见问题
 
-### 后端启动报 `.env 文件不存在`
+### 启动脚本报错 `.env 文件不存在`
 
 请检查根目录是否存在 `.env` 文件，并正确填写环境变量。
 

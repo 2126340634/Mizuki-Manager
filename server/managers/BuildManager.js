@@ -85,28 +85,26 @@ class BuildManager extends EventEmitter {
 		}
 	}
 	/**
-	 * @description 部署前安装更新包管理器
+	 * @description 部署前安装更新依赖
 	 * @func onLog 发送新日志内容回调
 	 * @func onError 执行出错回调,发送错误数据对象
 	 * @returns {Promise<boolean>} true为安装成功
 	 */
-	_installPackage(onLog) {
+	_installPackage(dir, onLog) {
 		const installParts = this.installCommand.split(' ')
 		const command = this.isWindows ? 'cmd.exe' : installParts[0]
 		const args = this.isWindows ? ['/c', this.installCommand] : installParts.slice(1)
 		const process = spawn(command, args, {
-			cwd: this.basePath
+			cwd: dir
 		})
-
 		this.execCallback('log', {
-			log: `[System] 开始安装更新包管理器...\n`
+			log: `[System] 路径: ${dir}\n[System] 开始安装更新依赖...\n`
 		})
 		onLog(
 			this._appendLog({
-				log: `[System] 开始安装更新包管理器...\n`
+				log: `[System] 路径: ${dir}\n[System] 开始安装更新依赖...\n`
 			})
 		)
-
 		process.stdout.on('data', data => {
 			const cbData = data.toString()
 			this.execCallback('log', {
@@ -160,18 +158,19 @@ class BuildManager extends EventEmitter {
 		this.log = ''
 		this.clearCallbacks()
 
-		// 安装更新包管理器
-		const installed = await this._installPackage(onLog)
-		if (!installed) {
+		// 安装更新依赖
+		const installed = await this._installPackage(this.basePath, onLog)
+		const frontendInstalled = await this._installPackage(path.resolve(this.basePath, 'frontend'), onLog)
+		if (!installed || !frontendInstalled) {
 			this.execCallback('error', {
 				code: 500,
 				success: false,
-				message: `\n[System] 安装更新包管理器失败\n`
+				message: `\n[System] 安装更新依赖失败\n`
 			})
 			onError({
 				code: 500,
 				success: false,
-				message: `\n[System] 安装更新包管理器失败\n`
+				message: `\n[System] 安装更新依赖失败\n`
 			})
 			this.childProcess = null
 			return

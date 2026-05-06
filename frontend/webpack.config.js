@@ -3,14 +3,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { EsbuildPlugin } = require('esbuild-loader')
 const webpack = require('webpack')
-const fs = require('fs')
 
 const envPath = path.resolve(__dirname, '../.env')
-if (!fs.existsSync(envPath)) {
-	console.error('\n==================== .env 文件不存在, 请创建 .env 文件并添加必要的环境变量配置 ====================\n')
-	process.exit(1)
-}
-require('dotenv').config({ path: envPath }) // 注入.env配置
+require('dotenv').config({ path: envPath }) // 注入.env环境变量
 const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
