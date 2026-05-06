@@ -8,8 +8,9 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "node ./start.js --prod",
+		"dev": "node ./start.js --dev",
 		"stop": "pm2 stop mizuki-manager",
-		"dev": "node ./start.js --dev"
+		"log": "pm2 log mizuki-manager"
 	},
 	"devDependencies": {
 		"@types/node": "^25.5.0",
@@ -22,7 +23,7 @@
 		"express": "^5.2.1",
 		"jsonwebtoken": "^9.0.3",
 		"multer": "^2.1.1",
-		"pm2": "^6.0.14",
+		"pm2": "^7.0.1",
 		"recast": "^0.23.11",
 		"svg-captcha": "^1.4.0"
 	}

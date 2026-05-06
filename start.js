@@ -24,13 +24,23 @@ const getPackageCmd = command => {
 
 // 安装更新前端依赖
 const [installCmd, installArgs] = getPackageCmd('install')
-const installRes = spawnSync(installCmd, installArgs, {
+const frontendInstallRes = spawnSync(installCmd, installArgs, {
 	stdio: 'inherit',
 	shell: true,
 	cwd: './frontend'
 })
-if (installRes.status !== 0) {
+// 安装更新根目录依赖
+const rootInstallRes = spawnSync(installCmd, installArgs, {
+	stdio: 'inherit',
+	shell: true,
+	cwd: '.'
+})
+if (frontendInstallRes.status !== 0) {
 	console.error('\n前端依赖安装更新失败！\n')
+	process.exit(1)
+}
+if (rootInstallRes.status !== 0) {
+	console.error('\n根目录依赖安装更新失败！\n')
 	process.exit(1)
 }
 
