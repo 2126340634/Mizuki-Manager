@@ -1,11 +1,6 @@
 const path = require('path')
-const fs = require('fs')
 
 const envPath = path.resolve(__dirname, '../.env')
-if (!fs.existsSync(envPath)) {
-	console.error('\n==================== .env 文件不存在, 请创建 .env 文件并添加必要的环境变量配置 ====================\n')
-	process.exit(1)
-}
 require('dotenv').config({ path: envPath })
 
 // 项目根目录
@@ -91,7 +86,7 @@ module.exports = {
 	// Markdown文档格式
 	MARKDOWN_FORMATS: ['.md'],
 	// 包管理工具 可选: pnpm | npm | yarn
-	PACKAGE_TOOL: 'pnpm',
+	PACKAGE_TOOL: process.env.PACKAGE_TOOL,
 	// 单个文件限制20MB
 	MAX_FILE_SIZE: 20 * 1024 * 1024
 }

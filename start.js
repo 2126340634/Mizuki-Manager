@@ -1,12 +1,31 @@
-const { spawn, spawnSync, exec } = require('child_process') // 1. 引入 exec
-const pm2 = require('pm2')
 const path = require('path')
+const fs = require('fs')
+
+const envPath = path.resolve(__dirname, '.env')
+if (!fs.existsSync(envPath)) {
+	console.error('\n.env 文件不存在！请根据根目录下的 .env.example 创建 .env 文件并配置相应的环境变量。\n')
+	process.exit(1)
+}
+require('dotenv').config({ path: envPath })
+
+const { spawn, spawnSync, exec } = require('child_process')
+const pm2 = require('pm2')
 
 const isProd = process.argv.includes('--prod')
+const PACKAGE_TOOL = process.env.PACKAGE_TOOL
+
+const getPackageCmd = command => {
+	if (PACKAGE_TOOL === 'pnpm') return ['pnpm', [command]]
+	if (PACKAGE_TOOL === 'npm') return ['npm', ['run', command]]
+	if (PACKAGE_TOOL === 'yarn') return ['yarn', [command]]
+	console.warn('未知的包管理器:', PACKAGE_TOOL)
+	return ['pnpm', [command]]
+}
 
 if (!isProd) {
 	// 开发环境下启动前端
-	const frontend = spawn('pnpm', ['start'], {
+	const [cmd, args] = getPackageCmd('start')
+	const frontend = spawn(cmd, args, {
 		stdio: 'inherit',
 		shell: true,
 		cwd: './frontend',
@@ -38,7 +57,8 @@ if (!isProd) {
 	process.on('SIGTERM', killAll)
 } else {
 	// 生产环境依赖构建文件
-	const buildRes = spawnSync('pnpm', ['build'], {
+	const [cmd, args] = getPackageCmd('build')
+	const buildRes = spawnSync(cmd, args, {
 		stdio: 'inherit',
 		shell: true,
 		cwd: './frontend',
@@ -48,7 +68,7 @@ if (!isProd) {
 		}
 	})
 	if (buildRes.status !== 0) {
-		console.error('\n==================== 前端构建失败, 停止启动服务 ====================\n')
+		console.error('\n前端构建失败！已停止启动服务。\n')
 		process.exit(1)
 	}
 	// 启动pm2进程托管后端
@@ -72,7 +92,7 @@ if (!isProd) {
 			(err, proc) => {
 				if (err) console.error('pm2进程启动失败:', err)
 				else {
-					console.log('\n==================== pm2进程启动成功 ====================\n')
+					console.log('\npm2进程启动成功！\n')
 					spawnSync('pm2', ['list'], {
 						stdio: 'inherit',
 						shell: true
