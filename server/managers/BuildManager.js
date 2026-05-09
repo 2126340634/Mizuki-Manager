@@ -2,15 +2,13 @@ const fs = require('fs')
 const { spawn, exec } = require('child_process')
 const config = require('../config.js')
 const path = require('path')
-const { EventEmitter } = require('events')
 
 /**
  * 注意内部函数执行完后会清理闭包
  * 闭包清理后上一次部署的日志将会清空
  */
-class BuildManager extends EventEmitter {
+class BuildManager {
 	constructor() {
-		super()
 		this.basePath = config.BASE_PATH
 		this.deployDir = config.DEPLOY_DIR
 		this.distDir = config.DIST_DIR
@@ -85,56 +83,6 @@ class BuildManager extends EventEmitter {
 		}
 	}
 	/**
-	 * @description 部署前安装更新依赖
-	 * @func onLog 发送新日志内容回调
-	 * @func onError 执行出错回调,发送错误数据对象
-	 * @returns {Promise<boolean>} true为安装成功
-	 */
-	_installPackage(dir, onLog) {
-		const installParts = this.installCommand.split(' ')
-		const command = this.isWindows ? 'cmd.exe' : installParts[0]
-		const args = this.isWindows ? ['/c', this.installCommand] : installParts.slice(1)
-		const process = spawn(command, args, {
-			cwd: dir
-		})
-		this.execCallback('log', {
-			log: `[System] 路径: ${dir}\n[System] 开始安装更新依赖...\n`
-		})
-		onLog(
-			this._appendLog({
-				log: `[System] 路径: ${dir}\n[System] 开始安装更新依赖...\n`
-			})
-		)
-		process.stdout.on('data', data => {
-			const cbData = data.toString()
-			this.execCallback('log', {
-				log: cbData
-			})
-			onLog(
-				this._appendLog({
-					log: cbData
-				})
-			)
-		})
-		process.stderr.on('data', data => {
-			const cbData = data.toString()
-			this.execCallback('log', {
-				log: `[Install Error] ${cbData}`
-			})
-			onLog(
-				this._appendLog({
-					log: `[Install Error] ${cbData}`
-				})
-			)
-		})
-		return new Promise(resolve => {
-			process.on('close', code => {
-				if (code !== 0) return resolve(false)
-				resolve(true)
-			})
-		})
-	}
-	/**
 	 * @description 部署构建
 	 * @func onLog 发送新日志内容回调
 	 * @func onDone 部署完成回调,发送成功数据对象
@@ -157,24 +105,6 @@ class BuildManager extends EventEmitter {
 
 		this.log = ''
 		this.clearCallbacks()
-
-		// 安装更新依赖
-		const installed = await this._installPackage(this.basePath, onLog)
-		const frontendInstalled = await this._installPackage(path.resolve(this.basePath, 'frontend'), onLog)
-		if (!installed || !frontendInstalled) {
-			this.execCallback('error', {
-				code: 500,
-				success: false,
-				message: `\n[System] 安装更新依赖失败\n`
-			})
-			onError({
-				code: 500,
-				success: false,
-				message: `\n[System] 安装更新依赖失败\n`
-			})
-			this.childProcess = null
-			return
-		}
 
 		this.execCallback('log', {
 			log: '\n[System] 准备启动构建任务...\n'
@@ -239,7 +169,7 @@ class BuildManager extends EventEmitter {
 				this.childProcess = null
 				return
 			}
-			if (path.resolve(this.distDir) !== path.resolve(this.deployDir)) {
+			if (this.distDir !== this.deployDir) {
 				onLog(
 					this._appendLog({
 						log: '\n[System] 构建完成，正在迁移文件到部署目录...\n'
