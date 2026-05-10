@@ -4,8 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { EsbuildPlugin } = require('esbuild-loader')
 const webpack = require('webpack')
 
-const envPath = path.resolve(__dirname, '../.env')
-require('dotenv').config({ path: envPath }) // 注入.env环境变量
 const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
