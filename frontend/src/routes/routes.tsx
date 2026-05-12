@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react'
+import React, { JSX, lazy, Suspense } from 'react'
 import { Navigate } from 'react-router-dom'
 const Login = lazy(() => import('../pages/login'))
 const Index = lazy(() => import('../pages/index'))
@@ -24,7 +24,14 @@ const lazyLoad = (Component: React.LazyExoticComponent<React.ComponentType<any>>
 	)
 }
 
-const routes = [
+export interface RouteItem {
+	path: string
+	element: React.ReactNode
+	children?: RouteItem[]
+	needAuth?: boolean
+}
+
+const routes: RouteItem[] = [
 	{
 		path: '/',
 		element: <Navigate to="/index" replace />
@@ -35,59 +42,73 @@ const routes = [
 	},
 	{
 		path: '/index',
-		element: lazyLoad(Index)
+		element: lazyLoad(Index),
+		needAuth: true
 	},
 	{
 		path: '/about',
-		element: lazyLoad(About)
+		element: lazyLoad(About),
+		needAuth: true
 	},
 	{
 		path: '/album',
-		element: lazyLoad(Album)
+		element: lazyLoad(Album),
+		needAuth: true
 	},
 	{
 		path: '/anime',
-		element: lazyLoad(Anime)
+		element: lazyLoad(Anime),
+		needAuth: true
 	},
 	{
 		path: '/builder',
-		element: lazyLoad(Builder)
+		element: lazyLoad(Builder),
+		needAuth: true
 	},
 	{
 		path: '/config',
-		element: lazyLoad(Config)
+		element: lazyLoad(Config),
+		needAuth: true
 	},
 	{
 		path: '/device',
-		element: lazyLoad(Device)
+		element: lazyLoad(Device),
+		needAuth: true
 	},
 	{
 		path: '/diary',
-		element: lazyLoad(Diary)
+		element: lazyLoad(Diary),
+		needAuth: true
 	},
 	{
 		path: '/friend',
-		element: lazyLoad(Friend)
+		element: lazyLoad(Friend),
+		needAuth: true
 	},
 	{
 		path: '/project',
-		element: lazyLoad(Project)
+		element: lazyLoad(Project),
+		needAuth: true
 	},
 	{
 		path: '/skill',
-		element: lazyLoad(Skill)
+		element: lazyLoad(Skill),
+		needAuth: true
 	},
 	{
 		path: '/timeline',
-		element: lazyLoad(Timeline)
+		element: lazyLoad(Timeline),
+		needAuth: true
 	},
 	{
 		path: '/music',
-		element: lazyLoad(Music)
+		element: lazyLoad(Music),
+		needAuth: true
 	},
 	{
 		path: '/post/*',
-		element: lazyLoad(Post)
+		element: lazyLoad(Post),
+		needAuth: true
 	},
 	{
 		path: '*',
