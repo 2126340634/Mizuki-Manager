@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { Routes, useLocation, useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Routes, useLocation } from 'react-router-dom'
 import { createRoute } from './routes/createRoute'
 import routes, { routePaths } from './routes/routes'
 import SidebarMenu from './components/SidebarMenu'
@@ -14,17 +14,7 @@ export default function App() {
 	const [drawerVisible, setDrawerVisible] = useState(false)
 	const screens = useBreakpoint()
 	const location = useLocation()
-	const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-	const nav = useNavigate()
-	const handleMenuClick = useCallback(() => {
-		setDrawerVisible(false)
-	}, [])
-	useEffect(() => {
-		// 登录路由守卫
-		if (!token && location.pathname === '/index') {
-			nav('/login', { replace: true })
-		}
-	}, [location.pathname, token])
+	const handleMenuClick = () => setDrawerVisible(false)
 	// 条件渲染侧边栏
 	const shouldShowSidebar = (path: string) => {
 		if (path === '/login') return false
