@@ -1,4 +1,4 @@
-import React, { JSX, lazy, Suspense } from 'react'
+import React, { lazy, Suspense } from 'react'
 import { Navigate } from 'react-router-dom'
 const Login = lazy(() => import('../pages/login'))
 const Index = lazy(() => import('../pages/index'))
