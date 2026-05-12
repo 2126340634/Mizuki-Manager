@@ -13,8 +13,7 @@
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
 		"react-redux": "^9.2.0",
-		"react-router-dom": "^7.14.0",
-		"react-scripts": "5.0.1"
+		"react-router-dom": "^7.14.0"
 	},
 	"scripts": {
 		"start": "webpack serve --config webpack.config.js --mode development",
