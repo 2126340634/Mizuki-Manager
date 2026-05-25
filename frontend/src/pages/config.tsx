@@ -71,7 +71,46 @@ const defaultValues = {
 			logo: ''
 		},
 		showLastModified: true,
-		generateOgImages: false
+		generateOgImages: false,
+		banner: {
+			src: {
+				desktop: [],
+				mobile: []
+			},
+			position: 'center',
+			carousel: {
+				enable: true,
+				interval: 3
+			},
+			waves: {
+				enable: true,
+				performanceMode: false,
+				mobileDisable: false
+			},
+			imageApi: {
+				enable: false,
+				url: ''
+			},
+			homeText: {
+				enable: true,
+				title: '',
+				subtitle: [],
+				typewriter: {
+					enable: true,
+					speed: 100,
+					deleteSpeed: 50,
+					pauseTime: 2000
+				}
+			},
+			credit: {
+				enable: false,
+				text: '',
+				url: ''
+			},
+			navbar: {
+				transparentMode: 'semifull'
+			}
+		}
 	},
 	fullscreenWallpaperConfig: {
 		position: 'center',
@@ -292,9 +331,7 @@ const StringListEditor: React.FC<{
 					<div className={styles.tagItem}>
 						{imageMode && <Image loading="lazy" width={70} height={70} className={styles.tagImage} src={item} alt={item} />}
 						<Tag key={i} closable onClose={() => removeItem(i)} className={styles.tag}>
-							<Typography.Text ellipsis={{ tooltip: item }} className={styles.tagText}>
-								{item}
-							</Typography.Text>
+							<Typography.Text ellipsis={{ tooltip: item }}>{item}</Typography.Text>
 						</Tag>
 					</div>
 				))}
@@ -519,7 +556,7 @@ const collapseItems = (
 					</Form.Item>
 				</Col>
 				<Col span={24}>
-					<Form.Item label="桌面壁纸" name={['fullscreenWallpaperConfig', 'src', 'desktop']}>
+					<Form.Item label="桌面端壁纸" name={['fullscreenWallpaperConfig', 'src', 'desktop']}>
 						<StringListEditor imageMode={true} uploadImage={uploadPCWallpaperImages} />
 					</Form.Item>
 				</Col>
@@ -544,6 +581,146 @@ const collapseItems = (
 					</Form.Item>
 				</Col>
 			</Row>
+		)
+	},
+	// 横幅配置
+	{
+		key: 'banner',
+		label: '横幅配置',
+		children: (
+			<>
+				{/* 横幅图片 */}
+				<Form.Item label="桌面端横幅" name={['siteConfig', 'banner', 'src', 'desktop']}>
+					<StringListEditor imageMode={true} uploadImage={uploadPCWallpaperImages} />
+				</Form.Item>
+				<Form.Item label="移动端横幅" name={['siteConfig', 'banner', 'src', 'mobile']}>
+					<StringListEditor imageMode={true} uploadImage={uploadMobileWallpaperImages} />
+				</Form.Item>
+
+				<Divider orientation="horizontal">基础设置</Divider>
+
+				<Row gutter={[8, 0]}>
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'banner', 'position']} label="图片位置">
+							<Select
+								options={[
+									{ label: '居中', value: 'center' },
+									{ label: '顶部', value: 'top' },
+									{ label: '底部', value: 'bottom' }
+								]}
+							/>
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'banner', 'navbar', 'transparentMode']} label="导航栏透明模式">
+							<Select
+								options={[
+									{ label: '半透明+圆角', value: 'semi' },
+									{ label: '完全透明', value: 'full' },
+									{ label: '动态透明', value: 'semifull' }
+								]}
+							/>
+						</Form.Item>
+					</Col>
+				</Row>
+
+				{/* 轮播配置 */}
+				<Divider orientation="horizontal">轮播配置</Divider>
+
+				<Form.Item name={['siteConfig', 'banner', 'carousel', 'enable']} valuePropName="checked" label="启用轮播">
+					<Switch />
+				</Form.Item>
+
+				<Form.Item name={['siteConfig', 'banner', 'carousel', 'interval']} label="轮播间隔(秒)">
+					<InputNumber min={1} className={styles.fullWidth} />
+				</Form.Item>
+
+				{/* 水波纹效果 */}
+				<Divider orientation="horizontal">水波纹效果</Divider>
+
+				<Form.Item name={['siteConfig', 'banner', 'waves', 'enable']} valuePropName="checked" label="启用水波纹">
+					<Switch />
+				</Form.Item>
+
+				<Row gutter={[8, 0]}>
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'banner', 'waves', 'performanceMode']} valuePropName="checked" label="性能模式">
+							<Switch />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name={['siteConfig', 'banner', 'waves', 'mobileDisable']} valuePropName="checked" label="移动端禁用">
+							<Switch />
+						</Form.Item>
+					</Col>
+				</Row>
+
+				{/* 图片API */}
+				<Divider orientation="horizontal">图片API (PicFlow)</Divider>
+
+				<Form.Item name={['siteConfig', 'banner', 'imageApi', 'enable']} valuePropName="checked" label="启用图片API">
+					<Switch />
+				</Form.Item>
+
+				<Form.Item name={['siteConfig', 'banner', 'imageApi', 'url']} label="API地址">
+					<Input placeholder="http://domain.com/api_v2.php?format=text&count=4" />
+				</Form.Item>
+
+				{/* 主页文字配置 */}
+				<Divider orientation="horizontal">主页文字</Divider>
+
+				<Form.Item name={['siteConfig', 'banner', 'homeText', 'enable']} valuePropName="checked" label="启用主页文字">
+					<Switch />
+				</Form.Item>
+
+				<Form.Item name={['siteConfig', 'banner', 'homeText', 'title']} label="主标题">
+					<Input placeholder="输入主标题" />
+				</Form.Item>
+
+				<Form.Item label="副标题列表" name={['siteConfig', 'banner', 'homeText', 'subtitle']}>
+					<StringListEditor addText="添加" />
+				</Form.Item>
+
+				{/* 打字机效果 */}
+				<Divider orientation="horizontal">打字机效果</Divider>
+
+				<Form.Item name={['siteConfig', 'banner', 'homeText', 'typewriter', 'enable']} valuePropName="checked" label="启用打字机效果">
+					<Switch />
+				</Form.Item>
+
+				<Row gutter={[8, 0]}>
+					<Col xs={24} md={8}>
+						<Form.Item name={['siteConfig', 'banner', 'homeText', 'typewriter', 'speed']} label="打字速度(ms)">
+							<InputNumber min={20} max={500} step={10} className={styles.fullWidth} />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={8}>
+						<Form.Item name={['siteConfig', 'banner', 'homeText', 'typewriter', 'deleteSpeed']} label="删除速度(ms)">
+							<InputNumber min={20} max={500} step={10} className={styles.fullWidth} />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={8}>
+						<Form.Item name={['siteConfig', 'banner', 'homeText', 'typewriter', 'pauseTime']} label="暂停时间(ms)">
+							<InputNumber min={500} max={10000} step={500} className={styles.fullWidth} />
+						</Form.Item>
+					</Col>
+				</Row>
+
+				{/* 图片来源 */}
+				<Divider orientation="horizontal">图片来源</Divider>
+
+				<Form.Item name={['siteConfig', 'banner', 'credit', 'enable']} valuePropName="checked" label="显示图片来源">
+					<Switch />
+				</Form.Item>
+
+				<Form.Item name={['siteConfig', 'banner', 'credit', 'text']} label="来源文本">
+					<Input placeholder="Describe" />
+				</Form.Item>
+
+				<Form.Item name={['siteConfig', 'banner', 'credit', 'url']} label="来源链接">
+					<Input placeholder="https://..." />
+				</Form.Item>
+			</>
 		)
 	},
 	// 个人资料
