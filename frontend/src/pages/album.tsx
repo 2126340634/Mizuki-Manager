@@ -408,7 +408,7 @@ export default function Album() {
 									className={styles.alert}
 									title={
 										<>
-											本地模式下相册内必须存在一个名为{' '}
+											本地模式下相册内必须存在一个名为
 											<span
 												className={styles.coverCopyText}
 												onClick={async () => {
@@ -421,7 +421,7 @@ export default function Album() {
 												}}
 											>
 												cover.jpg
-											</span>{' '}
+											</span>
 											的图片作为封面。
 										</>
 									}
@@ -468,6 +468,7 @@ export default function Album() {
 							{files.map((file, index) => (
 								<Col key={index} xs={12} sm={8} md={12} lg={6}>
 									<Card
+										className={styles.card}
 										hoverable
 										size="small"
 										cover={

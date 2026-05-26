@@ -235,6 +235,7 @@ export default function Device() {
 							{pageList.map((item, index) => (
 								<Col key={index} xs={12} sm={8} md={12} lg={6}>
 									<Card
+										className={styles.card}
 										hoverable
 										size="small"
 										cover={

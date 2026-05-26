@@ -224,7 +224,13 @@ export default function Diary() {
 						<Row gutter={[8, 8]} className={styles.diaryListRow}>
 							{pageList.map((item, index) => (
 								<Col key={item.id} xs={24} sm={12} md={12} lg={8}>
-									<Card hoverable size="small" onClick={() => _handleCheck(!checkedIdxes.has(index), index)} actions={[<EditOutlined key="edit" onClick={(e) => openEditModal(e, index)} />]}>
+									<Card
+										className={styles.card}
+										hoverable
+										size="small"
+										onClick={() => _handleCheck(!checkedIdxes.has(index), index)}
+										actions={[<EditOutlined key="edit" onClick={(e) => openEditModal(e, index)} />]}
+									>
 										<div className={styles.cardContent}>
 											<Checkbox className={styles.cardCheckbox} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
 											<Typography.Text type="secondary" className={styles.diaryDate}>

@@ -239,6 +239,7 @@ export default function Project() {
 							{pageList.map((item, index) => (
 								<Col key={item.id} xs={24} sm={12} lg={8} xl={6}>
 									<Card
+										className={styles.card}
 										hoverable
 										size="small"
 										onClick={() => _handleCheck(!checkedIdxes.has(index), index)}
