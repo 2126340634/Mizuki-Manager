@@ -632,7 +632,7 @@ const collapseItems = (
 				</Form.Item>
 
 				<Form.Item name={['siteConfig', 'banner', 'carousel', 'interval']} label="轮播间隔(秒)">
-					<InputNumber min={1} className={styles.fullWidth} />
+					<InputNumber min={1} />
 				</Form.Item>
 
 				{/* 水波纹效果 */}
