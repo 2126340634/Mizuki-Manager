@@ -7,7 +7,7 @@ const webpack = require('webpack')
 const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
-	mode: isProd ? 'production' : 'development',
+	mode: process.env.NODE_ENV || 'development',
 	entry: './src/index.tsx',
 	module: {
 		rules: [
@@ -81,8 +81,8 @@ module.exports = {
 	plugins: [
 		new webpack.DefinePlugin({
 			'process.env': JSON.stringify({
-				NODE_ENV: isProd ? 'production' : 'development',
-				DB_VERSION: process.env.DB_VERSION
+				...process.env,
+				NODE_ENV: isProd ? 'production' : 'development'
 			})
 		}),
 		new HtmlWebpackPlugin({
