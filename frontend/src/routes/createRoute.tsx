@@ -6,7 +6,7 @@ import { PrivateRoute } from '../components/PrivateRoute'
 export function createRoute(routes: RouteItem[]) {
 	return routes.map((item) => {
 		// 验证登录
-		const element = item.needAuth ? <PrivateRoute element={item.element} /> : item.element
+		const element = item.needAuth ? <PrivateRoute {...item} /> : item.element
 		// 子路由
 		if (item.children && item.children.length) return <Route key={item.path}>{createRoute(item.children)}</Route>
 
