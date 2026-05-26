@@ -119,9 +119,15 @@ export const wrap = (target: any, source: any, key: string): any => {
 // 深合并对象 source合并到target, 覆盖target同层级属性
 export const deepMerge = (target: any, source: any): any => {
 	if (!source || typeof source !== 'object') return source
-	if (!target || typeof target !== 'object') return { ...source } // 防止引用当前source
+	if (!target || typeof target !== 'object') return JSON.parse(JSON.stringify(source)) // 防止引用当前source
 	// source数组替换掉target
-	if (Array.isArray(source)) return [...source]
+	if (Array.isArray(source)) {
+		const result = [...target]
+		source.forEach((item, i) => {
+			result[i] = deepMerge(target[i], item)
+		})
+		return result
+	}
 	// source对象值覆盖target
 	const result = { ...target }
 	for (const prop of Object.keys(source)) {

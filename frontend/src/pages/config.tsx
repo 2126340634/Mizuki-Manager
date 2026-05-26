@@ -123,6 +123,32 @@ const defaultValues = {
 		},
 		carousel: { enable: true, interval: 5 }
 	},
+	navBarConfig: {
+		links: [
+			{
+				children: [
+					{
+						name: '',
+						url: '',
+						external: true,
+						icon: ''
+					},
+					{
+						name: '',
+						url: '',
+						external: true,
+						icon: ''
+					},
+					{
+						name: 'Gitee',
+						url: '',
+						external: true,
+						icon: ''
+					}
+				]
+			}
+		]
+	},
 	profileConfig: {
 		avatar: '',
 		name: '',
@@ -723,11 +749,47 @@ const collapseItems = (
 			</>
 		)
 	},
+	// 导航链接配置
+	{
+		key: 'navbar',
+		label: '导航链接',
+		children: (
+			<Form.Item name={['navBarConfig', 'links', 2, 'children']} label="导航链接">
+				<EditableList
+					addButtonText="添加导航链接"
+					modalTitle="编辑导航链接"
+					modalFields={(_, iconValue) => (
+						<>
+							<Form.Item name="name" label="名称" rules={[{ required: true }]}>
+								<Input placeholder="请输入名称" />
+							</Form.Item>
+							<Form.Item name="icon" label="图标">
+								<Input placeholder="例如: mdi:github" suffix={iconValue ? <Icon icon={iconValue} width={20} height={20} /> : <span />} />
+							</Form.Item>
+							<Form.Item name="url" label="链接" rules={[{ required: true }]}>
+								<Input placeholder="请输入链接" />
+							</Form.Item>
+							<Form.Item name="external" label="外部链接" valuePropName="checked">
+								<Switch />
+							</Form.Item>
+						</>
+					)}
+					itemRender={(item) => (
+						<div className={styles.linkItem}>
+							<Tag>{item.name}</Tag>
+							{item.icon && <Icon icon={item.icon} width={20} />}
+							<Typography.Text copyable>{item.url}</Typography.Text>
+							{item.external && <Tag>外链</Tag>}
+						</div>
+					)}
+				/>
+			</Form.Item>
+		)
+	},
 	// 个人资料
 	{
 		key: 'profile',
 		label: '个人资料',
-
 		children: (
 			<>
 				<Form.Item label="头像路径" className={styles.formItemNoMargin}>
