@@ -754,7 +754,7 @@ const collapseItems = (
 		key: 'navbar',
 		label: '导航链接',
 		children: (
-			<Form.Item name={['navBarConfig', 'links', 2, 'children']} label="导航链接">
+			<Form.Item name={['navBarConfig', 'links', 2, 'children']}>
 				<EditableList
 					addButtonText="添加导航链接"
 					modalTitle="编辑导航链接"
@@ -763,7 +763,17 @@ const collapseItems = (
 							<Form.Item name="name" label="名称" rules={[{ required: true }]}>
 								<Input placeholder="请输入名称" />
 							</Form.Item>
-							<Form.Item name="icon" label="图标">
+							<Form.Item
+								name="icon"
+								label={
+									<>
+										<span>图标</span>
+										<a href={process.env.ICONIFY_URL} target="_blank">
+											&nbsp;访问 iconify
+										</a>
+									</>
+								}
+							>
 								<Input placeholder="例如: mdi:github" suffix={iconValue ? <Icon icon={iconValue} width={20} height={20} /> : <span />} />
 							</Form.Item>
 							<Form.Item name="url" label="链接" rules={[{ required: true }]}>
@@ -845,9 +855,9 @@ const collapseItems = (
 									name="icon"
 									label={
 										<>
-											<span>图标(仅部分支持)</span>
-											<a href="https://icon-sets.iconify.design/" target="_blank">
-												&nbsp;访问Iconify
+											<span>图标</span>
+											<a href={process.env.ICONIFY_URL} target="_blank">
+												&nbsp;访问 iconify
 											</a>
 										</>
 									}

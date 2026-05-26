@@ -406,9 +406,9 @@ export default function Skill() {
 									name="icon"
 									label={
 										<>
-											<span>图标(仅部分支持)</span>
-											<a href="https://icon-sets.iconify.design/" target="_blank">
-												&nbsp;访问 Iconify
+											<span>图标</span>
+											<a href={process.env.ICONIFY_URL} target="_blank">
+												&nbsp;访问 iconify
 											</a>
 										</>
 									}
