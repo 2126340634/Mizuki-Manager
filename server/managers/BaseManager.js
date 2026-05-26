@@ -310,7 +310,7 @@ class BaseManager {
 		}
 		return ''
 	}
-	// 递归解析ast树
+	// 递归解析ast树生成js对象
 	_astToValue(node, wrap) {
 		if (!node) return undefined
 		const type = node.type
