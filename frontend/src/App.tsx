@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Routes, useLocation } from 'react-router-dom'
 import { createRoute } from './routes/createRoute'
 import routes, { routePaths } from './routes/routes'
@@ -8,6 +8,7 @@ import { Button, Drawer, Grid } from 'antd'
 import { MenuUnfoldOutlined } from '@ant-design/icons'
 import Sider from 'antd/es/layout/Sider'
 import Support from './components/Support'
+import { verifyToken } from './services/auth'
 
 export default function App() {
 	const { useBreakpoint } = Grid
@@ -20,6 +21,11 @@ export default function App() {
 		if (path === '/login') return false
 		return routePaths.some((p) => p === path || path.startsWith(`${p}/`))
 	}
+	// 首次进入检查token是否过期
+	useEffect(() => {
+		const token = localStorage.getItem('token') || sessionStorage.getItem('token')
+		if (token) verifyToken({ token })
+	}, [])
 	return (
 		<div className="App" style={{ maxWidth: location.pathname !== '/login' ? '1600px' : '', margin: '0 auto' }}>
 			{/* PC侧边栏 */}

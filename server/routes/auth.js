@@ -15,4 +15,10 @@ router.get('/refresh-captcha', (req, res) => {
 	res.status(result.code).json(result)
 })
 
+router.post('/verify', (req, res) => {
+	const { token } = req?.body || {}
+	const result = am.verify(token)
+	res.status(result.code).json(result)
+})
+
 module.exports = router
