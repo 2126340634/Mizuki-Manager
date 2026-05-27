@@ -34,7 +34,7 @@ import { FolderOutlined, UploadOutlined, EditOutlined, PlusOutlined, FolderOpenO
 import styles from '../styles/pages/album.module.scss'
 import { getFolders, createFolder, deleteFolder, getFolderFiles, uploadAlbumFiles, deleteFiles, getInfo, updateInfo, renameFolder } from '../services/album'
 import dayjs from 'dayjs'
-import { throttle } from '../utils/util'
+import { formatTime, throttle } from '../utils/util'
 import { imageAccept } from '../configs/uploadConfig'
 
 const { Sider, Content } = Layout
@@ -308,7 +308,7 @@ export default function Album() {
 						hidden: data.hidden || false,
 						title: data.title || '',
 						description: data.description || '',
-						date: dayjs(data.date) || null,
+						date: dayjs(data.date || formatTime(new Date())),
 						location: data.location || '',
 						tags: data.tags || [],
 						layout: data.layout || 'grid',

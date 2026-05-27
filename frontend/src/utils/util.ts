@@ -135,3 +135,12 @@ export const deepMerge = (target: any, source: any): any => {
 	}
 	return result
 }
+
+// 格式化时间 YYYY-MM-DD
+export const formatTime = (date: Date): string => {
+	if (!date) return ''
+	const year = date.getFullYear()
+	const month = (date.getMonth() + 1).toString().padStart(2, '0')
+	const day = date.getDate().toString().padStart(2, '0')
+	return `${year}-${month}-${day}`
+}
