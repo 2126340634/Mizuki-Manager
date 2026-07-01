@@ -15,7 +15,7 @@ const convert = new Convert({
 	stream: true
 })
 const { Content } = Layout
-const MAX_LOG_LINES = 1000 // 最多渲染1000条目
+const MAX_LOG_LENGTH = 30000 // 限制最大字符数
 
 export default function Builder() {
 	const logDB = useBuilderLogDB()
@@ -25,7 +25,6 @@ export default function Builder() {
 	const ctrlRef = useRef<AbortController>(null)
 	const inited = useRef<boolean>(false) // 是否已初始化
 	const hasSynced = useRef<boolean>(false) // 是否已同步服务器部署状态
-	const logLines = useRef<string[]>([])
 
 	const renderedLog = useMemo(() => {
 		if (!log) return ''
@@ -66,12 +65,12 @@ export default function Builder() {
 			if (data?.isHistory) {
 				setLog(newLog || '')
 			} else {
-				setLog(() => {
-					logLines.current.push(newLog || '')
-					if (logLines.current.length > MAX_LOG_LINES) {
-						logLines.current = logLines.current.slice(-MAX_LOG_LINES) // 保留最新的日志
+				setLog((prev) => {
+					const log = prev + (newLog || '')
+					if (log.length > MAX_LOG_LENGTH) {
+						return log.slice(-MAX_LOG_LENGTH) // 限制日志长度
 					}
-					return logLines.current.join('')
+					return log
 				})
 			}
 		},
