@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
-import { Layout, Typography, Grid, Space, Button, Alert, Empty, Popconfirm, message } from 'antd'
+import { Layout, Typography, Space, Button, Alert, Empty, Popconfirm, message } from 'antd'
 import { RocketOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons'
 import styles from '../styles/pages/builder.module.scss'
 import { deployProjectSSE, stopDeployProcess, syncDeployStatus } from '../services/builder'
@@ -15,11 +15,9 @@ const convert = new Convert({
 	stream: true
 })
 const { Content } = Layout
-const { useBreakpoint } = Grid
 const MAX_LOG_LINES = 1000 // 最多渲染1000条目
 
 export default function Builder() {
-	const screens = useBreakpoint()
 	const logDB = useBuilderLogDB()
 	const [loading, setLoading] = useState(false)
 	const [log, setLog] = useState<string>('')
@@ -38,7 +36,7 @@ export default function Builder() {
 		logEndRef?.current?.scrollIntoView()
 	}, [])
 
-	const throttledSaveLog = useMemo(() => throttle(logDB.saveCache, 1000), [logDB])
+	const throttledSaveLog = useMemo(() => throttle(logDB.saveCache, 1000), [logDB.saveCache])
 
 	// 监听log变化
 	useEffect(() => {
@@ -58,7 +56,7 @@ export default function Builder() {
 				logDB.saveCache(log) // 卸载前保存
 			}
 		}
-	}, [log, scrollToBottom, throttledSaveLog])
+	}, [log])
 
 	const _sseCallback = {
 		onMessage: (data: any) => {
@@ -68,13 +66,12 @@ export default function Builder() {
 			if (data?.isHistory) {
 				setLog(newLog || '')
 			} else {
-				setLog((prev) => {
-					const next = prev + (newLog || '')
-					logLines.current.push(next)
+				setLog(() => {
+					logLines.current.push(newLog || '')
 					if (logLines.current.length > MAX_LOG_LINES) {
-						logLines.current = logLines.current.slice(-MAX_LOG_LINES) // 保留最新的1000条日志
+						logLines.current = logLines.current.slice(-MAX_LOG_LINES) // 保留最新的日志
 					}
-					return next
+					return logLines.current.join('')
 				})
 			}
 		},
