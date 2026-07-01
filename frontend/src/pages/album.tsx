@@ -94,6 +94,15 @@ export default function Album() {
 	const [pageSize, setPageSize] = useState(12) // 每页数量
 	const [pageTotal, setPageTotal] = useState(0) // 相册图片总量
 
+	const copy = async (text: string) => {
+		try {
+			await navigator.clipboard.writeText(text)
+			message.success('已复制到剪切板')
+		} catch {
+			message.error('复制失败')
+		}
+	}
+
 	// 全选
 	const onCheckAllChange: CheckboxProps['onChange'] = (e) => {
 		setCheckedPaths(e.target.checked ? new Set(files.map((file) => file.filePath)) : new Set())
@@ -409,17 +418,7 @@ export default function Album() {
 									title={
 										<>
 											本地模式下相册内必须存在一个名为
-											<span
-												className={styles.coverCopyText}
-												onClick={async () => {
-													try {
-														await navigator.clipboard.writeText('cover.jpg')
-														message.success('已复制到剪切板')
-													} catch {
-														message.error('复制失败')
-													}
-												}}
-											>
+											<span className={styles.coverCopyText} onClick={() => copy('cover.jpg')}>
 												cover.jpg
 											</span>
 											的图片作为封面。
@@ -479,13 +478,30 @@ export default function Album() {
 										actions={[<Checkbox checked={checkedPaths.has(file.filePath)} onChange={(e) => onCheckChange(e, file.filePath)} />]}
 										onClick={() => toggleCheck(file.filePath)}
 									>
-										<Card.Meta
-											title={
-												<Typography.Text className={styles.filenameText} ellipsis={{ tooltip: file.filename }}>
-													<span className={styles.coverBadge}>{file.filename === 'cover.jpg' ? '[封面]' : ''}</span> {file.filename}
-												</Typography.Text>
-											}
-										/>
+										{(() => {
+											const filePath = file.filePath.replace(/\\/g, '/')
+											return (
+												<Card.Meta
+													title={
+														<Typography.Text className={styles.filenameText} ellipsis={{ tooltip: file.filename }}>
+															<span className={styles.coverBadge}>{file.filename === 'cover.jpg' ? '[封面]' : ''}</span> {file.filename}
+														</Typography.Text>
+													}
+													description={
+														<Typography.Text
+															type="secondary"
+															ellipsis={{ tooltip: filePath, suffix: ' [点击复制]' }}
+															onClick={(e) => {
+																e.stopPropagation()
+																copy(filePath)
+															}}
+														>
+															{filePath}
+														</Typography.Text>
+													}
+												/>
+											)
+										})()}
 									</Card>
 								</Col>
 							))}
