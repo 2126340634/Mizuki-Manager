@@ -479,7 +479,8 @@ export default function Album() {
 										onClick={() => toggleCheck(file.filePath)}
 									>
 										{(() => {
-											const filePath = file.filePath.replace(/\\/g, '/')
+											const relativePath = file.filePath.replace(/\\/g, '/').split(/^.*?\/public/, 2)[1]
+											const filePath = relativePath || file.filePath.replace(/\\/g, '/')
 											return (
 												<Card.Meta
 													title={
