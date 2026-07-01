@@ -244,6 +244,7 @@ function PostEditor(props: PostEditorProps) {
 					message.success('保存成功')
 				}
 			}
+			setShowReload(false)
 		} catch {
 		} finally {
 			setLoading(false)

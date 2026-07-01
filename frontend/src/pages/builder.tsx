@@ -16,7 +16,7 @@ const convert = new Convert({
 })
 const { Content } = Layout
 const { useBreakpoint } = Grid
-const LOG_MAX_LENGTH = 100000 // 最长保留100000字符
+const MAX_LOG_LINES = 1000 // 最多渲染1000条目
 
 export default function Builder() {
 	const screens = useBreakpoint()
@@ -27,6 +27,7 @@ export default function Builder() {
 	const ctrlRef = useRef<AbortController>(null)
 	const inited = useRef<boolean>(false) // 是否已初始化
 	const hasSynced = useRef<boolean>(false) // 是否已同步服务器部署状态
+	const logLines = useRef<string[]>([])
 
 	const renderedLog = useMemo(() => {
 		if (!log) return ''
@@ -69,8 +70,9 @@ export default function Builder() {
 			} else {
 				setLog((prev) => {
 					const next = prev + (newLog || '')
-					if (next.length > LOG_MAX_LENGTH) {
-						return next.slice(-LOG_MAX_LENGTH)
+					logLines.current.push(next)
+					if (logLines.current.length > MAX_LOG_LINES) {
+						logLines.current = logLines.current.slice(-MAX_LOG_LINES) // 保留最新的1000条日志
 					}
 					return next
 				})

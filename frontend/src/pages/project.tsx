@@ -361,7 +361,7 @@ export default function Project() {
 							</Col>
 							<Col span={24}>
 								<div className={styles.modalImageWrapper}>
-									<Form.Item className={styles.modalFormItem} name="image" label="设备图片" rules={[{ required: true }]}>
+									<Form.Item className={styles.modalFormItem} name="image" label="项目图片" rules={[{ required: true }]}>
 										<Space.Compact className={styles.fullWidth}>
 											<Form.Item name="image" noStyle>
 												<Input placeholder="输入图片外链" />
