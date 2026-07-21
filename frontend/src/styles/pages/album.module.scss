@@ -152,3 +152,11 @@
 .photoPreview {
 	object-fit: contain;
 }
+
+.folder-dropdown {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	margin-right: 8px;
+}
