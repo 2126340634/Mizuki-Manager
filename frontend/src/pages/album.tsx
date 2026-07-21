@@ -364,7 +364,7 @@ export default function Album() {
 			icon: <FolderOutlined />,
 			label: folder.folderName,
 			extra: curFolderPath === folder.folderPath && (
-				<div onClick={(e) => e.stopPropagation()}>
+				<div onClick={(e) => e.stopPropagation()} className={styles['folder-dropdown']}>
 					<Dropdown menu={{ items: dropdownOpts, onClick: dropdownClick }} trigger={['click']}>
 						{<Button loading={loading} icon={<EllipsisOutlined />} type="text" />}
 					</Dropdown>
