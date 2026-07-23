@@ -1,5 +1,12 @@
 # Mizuki Manager
 
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)
+![Ant Design](https://img.shields.io/badge/Ant%20Design-5.0-0170FE?logo=antdesign&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.0-000000?logo=express&logoColor=white)
+![Recast](https://img.shields.io/badge/Recast-0.23-FF6B6B?logo=javascript&logoColor=white)
+
 ## 开源声明
 
 博客开源项目 **Mizuki**，作者 [@matsuzaka-yuki](https://github.com/matsuzaka-yuki)。
