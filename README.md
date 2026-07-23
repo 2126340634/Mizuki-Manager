@@ -176,13 +176,3 @@ Authorization: Bearer <token>
 ### 上传失败或格式错误
 
 请检查文件大小是否超过 20MB，且是否为后端可识别的图片/音频/文档格式。
-
-## 贡献与维护
-
-如果你要扩展服务，请从 `server/routes` 和 `server/managers` 开始：
-
-- `routes` 负责接口定义
-- `managers` 负责业务实现
-- `middlewares` 负责鉴权与通用处理
-
-欢迎按照项目实际需求继续完善 API 文档与前端交互规范。
