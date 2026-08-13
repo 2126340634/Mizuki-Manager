@@ -116,7 +116,9 @@ class BaseManager {
 			// 配置中需要的
 			const pathSet = new Set(pathsInConfig)
 			// 当前目录下存在的
-			const exists = (await fs.promises.readdir(directory)).filter(filename => conditionFunc(filename)).map(filename => path.resolve(directory, filename))
+			const exists = (await fs.promises.readdir(directory))
+				.filter(filename => conditionFunc(filename))
+				.map(filename => path.resolve(directory, filename))
 			// 需要删除的
 			const olds = exists.filter(existPath => !pathSet.has(existPath))
 			const tasks = olds.map(async oldPath => {

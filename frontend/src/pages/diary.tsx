@@ -204,7 +204,11 @@ export default function Diary() {
 
 					<Space>
 						{pageList.length > 0 && (
-							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
+							<Checkbox
+								onChange={onCheckAllChange}
+								indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length}
+								checked={checkedIdxes.size === pageList.length}
+							>
 								全选
 							</Checkbox>
 						)}

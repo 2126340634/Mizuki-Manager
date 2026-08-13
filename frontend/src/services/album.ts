@@ -7,8 +7,10 @@ export const deleteFolder = (folderPath: string) => request.delete({ url: '/mizu
 export const renameFolder = (folderPath: string, newName: string) => request.post({ url: '/mizuki/album/rename', data: { folderPath, newName } })
 
 // 文件操作
-export const getFolderFiles = (folderPath: string, pageNum: number, pageSize: number) => request.get({ url: '/mizuki/album/files', data: { folderPath, pageNum, pageSize } })
-export const uploadAlbumFiles = (folderPath: string, files: File[]) => request.upload({ url: '/mizuki/album/upload-files', files, data: { folderPath } })
+export const getFolderFiles = (folderPath: string, pageNum: number, pageSize: number) =>
+	request.get({ url: '/mizuki/album/files', data: { folderPath, pageNum, pageSize } })
+export const uploadAlbumFiles = (folderPath: string, files: File[]) =>
+	request.upload({ url: '/mizuki/album/upload-files', files, data: { folderPath } })
 export const deleteFiles = (filePaths: string[]) => request.delete({ url: '/mizuki/album/files', data: { filePaths } })
 
 // 配置操作

@@ -15,5 +15,6 @@ module.exports = {
 	TimelineManager: require('./TimelineManager.js'),
 	MusicManager: require('./MusicManager.js'),
 	BuildManager: require('./BuildManager.js'),
-	AuthManager: require('./AuthManager.js')
+	AuthManager: require('./AuthManager.js'),
+	SystemManager: require('./SystemManager.js')
 }

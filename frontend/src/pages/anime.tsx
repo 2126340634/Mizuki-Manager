@@ -277,13 +277,22 @@ export default function Anime() {
 										size="small"
 										cover={
 											<div className={styles.cover} onClick={(e) => e.stopPropagation()}>
-												{anime.cover && <Image loading="lazy" height="100%" width="100%" className={styles.coverImage} src={anime.cover} alt={anime.title} />}
+												{anime.cover && (
+													<Image loading="lazy" height="100%" width="100%" className={styles.coverImage} src={anime.cover} alt={anime.title} />
+												)}
 												<Tag color="black" className={styles.tag}>
 													{anime.year}
 												</Tag>
 												{(() => {
 													const selected = checkedIdxes.has(index)
-													return <Checkbox className={styles.coverCheckbox} style={{ opacity: selected ? 1 : 0.4 }} checked={selected} onChange={(e) => onCheckChange(e, index)} />
+													return (
+														<Checkbox
+															className={styles.coverCheckbox}
+															style={{ opacity: selected ? 1 : 0.4 }}
+															checked={selected}
+															onChange={(e) => onCheckChange(e, index)}
+														/>
+													)
 												})()}
 											</div>
 										}
@@ -313,9 +322,15 @@ export default function Anime() {
 															<StarFilled className={styles.starIcon} />
 															{Number(anime.rating || 0).toFixed(1)}
 														</div>
-														<Typography.Text type="secondary">{anime.status === 'watching' ? '在看' : anime.status === 'completed' ? '看过' : '想看'}</Typography.Text>
+														<Typography.Text type="secondary">
+															{anime.status === 'watching' ? '在看' : anime.status === 'completed' ? '看过' : '想看'}
+														</Typography.Text>
 													</div>
-													<Progress percent={Math.round((anime.progress / anime.totalEpisodes) * 100)} size="small" strokeColor={anime.status === 'completed' ? '#52c41a' : '#1890ff'} />
+													<Progress
+														percent={Math.round((anime.progress / anime.totalEpisodes) * 100)}
+														size="small"
+														strokeColor={anime.status === 'completed' ? '#52c41a' : '#1890ff'}
+													/>
 												</Space>
 											}
 										/>
@@ -388,7 +403,16 @@ export default function Anime() {
 											</Upload>
 										</Space.Compact>
 									</Form.Item>
-									{coverValue && <Image width={screens.md ? 100 : '100%'} height={80} loading="lazy" src={coverValue} alt={coverValue || ''} className={styles.modalCoverImage} />}
+									{coverValue && (
+										<Image
+											width={screens.md ? 100 : '100%'}
+											height={80}
+											loading="lazy"
+											src={coverValue}
+											alt={coverValue || ''}
+											className={styles.modalCoverImage}
+										/>
+									)}
 								</div>
 							</Col>
 							<Col span={24}>
@@ -408,7 +432,13 @@ export default function Anime() {
 							</Col>
 							<Col xs={12} md={8}>
 								<Form.Item className={styles.modalFormItem} name="rating" label="评分 (0-10)" rules={[{ required: true }]}>
-									<InputNumber placeholder="输入番剧评分" min={0} max={10} formatter={(value) => Number(value)?.toFixed(1) || ''} className={styles.fullWidth} />
+									<InputNumber
+										placeholder="输入番剧评分"
+										min={0}
+										max={10}
+										formatter={(value) => Number(value)?.toFixed(1) || ''}
+										className={styles.fullWidth}
+									/>
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>
@@ -427,7 +457,12 @@ export default function Anime() {
 										}
 									]}
 								>
-									<InputNumber placeholder="输入观看集数" min={0} formatter={(value) => Number(value)?.toFixed(0) || ''} className={styles.fullWidth} />
+									<InputNumber
+										placeholder="输入观看集数"
+										min={0}
+										formatter={(value) => Number(value)?.toFixed(0) || ''}
+										className={styles.fullWidth}
+									/>
 								</Form.Item>
 							</Col>
 							<Col xs={12} md={8}>

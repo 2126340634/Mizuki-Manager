@@ -16,9 +16,6 @@ app.use('/mizuki', (req, res, next) => {
 	if (!queryPath) return next()
 
 	const realPath = path.resolve(SAFE_PATH, queryPath.substring(1))
-	// console.log('queryPath为:', queryPath)
-	// console.log('访问完整路径:', realPath)
-	// console.log('项目安全根路径:', SAFE_PATH)
 
 	// 防止越出项目根目录访问
 	if (!realPath.startsWith(SAFE_PATH)) {
@@ -49,6 +46,7 @@ mizukiRouter.use('/skill', routes.skill)
 mizukiRouter.use('/timeline', routes.timeline)
 mizukiRouter.use('/music', routes.music)
 mizukiRouter.use('/builder', routes.builder)
+mizukiRouter.use('/system', routes.system)
 
 // 404
 mizukiRouter.use((req, res) => {

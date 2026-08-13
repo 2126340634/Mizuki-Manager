@@ -175,7 +175,11 @@ export default function Friend() {
 
 					<Space>
 						{pageList.length > 0 && (
-							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
+							<Checkbox
+								onChange={onCheckAllChange}
+								indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length}
+								checked={checkedIdxes.size === pageList.length}
+							>
 								全选
 							</Checkbox>
 						)}
@@ -287,7 +291,11 @@ export default function Friend() {
 								<div className={styles.modalImageWrapper}>
 									<Form.Item name="imgurl" label="图标链接" rules={[{ required: true }]} className={styles.modalFormItem}>
 										<Space.Compact className={styles.fullWidth}>
-											<Input value={imgUrlValue} placeholder="请输入站点提供的图标外链" onChange={(e) => form.setFieldsValue({ imgurl: e.target.value })} />
+											<Input
+												value={imgUrlValue}
+												placeholder="请输入站点提供的图标外链"
+												onChange={(e) => form.setFieldsValue({ imgurl: e.target.value })}
+											/>
 										</Space.Compact>
 									</Form.Item>
 									{imgUrlValue && <Avatar shape="square" src={imgUrlValue} className={styles.modalAvatar} />}

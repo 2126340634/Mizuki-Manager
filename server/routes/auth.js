@@ -21,4 +21,10 @@ router.post('/verify', (req, res) => {
 	res.status(result.code).json(result)
 })
 
+router.post('/refresh-token', (req, res) => {
+	const { refreshToken } = req?.body || {}
+	const result = am.refreshToken(refreshToken)
+	res.status(result.code).json(result)
+})
+
 module.exports = router

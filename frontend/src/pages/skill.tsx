@@ -245,7 +245,11 @@ export default function Skill() {
 
 					<Space className={styles.actionBar}>
 						{pageList.length > 0 && (
-							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
+							<Checkbox
+								onChange={onCheckAllChange}
+								indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length}
+								checked={checkedIdxes.size === pageList.length}
+							>
 								全选
 							</Checkbox>
 						)}
@@ -356,7 +360,11 @@ export default function Skill() {
 					mask={{ closable: false }}
 					destroyOnHidden
 				>
-					<Form form={form} layout="vertical" initialValues={{ category: 'frontend', level: 'beginner', experienceYears: 0, experienceMonths: 0, color: '#1890ff' }}>
+					<Form
+						form={form}
+						layout="vertical"
+						initialValues={{ category: 'frontend', level: 'beginner', experienceYears: 0, experienceMonths: 0, color: '#1890ff' }}
+					>
 						<Form.Item name="id" hidden>
 							<Input />
 						</Form.Item>

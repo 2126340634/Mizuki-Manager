@@ -134,7 +134,6 @@ class BuildManager {
 		// 监听输出
 		this.childProcess.stdout.on('data', data => {
 			const cbData = data.toString()
-			console.log(cbData)
 			this.execCallback('log', {
 				log: cbData
 			})
@@ -147,7 +146,6 @@ class BuildManager {
 		// 监听错误
 		this.childProcess.stderr.on('data', data => {
 			const cbData = data.toString()
-			console.error(cbData)
 			this.execCallback('log', {
 				log: `[Error] ${cbData}`
 			}) // 这边不能直接error回调，不然前端直接断连了

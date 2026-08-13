@@ -214,7 +214,11 @@ export default function Device() {
 
 					<Space>
 						{pageList.length > 0 && (
-							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
+							<Checkbox
+								onChange={onCheckAllChange}
+								indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length}
+								checked={checkedIdxes.size === pageList.length}
+							>
 								全选
 							</Checkbox>
 						)}
@@ -244,7 +248,12 @@ export default function Device() {
 												<Tag color="black" className={styles.tag}>
 													{item.category}
 												</Tag>
-												<Checkbox className={styles.coverCheckbox} style={{ opacity: checkedIdxes.has(index) ? 1 : 0.4 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
+												<Checkbox
+													className={styles.coverCheckbox}
+													style={{ opacity: checkedIdxes.has(index) ? 1 : 0.4 }}
+													checked={checkedIdxes.has(index)}
+													onChange={(e) => onCheckChange(e, index)}
+												/>
 											</div>
 										}
 										actions={[

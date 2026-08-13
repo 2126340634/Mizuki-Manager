@@ -15,5 +15,6 @@ module.exports = {
 	timeline: require('./timeline.js'),
 	music: require('./music.js'),
 	builder: require('./builder.js'),
-	auth: require('./auth.js')
+	auth: require('./auth.js'),
+	system: require('./system.js')
 }
