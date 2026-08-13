@@ -15,7 +15,36 @@ interface UploadParams {
 	data?: Record<string, any>
 }
 
-const request = async (params: RequestParams) => {
+// 公共刷新token方法
+export const refreshToken = async () => {
+	const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken')
+	if (!refreshToken) {
+		redirectToLogin() // 刷新token不存在，需要重新登录
+		return
+	}
+	try {
+		const res = await fetch('/mizuki/auth/refresh-token', {
+			method: 'POST',
+			body: JSON.stringify({ refreshToken }),
+			headers: { 'Content-Type': 'application/json' }
+		})
+		const resJson = await res.json()
+		if (!res.ok || resJson.code !== 200) throw resJson
+		const newToken = resJson.data.token
+		localStorage.setItem('token', newToken)
+		sessionStorage.setItem('token', newToken)
+		return true // 刷新成功
+	} catch (err: any) {
+		if (err.code === 401) {
+			redirectToLogin() // 长token过期，重新登录
+			return
+		}
+		_handleError(err)
+		return false // 刷新失败
+	}
+}
+
+const request = async (params: RequestParams, retried?: boolean): Promise<any> => {
 	let { url, method = 'GET', data, headers = {} } = params
 	const token = localStorage.getItem('token') || sessionStorage.getItem('token')
 	if (token) {
@@ -29,14 +58,14 @@ const request = async (params: RequestParams) => {
 	}
 	try {
 		const res = await fetch(url, { method, body, headers: { 'Content-Type': 'application/json', ...headers } })
-		return await _handleResponse(res)
+		return await _handleResponse(res, request, params, retried)
 	} catch (err: any) {
 		_handleError(err)
 		throw err
 	}
 }
 
-request.upload = async (params: UploadParams) => {
+request.upload = async (params: UploadParams, retried?: boolean) => {
 	let { url, file, files, data } = params
 	const token = localStorage.getItem('token')
 	const headers: Record<string, string> = {}
@@ -59,7 +88,7 @@ request.upload = async (params: UploadParams) => {
 			body: fd,
 			headers
 		})
-		return await _handleResponse(res)
+		return await _handleResponse(res, request.upload, params, retried)
 	} catch (err: any) {
 		_handleError(err)
 		throw err
@@ -67,11 +96,22 @@ request.upload = async (params: UploadParams) => {
 }
 
 // 成功响应
-async function _handleResponse(res: Response) {
+async function _handleResponse(
+	res: Response,
+	retryFunc?: (params: RequestParams | UploadParams, retried?: boolean) => Promise<any>,
+	params?: RequestParams | UploadParams,
+	retried?: boolean
+) {
 	const resJson = await res.json()
 	if (resJson.code === 401) {
-		redirectToLogin()
-		throw resJson
+		if (retried) throw resJson // 已经重试过了，仍然401，直接抛出异常
+		const success = await refreshToken() // 刷新token
+		// 重试请求
+		if (success && retryFunc && params) {
+			return await retryFunc(params, true)
+		} else {
+			throw resJson
+		}
 	}
 	if (!res.ok || resJson.code !== 200) throw resJson
 	return resJson

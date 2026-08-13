@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const { JWT_SECRET, JWT_EXPIRES_IN, USERNAME, PASSWORD } = require('../config.js')
 const svgCaptcha = require('svg-captcha')
 const CAPTCHA_EXPIRE = 24 * 60 * 60 * 1000 // 验证码取消间隔
+const TOKEN_EXPIRE = '15m' // 短token有效期
 const LRUCache = require('../utils/LRUCache.js')
 
 class AuthManager {
@@ -117,18 +118,19 @@ class AuthManager {
 					},
 					JWT_SECRET,
 					{
-						expiresIn: JWT_EXPIRES_IN
+						expiresIn: TOKEN_EXPIRE // 短token有效期
 					}
 				)
-				return {
-					code: 200,
-					success: true,
-					message: '登录成功',
-					data: {
-						token,
-						expiresIn: JWT_EXPIRES_IN
+				const refreshToken = jwt.sign(
+					{
+						username
+					},
+					JWT_SECRET,
+					{
+						expiresIn: JWT_EXPIRES_IN // 长token有效期
 					}
-				}
+				)
+				return { code: 200, success: true, data: { token, refreshToken } }
 			}
 			// 账号密码错误
 			const newFailCount = current.failCount + 1 // 提前一次拿到验证码
@@ -170,6 +172,24 @@ class AuthManager {
 			return { code: 200, success: true }
 		} catch {
 			return { code: 401, success: false, message: '登录凭证无效' }
+		}
+	}
+	refreshToken(refreshToken) {
+		if (!refreshToken) return { code: 401, success: false, message: '请先登录' }
+		try {
+			const decoded = jwt.verify(refreshToken, JWT_SECRET)
+			const newToken = jwt.sign(
+				{
+					username: decoded.username
+				},
+				JWT_SECRET,
+				{
+					expiresIn: TOKEN_EXPIRE // 新的短token有效期
+				}
+			)
+			return { code: 200, success: true, data: { token: newToken } }
+		} catch {
+			return { code: 401, success: false, message: '刷新凭证无效，请重新登录' }
 		}
 	}
 }

@@ -36,7 +36,14 @@ export default function App() {
 					</Sider>
 				) : (
 					/* 移动端 */
-					<Drawer title="功能导航" placement="left" onClose={() => setDrawerVisible(false)} open={drawerVisible} size="fit-content" styles={{ body: { padding: 0, margin: 0 } }}>
+					<Drawer
+						title="功能导航"
+						placement="left"
+						onClose={() => setDrawerVisible(false)}
+						open={drawerVisible}
+						size="fit-content"
+						styles={{ body: { padding: 0, margin: 0 } }}
+					>
 						<SidebarMenu menuClick={handleMenuClick} />
 					</Drawer>
 				))}

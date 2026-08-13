@@ -32,7 +32,17 @@ import {
 } from 'antd'
 import { FolderOutlined, UploadOutlined, EditOutlined, PlusOutlined, FolderOpenOutlined, DeleteOutlined, EllipsisOutlined } from '@ant-design/icons'
 import styles from '../styles/pages/album.module.scss'
-import { getFolders, createFolder, deleteFolder, getFolderFiles, uploadAlbumFiles, deleteFiles, getInfo, updateInfo, renameFolder } from '../services/album'
+import {
+	getFolders,
+	createFolder,
+	deleteFolder,
+	getFolderFiles,
+	uploadAlbumFiles,
+	deleteFiles,
+	getInfo,
+	updateInfo,
+	renameFolder
+} from '../services/album'
 import dayjs from 'dayjs'
 import { formatTime, throttle } from '../utils/util'
 import { imageAccept } from '../configs/uploadConfig'
@@ -400,7 +410,14 @@ export default function Album() {
 				</Sider>
 			) : (
 				/* 移动端 */
-				<Drawer title="目录列表" placement="left" onClose={() => setDrawerVisible(false)} open={drawerVisible} size="80%" classNames={{ body: styles.drawerBody }}>
+				<Drawer
+					title="目录列表"
+					placement="left"
+					onClose={() => setDrawerVisible(false)}
+					open={drawerVisible}
+					size="80%"
+					classNames={{ body: styles.drawerBody }}
+				>
 					<FolderMenu />
 				</Drawer>
 			)}
@@ -410,8 +427,17 @@ export default function Album() {
 					{/* 顶部标题与操作栏 */}
 					<div className={styles.toolbar}>
 						<div>
-							{!screens.lg && <Button loading={loading} className={styles['toolbar-directory']} icon={<FolderOpenOutlined />} onClick={() => setDrawerVisible(true)} />}
-							<Typography.Title level={4}>{folders.find((folder) => folder.folderPath === curFolderPath)?.folderName || '选择相册目录'}</Typography.Title>
+							{!screens.lg && (
+								<Button
+									loading={loading}
+									className={styles['toolbar-directory']}
+									icon={<FolderOpenOutlined />}
+									onClick={() => setDrawerVisible(true)}
+								/>
+							)}
+							<Typography.Title level={4}>
+								{folders.find((folder) => folder.folderPath === curFolderPath)?.folderName || '选择相册目录'}
+							</Typography.Title>
 							{curFolderPath && (
 								<Alert
 									className={styles.alert}
@@ -472,7 +498,9 @@ export default function Album() {
 										size="small"
 										cover={
 											<div className={styles.cover} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-												{file.url && <Image loading="lazy" width="100%" height="100%" className={styles.coverImage} alt={file.filename} src={file.url} />}
+												{file.url && (
+													<Image loading="lazy" width="100%" height="100%" className={styles.coverImage} alt={file.filename} src={file.url} />
+												)}
 											</div>
 										}
 										actions={[<Checkbox checked={checkedPaths.has(file.filePath)} onChange={(e) => onCheckChange(e, file.filePath)} />]}
@@ -649,7 +677,13 @@ export default function Album() {
 																				<Col xs={src ? 16 : 24}>
 																					<Row gutter={[0, 12]}>
 																						<Col xs={24}>
-																							<Form.Item {...restField} name={[name, 'src']} label="图片链接" className={styles.photoFormItem} rules={[{ required: index > 0 }]}>
+																							<Form.Item
+																								{...restField}
+																								name={[name, 'src']}
+																								label="图片链接"
+																								className={styles.photoFormItem}
+																								rules={[{ required: index > 0 }]}
+																							>
 																								<Input placeholder="输入图片URL" />
 																							</Form.Item>
 																						</Col>

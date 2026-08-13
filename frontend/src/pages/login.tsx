@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import styles from '../styles/pages/login.module.scss'
 import { login, refreshCaptchaBase64 } from '../services/auth'
 import { defaultTheme } from '../configs/styleConfig'
+import { formatTimeDisplay } from '../utils/util'
 
 interface LoginInput {
 	username: string
@@ -28,12 +29,13 @@ export default function Login() {
 	const handleLogin = async (values: LoginInput) => {
 		try {
 			setLoading(true)
-			const { remember, ...rest } = values
-			const res = await login(rest)
-			const token = res.data.token
-			if (token) {
+			const res = await login(values)
+			const { token, refreshToken } = res.data || {}
+			if (token && refreshToken) {
 				sessionStorage.setItem('token', token)
-				if (remember) localStorage.setItem('token', token)
+				sessionStorage.setItem('refreshToken', refreshToken)
+				localStorage.setItem('token', token)
+				localStorage.setItem('refreshToken', refreshToken)
 			} else throw new Error('未从登录响应中获取凭证信息')
 			navigate('/')
 			msgApi.success('欢迎回来')
@@ -89,16 +91,25 @@ export default function Login() {
 						)}
 						<Form.Item>
 							<div className={styles.options}>
-								<Form.Item name="remember" valuePropName="checked" noStyle>
-									<Checkbox>记住我</Checkbox>
-								</Form.Item>
-								<a style={{ color: themeColor }} className={styles.forgotLink} onClick={() => msgApi.warning('默认账号密码在 .env 环境变量配置文件中更改')}>
+								<a
+									style={{ color: themeColor }}
+									className={styles.forgotLink}
+									onClick={() => msgApi.warning('默认账号密码在 .env 环境变量配置文件中更改')}
+								>
 									忘记密码？
 								</a>
+								<div className={styles['option-label']}>登录有效期: {formatTimeDisplay(process.env.TOKEN_EXPIRES_IN || '')}</div>
 							</div>
 						</Form.Item>
 						<Form.Item>
-							<Button htmlType="submit" type="primary" block loading={loading} className={styles.submitBtn} style={{ backgroundColor: themeColor, borderColor: themeColor, margin: 0 }}>
+							<Button
+								htmlType="submit"
+								type="primary"
+								block
+								loading={loading}
+								className={styles.submitBtn}
+								style={{ backgroundColor: themeColor, borderColor: themeColor, margin: 0 }}
+							>
 								登 录
 							</Button>
 						</Form.Item>

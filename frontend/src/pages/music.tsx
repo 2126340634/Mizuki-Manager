@@ -136,7 +136,6 @@ export default function Music() {
 		try {
 			setLoading(true)
 			const res = await uploadCoverFile(file)
-			console.log(res)
 			if (res.success) {
 				msgApi.success('上传成功')
 				form.setFieldsValue({ cover: res.data?.[0]?.publicPath || '' })
@@ -219,7 +218,11 @@ export default function Music() {
 
 						<Space className={styles.actionBar}>
 							{pageList.length > 0 && (
-								<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
+								<Checkbox
+									onChange={onCheckAllChange}
+									indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length}
+									checked={checkedIdxes.size === pageList.length}
+								>
 									全选
 								</Checkbox>
 							)}
@@ -262,7 +265,12 @@ export default function Music() {
 												</a>
 											]}
 										>
-											<Checkbox className={styles.cardCheckbox} style={{ opacity: checkedIdxes.has(index) ? 1 : 0.4 }} checked={checkedIdxes.has(index)} onChange={(e) => onCheckChange(e, index)} />
+											<Checkbox
+												className={styles.cardCheckbox}
+												style={{ opacity: checkedIdxes.has(index) ? 1 : 0.4 }}
+												checked={checkedIdxes.has(index)}
+												onChange={(e) => onCheckChange(e, index)}
+											/>
 											<Card.Meta
 												title={item.title}
 												description={
@@ -345,7 +353,9 @@ export default function Music() {
 												</Upload>
 											</Space.Compact>
 										</Form.Item>
-										{coverUrlValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} className={styles.modalImage} src={coverUrlValue} />}
+										{coverUrlValue && (
+											<Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} className={styles.modalImage} src={coverUrlValue} />
+										)}
 									</div>
 								</Col>
 								<Col span={24}>

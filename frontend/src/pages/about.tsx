@@ -124,7 +124,13 @@ export default function About() {
 						</Popconfirm>
 					)}
 				</div>
-				<Input.TextArea value={content} onChange={onInputChange} autoSize={{ minRows: 25 }} className={styles.editorTextarea} placeholder="输入关于内容" />
+				<Input.TextArea
+					value={content}
+					onChange={onInputChange}
+					autoSize={{ minRows: 25 }}
+					className={styles.editorTextarea}
+					placeholder="输入关于内容"
+				/>
 			</Spin>
 		</Card>
 	)

@@ -243,7 +243,15 @@ const CustomList: React.FC<{
 	)
 }
 
-const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemRender, addButtonText = '添加', emptyText = '暂无数据', modalTitle = '编辑项', modalFields }) => {
+const EditableList: React.FC<EditableListProps> = ({
+	value = [],
+	onChange,
+	itemRender,
+	addButtonText = '添加',
+	emptyText = '暂无数据',
+	modalTitle = '编辑项',
+	modalFields
+}) => {
 	const [modalVisible, setModalVisible] = useState(false)
 	const [editingIndex, setEditingIndex] = useState<number | null>(null)
 	const [form] = Form.useForm()
@@ -316,7 +324,15 @@ const EditableList: React.FC<EditableListProps> = ({ value = [], onChange, itemR
 			<Button type="dashed" block icon={<PlusOutlined />} onClick={handleAdd} className={styles.addButton}>
 				{addButtonText}
 			</Button>
-			<Modal destroyOnHidden mask={{ closable: false }} title={modalTitle} open={modalVisible} onOk={handleOk} onCancel={() => setModalVisible(false)} width={600}>
+			<Modal
+				destroyOnHidden
+				mask={{ closable: false }}
+				title={modalTitle}
+				open={modalVisible}
+				onOk={handleOk}
+				onCancel={() => setModalVisible(false)}
+				width={600}
+			>
 				<Form form={form} layout="vertical">
 					{modalFields?.(form, iconValue)}
 				</Form>
@@ -365,7 +381,12 @@ const StringListEditor: React.FC<{
 			<Space.Compact className={styles.fullWidth}>
 				<Input value={inputVal} onChange={(e) => setInputVal(e.target.value)} placeholder="输入内容后添加" />
 				{imageMode && (
-					<Upload accept={imageAccept} beforeUpload={(file: File, fileList: File[]) => uploadImage(file, fileList, (urls) => uploadItem(urls))} showUploadList={false} multiple>
+					<Upload
+						accept={imageAccept}
+						beforeUpload={(file: File, fileList: File[]) => uploadImage(file, fileList, (urls) => uploadItem(urls))}
+						showUploadList={false}
+						multiple
+					>
 						<Button>
 							<UploadOutlined />
 							<span>上传</span>
@@ -1459,7 +1480,10 @@ export default function Config() {
 					</div>
 
 					<Form form={form} layout="vertical" onValuesChange={() => debouncedSaveDraft(form.getFieldsValue(true))} initialValues={defaultValues}>
-						<Collapse className={styles.collapse} items={collapseItems(uploadHomeImg, uploadAvatar, uploadPCWallpaperImages, uploadMobileWallpaperImages)} />
+						<Collapse
+							className={styles.collapse}
+							items={collapseItems(uploadHomeImg, uploadAvatar, uploadPCWallpaperImages, uploadMobileWallpaperImages)}
+						/>
 					</Form>
 				</Spin>
 			</Card>

@@ -235,7 +235,11 @@ export default function Timeline() {
 
 					<Space className={styles.actionBar}>
 						{pageList.length > 0 && (
-							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
+							<Checkbox
+								onChange={onCheckAllChange}
+								indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length}
+								checked={checkedIdxes.size === pageList.length}
+							>
 								全选
 							</Checkbox>
 						)}
@@ -460,7 +464,10 @@ export default function Timeline() {
 									className={styles.modalFormItem}
 								>
 									<Form.Item name="icon" noStyle>
-										<Input placeholder="例如: material-symbols:school" suffix={iconValue ? <Icon icon={iconValue} width={20} height={20} /> : <span />} />
+										<Input
+											placeholder="例如: material-symbols:school"
+											suffix={iconValue ? <Icon icon={iconValue} width={20} height={20} /> : <span />}
+										/>
 									</Form.Item>
 								</Form.Item>
 							</Col>
@@ -486,13 +493,29 @@ export default function Timeline() {
 										<>
 											{fields.map((field) => (
 												<div key={field.key} className={styles.linkRow}>
-													<Form.Item key={`name-${field.key}`} name={[field.name, 'name']} rules={[{ required: true, message: '请输入名称' }]} className={styles.linkNameInput}>
+													<Form.Item
+														key={`name-${field.key}`}
+														name={[field.name, 'name']}
+														rules={[{ required: true, message: '请输入名称' }]}
+														className={styles.linkNameInput}
+													>
 														<Input placeholder="名称" />
 													</Form.Item>
-													<Form.Item key={`url-${field.key}`} name={[field.name, 'url']} rules={[{ required: true, message: '请输入链接地址' }]} className={styles.linkUrlInput}>
+													<Form.Item
+														key={`url-${field.key}`}
+														name={[field.name, 'url']}
+														rules={[{ required: true, message: '请输入链接地址' }]}
+														className={styles.linkUrlInput}
+													>
 														<Input placeholder="链接地址" />
 													</Form.Item>
-													<Form.Item key={`type-${field.key}`} name={[field.name, 'type']} rules={[{ required: true, message: '请选择类型' }]} className={styles.linkTypeSelect} initialValue="other">
+													<Form.Item
+														key={`type-${field.key}`}
+														name={[field.name, 'type']}
+														rules={[{ required: true, message: '请选择类型' }]}
+														className={styles.linkTypeSelect}
+														initialValue="other"
+													>
 														<Select
 															options={[
 																{ label: '网站', value: 'website' },

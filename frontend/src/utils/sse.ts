@@ -1,6 +1,8 @@
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { message } from 'antd'
 import { redirectToLogin } from './util'
+import { refreshToken } from './request'
+import { RefObject } from 'react'
 type MethodType = 'GET' | 'POST' | 'PUT' | 'DELETE'
 interface SSEParams {
 	url: string
@@ -11,6 +13,7 @@ interface SSEParams {
 	onMessage: (data: any) => void
 	onDone?: (data: any) => void
 	onError?: (data: any) => void
+	controllerRef?: RefObject<AbortController> // 外部传入的AbortController引用,用于外部中断请求
 }
 interface Data {
 	code: number
@@ -18,12 +21,15 @@ interface Data {
 	message: string
 }
 
-export const createSSE = (params: SSEParams) => {
-	const { url, method = 'POST', headers = {}, body, openWhenHidden = true, onMessage, onDone = () => {}, onError = () => {} } = params
-	const ctrl = new AbortController()
+export const createSSE = (params: SSEParams, retryCount: number = 0) => {
+	const { url, method = 'POST', headers = {}, body, openWhenHidden = true, onMessage, onDone = () => {}, onError = () => {}, controllerRef } = params
 	const token = localStorage.getItem('token') || sessionStorage.getItem('token')
 	if (token) {
 		headers['Authorization'] = `Bearer ${token}`
+	}
+	const ctrl = new AbortController()
+	if (controllerRef) {
+		controllerRef.current = ctrl
 	}
 	fetchEventSource(url, {
 		method,
@@ -35,17 +41,25 @@ export const createSSE = (params: SSEParams) => {
 			const contentType = res.headers.get('Content-Type')
 			// 401返回json结果
 			if (res.status === 401) {
-				const errData = await res.json()
-				redirectToLogin()
-				message.error(errData.message || '请先登录')
-				ctrl.abort()
+				// 最多刷新重试3次
+				if (retryCount >= 3) {
+					message.error('登录刷新失败，请稍后重试')
+					redirectToLogin() // 已经重试过了，仍然401，直接跳转登录页
+					controllerRef?.current.abort()
+					return
+				}
+				const success = await refreshToken() // 刷新token
+				if (success) {
+					controllerRef?.current.abort()
+					createSSE(params, retryCount + 1) // 刷新成功，重新发起请求
+				}
 				return
 			}
 			// 响应失败或格式为json
 			if (!res.ok || contentType?.includes('application/json')) {
 				const errData = await res.json()
 				onError(errData)
-				ctrl.abort()
+				controllerRef?.current.abort()
 				return
 			}
 		},
@@ -54,12 +68,12 @@ export const createSSE = (params: SSEParams) => {
 			const data: Data = JSON.parse(msg.data)
 			if (data.success === true) {
 				onDone(data)
-				ctrl.abort()
+				controllerRef?.current.abort()
 				return
 			}
 			if (data.success === false) {
 				onError(data)
-				ctrl.abort()
+				controllerRef?.current.abort()
 				return
 			}
 			onMessage(data)
@@ -69,5 +83,4 @@ export const createSSE = (params: SSEParams) => {
 			message.error(err.message || '连接异常')
 		}
 	})
-	return ctrl
 }

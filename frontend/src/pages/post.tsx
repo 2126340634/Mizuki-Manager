@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Card, Input, Button, Upload, message, Space, Typography, Spin, Popconfirm, Table, Tooltip } from 'antd'
-import { SaveOutlined, UploadOutlined, FileTextOutlined, ReloadOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import {
+	SaveOutlined,
+	UploadOutlined,
+	FileTextOutlined,
+	ReloadOutlined,
+	PlusOutlined,
+	EditOutlined,
+	DeleteOutlined,
+	EyeOutlined
+} from '@ant-design/icons'
 import { getAllPosts, getPostContent, updatePost, createPost, uploadPostFile, deletePost, renamePost } from '../services/post'
 import { debounce, throttle } from '../utils/util'
 import { usePostContentDB } from '../hooks/usePostContentDB'
@@ -318,7 +327,8 @@ function PostEditor(props: PostEditorProps) {
 		<Card
 			title={
 				<span className={styles.cardTitle}>
-					<FileTextOutlined /> {isNewRef.current ? '新建文章' : `${isEditingRef.current ? '编辑' : '查看'} ${filenameRef.current?.replace('.md', '')}`}
+					<FileTextOutlined />{' '}
+					{isNewRef.current ? '新建文章' : `${isEditingRef.current ? '编辑' : '查看'} ${filenameRef.current?.replace('.md', '')}`}
 				</span>
 			}
 			className={styles.card}

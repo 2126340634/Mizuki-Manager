@@ -144,3 +144,31 @@ export const formatTime = (date: Date): string => {
 	const day = date.getDate().toString().padStart(2, '0')
 	return `${year}-${month}-${day}`
 }
+
+// 格式化字节数为GB
+export const formatBytes = (bytes?: number) => {
+	if (!bytes) return '-'
+	return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`
+}
+
+// 格式化运行时长
+export const formatUptime = (seconds?: number) => {
+	if (!seconds) return '-'
+	const days = Math.floor(seconds / 86400)
+	const hours = Math.floor((seconds % 86400) / 3600)
+	const minutes = Math.floor((seconds % 3600) / 60)
+	return `${days} 天 ${hours} 小时 ${minutes} 分`
+}
+
+// 格式化时间显示格式
+export const formatTimeDisplay = (date: string): string => {
+	if (!date) return '-'
+	const endChar = date.charAt(date.length - 1).toLowerCase()
+	if (endChar === 'y') return `${date.slice(0, -1)}年`
+	if (endChar === 'w') return `${date.slice(0, -1)}周`
+	if (endChar === 'd') return `${date.slice(0, -1)}天`
+	if (endChar === 'h') return `${date.slice(0, -1)}小时`
+	if (endChar === 'm') return `${date.slice(0, -1)}分钟`
+	if (endChar === 's') return `${date.slice(0, -1)}秒`
+	return date
+}

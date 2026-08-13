@@ -22,7 +22,7 @@ export default function Builder() {
 	const [loading, setLoading] = useState(false)
 	const [log, setLog] = useState<string>('')
 	const logEndRef = useRef<HTMLDivElement>(null)
-	const ctrlRef = useRef<AbortController>(null)
+	const ctrlRef = useRef<AbortController>(new AbortController())
 	const inited = useRef<boolean>(false) // 是否已初始化
 	const hasSynced = useRef<boolean>(false) // 是否已同步服务器部署状态
 
@@ -46,7 +46,7 @@ export default function Builder() {
 			if (!hasSynced.current) {
 				hasSynced.current = true
 				ctrlRef?.current?.abort() // 断开旧连接
-				ctrlRef.current = syncDeployStatus(_sseCallback)
+				syncDeployStatus(_sseCallback, ctrlRef)
 			}
 		}
 
@@ -89,7 +89,7 @@ export default function Builder() {
 	const handleDeploy = () => {
 		if (loading) return
 		ctrlRef?.current?.abort()
-		ctrlRef.current = deployProjectSSE(_sseCallback)
+		deployProjectSSE(_sseCallback, ctrlRef)
 	}
 
 	// 清除日志数据库
@@ -155,12 +155,26 @@ export default function Builder() {
 							</Button>
 						</Popconfirm>
 					)}
-					<Popconfirm placement="bottom" title="确定终止部署进程吗？" description="如遇到执行异常等情况可终止后重新部署" okText="确定" cancelText="取消" onConfirm={cancelDeploy}>
+					<Popconfirm
+						placement="bottom"
+						title="确定终止部署进程吗？"
+						description="如遇到执行异常等情况可终止后重新部署"
+						okText="确定"
+						cancelText="取消"
+						onConfirm={cancelDeploy}
+					>
 						<Button danger icon={<SyncOutlined />}>
 							终止进程
 						</Button>
 					</Popconfirm>
-					<Popconfirm placement="bottom" title="确定执行部署吗？" description="重新构建通常需要几十秒" okText="确定" cancelText="取消" onConfirm={handleDeploy}>
+					<Popconfirm
+						placement="bottom"
+						title="确定执行部署吗？"
+						description="重新构建通常需要几十秒"
+						okText="确定"
+						cancelText="取消"
+						onConfirm={handleDeploy}
+					>
 						<Button type="primary" icon={<SyncOutlined spin={loading} />} loading={loading}>
 							一键部署
 						</Button>

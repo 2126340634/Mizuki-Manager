@@ -218,7 +218,11 @@ export default function Project() {
 
 					<Space className={styles.actionBar}>
 						{pageList.length > 0 && (
-							<Checkbox onChange={onCheckAllChange} indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length} checked={checkedIdxes.size === pageList.length}>
+							<Checkbox
+								onChange={onCheckAllChange}
+								indeterminate={checkedIdxes.size > 0 && checkedIdxes.size < pageList.length}
+								checked={checkedIdxes.size === pageList.length}
+							>
 								全选
 							</Checkbox>
 						)}
@@ -279,7 +283,10 @@ export default function Project() {
 											}
 										/>
 										<Space wrap size={[4, 0]} className={styles.tagSpace}>
-											<Tag color={item.status === 'completed' ? 'green' : item.status === 'in-progress' ? 'gold' : 'default'} className={styles.statusTag}>
+											<Tag
+												color={item.status === 'completed' ? 'green' : item.status === 'in-progress' ? 'gold' : 'default'}
+												className={styles.statusTag}
+											>
 												{item.status === 'completed' ? '已完成' : item.status === 'in-progress' ? '进行中' : '计划中'}
 											</Tag>
 											{item.techStack?.map((tech) => (
@@ -373,7 +380,9 @@ export default function Project() {
 											</Upload>
 										</Space.Compact>
 									</Form.Item>
-									{imageUrlValue && <Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} className={styles.modalImage} src={imageUrlValue} />}
+									{imageUrlValue && (
+										<Image loading="lazy" width={screens.md ? 70 : '100%'} height={70} className={styles.modalImage} src={imageUrlValue} />
+									)}
 								</div>
 							</Col>
 							<Col xs={24} md={12}>
