@@ -1,7 +1,7 @@
 const config = require('../config')
 const BaseManager = require('./BaseManager')
 const path = require('path')
-const { isImage, isObject, isMusic } = require('../utils/Util')
+const { isImage, isObject, isMusic } = require('../utils/util')
 
 class ProjectManager extends BaseManager {
 	constructor() {

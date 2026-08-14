@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import styles from '../styles/pages/login.module.scss'
 import { login, refreshCaptchaBase64 } from '../services/auth'
-import { defaultTheme } from '../configs/styleConfig'
+import { defaultTheme } from '../configs/style-config'
 import { formatTimeDisplay } from '../utils/util'
 
 interface LoginInput {
@@ -30,15 +30,13 @@ export default function Login() {
 		try {
 			setLoading(true)
 			const res = await login(values)
-			const { token, refreshToken } = res.data || {}
-			if (token && refreshToken) {
+			const { token } = res.data || {}
+			if (token) {
 				sessionStorage.setItem('token', token)
-				sessionStorage.setItem('refreshToken', refreshToken)
 				localStorage.setItem('token', token)
-				localStorage.setItem('refreshToken', refreshToken)
-			} else throw new Error('未从登录响应中获取凭证信息')
-			navigate('/')
-			msgApi.success('欢迎回来')
+				navigate('/')
+				msgApi.success('欢迎回来')
+			}
 		} catch (err: any) {
 			// 验证码
 			if (err.data?.captchaBase64) setCaptchaBase64(err.data.captchaBase64)

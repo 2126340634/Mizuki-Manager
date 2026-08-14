@@ -1,7 +1,7 @@
 const config = require('../config')
 const BaseManager = require('./BaseManager')
 const path = require('path')
-const { isImage, isObject } = require('../utils/Util')
+const { isImage, isObject } = require('../utils/util')
 
 class AnimeManager extends BaseManager {
 	constructor() {

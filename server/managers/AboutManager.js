@@ -1,5 +1,5 @@
 const config = require('../config.js')
-const { readFile, fileExists, writeFile } = require('../utils/Util.js')
+const { readFile, fileExists, writeFile } = require('../utils/util.js')
 const path = require('path')
 
 class AboutManager {

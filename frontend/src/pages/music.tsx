@@ -29,7 +29,7 @@ import { getMusicConfig, writeMusicConfig, uploadCoverFile, uploadMusicFile } fr
 import { throttle } from '../utils/util'
 import styles from '../styles/pages/music.module.scss'
 import { Content } from 'antd/es/layout/layout'
-import { imageAccept, audioAccept } from '../configs/uploadConfig'
+import { imageAccept, audioAccept } from '../configs/upload-config'
 
 const { useBreakpoint } = Grid
 

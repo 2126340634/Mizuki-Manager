@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
-import { managerList } from '../configs/managerConfig'
+import { managerList } from '../configs/manager-config'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState, updateSelect } from '../stores'

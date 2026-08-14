@@ -15,18 +15,12 @@ interface UploadParams {
 	data?: Record<string, any>
 }
 
-// 公共刷新token方法
+// 公共刷新短token方法
 export const refreshToken = async () => {
-	const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken')
-	if (!refreshToken) {
-		redirectToLogin() // 刷新token不存在，需要重新登录
-		return
-	}
 	try {
 		const res = await fetch('/mizuki/auth/refresh-token', {
 			method: 'POST',
-			body: JSON.stringify({ refreshToken }),
-			headers: { 'Content-Type': 'application/json' }
+			credentials: 'include' // 长token在cookie中，自动携带
 		})
 		const resJson = await res.json()
 		if (!res.ok || resJson.code !== 200) throw resJson
@@ -36,7 +30,7 @@ export const refreshToken = async () => {
 		return true // 刷新成功
 	} catch (err: any) {
 		if (err.code === 401) {
-			redirectToLogin() // 长token过期，重新登录
+			await redirectToLogin() // 长token过期，重新登录
 			return
 		}
 		_handleError(err)
@@ -117,10 +111,15 @@ async function _handleResponse(
 	return resJson
 }
 
+// 不提示的状态码
+const NO_MESSAGE_CODE = [601]
+
 // 失败响应
 function _handleError(err: any) {
-	console.error(err)
-	message.error(err.message || '请求失败')
+	if (!NO_MESSAGE_CODE.includes(err.code)) {
+		console.error(err)
+		message.error(err.message || '请求失败')
+	}
 }
 
 request.get = (params: RequestParams) => request({ ...params, method: 'GET' })

@@ -32,7 +32,7 @@ import { getProjectConfig, writeProjectConfig, uploadProjectImages } from '../se
 import { throttle } from '../utils/util'
 import styles from '../styles/pages/project.module.scss'
 import { Content } from 'antd/es/layout/layout'
-import { imageAccept } from '../configs/uploadConfig'
+import { imageAccept } from '../configs/upload-config'
 
 const { useBreakpoint } = Grid
 

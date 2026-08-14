@@ -28,7 +28,7 @@ import { SaveOutlined, SettingOutlined, ReloadOutlined, PlusOutlined, DeleteOutl
 import { getConfigData, uploadAvatarImage, uploadHomeImage, uploadMobileWallpapers, uploadPCWallpapers, writeConfigData } from '../services/config'
 import { debounce, deepMerge, throttle, unwrap, wrap } from '../utils/util'
 import { useConfigContentDB } from '../hooks/useConfigContentDB'
-import { imageAccept } from '../configs/uploadConfig'
+import { imageAccept } from '../configs/upload-config'
 import { Icon } from '@iconify/react'
 import styles from '../styles/pages/config.module.scss'
 

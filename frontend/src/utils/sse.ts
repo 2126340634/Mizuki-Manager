@@ -44,7 +44,7 @@ export const createSSE = (params: SSEParams, retryCount: number = 0) => {
 				// 最多刷新重试3次
 				if (retryCount >= 3) {
 					message.error('登录刷新失败，请稍后重试')
-					redirectToLogin() // 已经重试过了，仍然401，直接跳转登录页
+					await redirectToLogin() // 已经重试过了，仍然401，直接跳转登录页
 					controllerRef?.current.abort()
 					return
 				}
