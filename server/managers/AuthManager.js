@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken')
 const { JWT_SECRET, JWT_EXPIRES_IN, USERNAME, PASSWORD } = require('../config.js')
 const svgCaptcha = require('svg-captcha')
 const CAPTCHA_EXPIRE = 24 * 60 * 60 * 1000 // 验证码取消间隔
-const TOKEN_EXPIRE = '15m' // 短token有效期
-const LRUCache = require('../utils/LRUCache.js')
+const TOKEN_EXPIRE = '30m' // 短token有效期
+const LRUCache = require('../utils/lru-cache.js')
 
 class AuthManager {
 	constructor() {
@@ -12,6 +12,7 @@ class AuthManager {
 		 * key:用户名, value:{failCount:登录错误次数, captcha:验证码, expireAt:验证码取消时间戳}
 		 */
 		this.loginMap = new LRUCache(1000) // 最大缓存1000个对象
+		this.curSession = null // 当前已登录用户的长token
 	}
 	_shouldUseCaptcha(failCount) {
 		return failCount >= 2 // 错误2次后需要验证码
@@ -70,7 +71,7 @@ class AuthManager {
 	 * @param {string} username
 	 * @param {string} password
 	 * @param {string} captcha
-	 * @returns {{ code: number, success: boolean, message?: string, data?: any, error?: any}}
+	 * @returns {{ code: number, success: boolean, message?: string, data?: any, refreshToken?: string, error?: any}}
 	 */
 	login(username, password, captcha = '') {
 		if (!username || !password)
@@ -130,7 +131,9 @@ class AuthManager {
 						expiresIn: JWT_EXPIRES_IN // 长token有效期
 					}
 				)
-				return { code: 200, success: true, data: { token, refreshToken } }
+				// 记录当前登录用户长token
+				this.curSession = refreshToken
+				return { code: 200, success: true, data: { token }, refreshToken }
 			}
 			// 账号密码错误
 			const newFailCount = current.failCount + 1 // 提前一次拿到验证码
@@ -151,7 +154,6 @@ class AuthManager {
 				}
 			}
 		} catch (err) {
-			console.error(err)
 			return {
 				code: 500,
 				success: false,
@@ -175,7 +177,7 @@ class AuthManager {
 		}
 	}
 	refreshToken(refreshToken) {
-		if (!refreshToken) return { code: 401, success: false, message: '请先登录' }
+		if (!refreshToken || refreshToken !== this.curSession) return { code: 401, success: false, message: '请先登录' }
 		try {
 			const decoded = jwt.verify(refreshToken, JWT_SECRET)
 			const newToken = jwt.sign(
@@ -191,6 +193,12 @@ class AuthManager {
 		} catch {
 			return { code: 401, success: false, message: '刷新凭证无效，请重新登录' }
 		}
+	}
+	// 检查长token是否为当前用户的，单点互踢
+	checkSession(refreshToken) {
+		if (!refreshToken || !this.curSession) return { code: 601, success: false } // 未登录不提示，使用自定义状态码防止前端401跳转
+		if (refreshToken !== this.curSession) return { code: 403, success: false, message: '检测到多端登录，已强制退出当前账号' }
+		return { code: 200, success: true }
 	}
 }
 

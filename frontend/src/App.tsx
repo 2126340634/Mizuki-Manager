@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Routes, useLocation } from 'react-router-dom'
-import { createRoute } from './routes/createRoute'
+import { createRoute } from './routes/create-route'
 import routes, { routePaths } from './routes/routes'
 import SidebarMenu from './components/SidebarMenu'
 import './styles/App.scss'
@@ -8,7 +8,9 @@ import { Button, Drawer, Grid } from 'antd'
 import { MenuUnfoldOutlined } from '@ant-design/icons'
 import Sider from 'antd/es/layout/Sider'
 import Support from './components/Support'
-import { verifyToken } from './services/auth'
+import { checkSession, verifyToken } from './services/auth'
+import { redirectToLogin } from './utils/util'
+import { usePolling } from './hooks/usePolling'
 
 export default function App() {
 	const { useBreakpoint } = Grid
@@ -16,16 +18,36 @@ export default function App() {
 	const screens = useBreakpoint()
 	const location = useLocation()
 	const handleMenuClick = () => setDrawerVisible(false)
+	// 轮询检测单点会话
+	const sessionPolling = usePolling(() => {
+		checkSession().catch(async (err) => {
+			if (err.code === 403) {
+				// 多端登录
+				alert(err.message || '当前会话已失效，请重新登录')
+				await redirectToLogin()
+			} else if (err.code === 601) {
+				// 未登录停止轮询
+				sessionPolling.stop()
+			}
+		})
+	}, 1000)
+
 	// 条件渲染侧边栏
 	const shouldShowSidebar = (path: string) => {
 		if (path === '/login') return false
 		return routePaths.some((p) => p === path || path.startsWith(`${p}/`))
 	}
-	// 首次进入检查token是否过期
+
 	useEffect(() => {
 		const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-		if (token) verifyToken({ token })
+		if (token) verifyToken({ token }) // 首次进入检查token是否过期
 	}, [])
+
+	// 路由改变就重新启动轮询
+	useEffect(() => {
+		sessionPolling.start()
+	}, [location.pathname])
+
 	return (
 		<div className="App" style={{ maxWidth: location.pathname !== '/login' ? '1600px' : '', margin: '0 auto' }}>
 			{/* PC侧边栏 */}

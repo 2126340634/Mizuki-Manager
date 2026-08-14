@@ -1,7 +1,7 @@
 const config = require('../config')
 const path = require('path')
 const BaseManager = require('./BaseManager')
-const { isImage, isObject } = require('../utils/Util')
+const { isImage, isObject } = require('../utils/util')
 
 class DeviceManager extends BaseManager {
 	constructor() {

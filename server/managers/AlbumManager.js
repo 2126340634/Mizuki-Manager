@@ -1,6 +1,6 @@
 const config = require('../config')
 const fs = require('fs')
-const { readFile, writeFile, isImage, ensureDirExist, isLegalFilename } = require('../utils/Util')
+const { readFile, writeFile, isImage, ensureDirExist, isLegalFilename } = require('../utils/util')
 const path = require('path')
 const BaseManager = require('./BaseManager')
 

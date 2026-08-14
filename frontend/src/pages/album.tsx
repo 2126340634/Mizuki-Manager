@@ -45,7 +45,7 @@ import {
 } from '../services/album'
 import dayjs from 'dayjs'
 import { formatTime, throttle } from '../utils/util'
-import { imageAccept } from '../configs/uploadConfig'
+import { imageAccept } from '../configs/upload-config'
 
 const { Sider, Content } = Layout
 const { useBreakpoint } = Grid

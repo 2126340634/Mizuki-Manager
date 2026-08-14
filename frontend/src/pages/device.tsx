@@ -28,7 +28,7 @@ import { getDeviceConfig, writeDeviceConfig, uploadDeviceImages } from '../servi
 import { throttle } from '../utils/util'
 import styles from '../styles/pages/device.module.scss'
 import { Content } from 'antd/es/layout/layout'
-import { imageAccept } from '../configs/uploadConfig'
+import { imageAccept } from '../configs/upload-config'
 
 const { useBreakpoint } = Grid
 

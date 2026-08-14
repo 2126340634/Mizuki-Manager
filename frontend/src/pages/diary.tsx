@@ -30,7 +30,7 @@ import { getDiaryConfig, writeDiaryConfig, uploadDiaryImages } from '../services
 import { throttle } from '../utils/util'
 import styles from '../styles/pages/diary.module.scss'
 import { Content } from 'antd/es/layout/layout'
-import { imageAccept } from '../configs/uploadConfig'
+import { imageAccept } from '../configs/upload-config'
 import dayjs from 'dayjs'
 
 const { useBreakpoint } = Grid

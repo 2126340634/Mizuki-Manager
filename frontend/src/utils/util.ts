@@ -1,3 +1,5 @@
+import { logout } from '../services/auth'
+
 // 防抖
 export const debounce = <T extends (...arg: any[]) => any>(func: T, delay: number, options?: { immediate?: boolean }) => {
 	let timer: ReturnType<typeof setTimeout> | null = null
@@ -64,10 +66,15 @@ export const compareMonth = (str1: string, str2: string): -1 | 0 | 1 | undefined
 }
 
 // 处理重定向到登录页
-export const redirectToLogin = () => {
+export const redirectToLogin = async () => {
 	localStorage.removeItem('token')
 	sessionStorage.removeItem('token')
-	window.location.replace('/login')
+	try {
+		await logout()
+	} catch {
+	} finally {
+		window.location.replace('/login')
+	}
 }
 
 // 递归解包对象中的目标key键值对

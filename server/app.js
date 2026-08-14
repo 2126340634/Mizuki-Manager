@@ -4,11 +4,13 @@ const routes = require('./routes/index.js')
 const config = require('./config')
 const { verifyToken } = require('./middlewares/auth.js')
 const path = require('path')
+const cookieParser = require('cookie-parser')
 
 const isProd = process.env.NODE_ENV === 'production'
 
 app.use(express.json({ limit: '1mb' })) // 解析json
 app.use(express.urlencoded({ extended: true })) // 解析url参数
+app.use(cookieParser()) // 解析cookie
 
 const SAFE_PATH = path.resolve(config.BASE_PATH)
 app.use('/mizuki', (req, res, next) => {

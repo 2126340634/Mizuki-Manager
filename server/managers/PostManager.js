@@ -1,6 +1,6 @@
 const fs = require('fs')
 const config = require('../config.js')
-const { readFile, fileExists, writeFile, deleteFile, isMarkdown, isLegalFilename, ensureDirExist } = require('../utils/Util.js')
+const { readFile, fileExists, writeFile, deleteFile, isMarkdown, isLegalFilename, ensureDirExist } = require('../utils/util.js')
 const path = require('path')
 const BaseManager = require('./BaseManager.js')
 

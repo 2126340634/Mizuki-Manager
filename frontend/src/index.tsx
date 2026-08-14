@@ -8,7 +8,7 @@ import './styles/index.scss'
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/locale/zh_CN'
 import AppContext from './hooks/useGlobalContext'
-import { defaultTheme } from './configs/styleConfig'
+import { defaultTheme } from './configs/style-config'
 
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error('Failed to find the root element')

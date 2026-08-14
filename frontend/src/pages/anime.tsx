@@ -33,7 +33,7 @@ import { compareMonth, throttle } from '../utils/util'
 import styles from '../styles/pages/anime.module.scss'
 import { Content } from 'antd/es/layout/layout'
 import dayjs from 'dayjs'
-import { imageAccept } from '../configs/uploadConfig'
+import { imageAccept } from '../configs/upload-config'
 
 const { useBreakpoint } = Grid
 const statusOpts = [

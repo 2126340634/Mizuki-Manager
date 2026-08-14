@@ -1,7 +1,7 @@
 const path = require('path')
 const config = require('../config.js')
 const BaseManager = require('./BaseManager')
-const { writeFile, isObject, isImage } = require('../utils/Util.js')
+const { writeFile, isObject, isImage } = require('../utils/util.js')
 
 class ConfigManager extends BaseManager {
 	constructor() {
