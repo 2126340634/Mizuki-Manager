@@ -41,6 +41,7 @@ function PostList() {
 	const [pageNum, setPageNum] = useState(1)
 	const [pageSize, setPageSize] = useState(12)
 	const [pageTotal, setPageTotal] = useState(0)
+	const [keyword, setKeyword] = useState('')
 
 	const getPosts = async (num: number, size: number) => {
 		try {
@@ -99,6 +100,11 @@ function PostList() {
 		getPosts(1, 12)
 	}, [])
 
+	const filteredPosts = useMemo(() => {
+		const kw = keyword.trim().toLowerCase()
+		return kw ? posts.filter((p) => p.toLowerCase().includes(kw)) : posts
+	}, [posts, keyword])
+
 	const columns = [
 		{
 			title: '文章名称',
@@ -149,11 +155,12 @@ function PostList() {
 				</Space.Compact>
 			}
 		>
+			<Input placeholder="搜索文章" allowClear value={keyword} onChange={(e) => setKeyword(e.target.value)} className={styles['search-input']} />
 			<Table
 				style={{ width: '100%' }}
 				loading={loading}
 				rowKey={(record) => record}
-				dataSource={posts}
+				dataSource={filteredPosts}
 				columns={columns}
 				pagination={{
 					size: 'small',
