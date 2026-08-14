@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const { JWT_SECRET, JWT_EXPIRES_IN, USERNAME, PASSWORD } = require('../config.js')
 const svgCaptcha = require('svg-captcha')
 const CAPTCHA_EXPIRE = 24 * 60 * 60 * 1000 // 验证码取消间隔
-const TOKEN_EXPIRE = '30m' // 短token有效期
+const TOKEN_EXPIRE = '60m' // 短token有效期
 const LRUCache = require('../utils/lru-cache.js')
 
 class AuthManager {

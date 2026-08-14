@@ -18,19 +18,23 @@ export default function App() {
 	const screens = useBreakpoint()
 	const location = useLocation()
 	const handleMenuClick = () => setDrawerVisible(false)
-	// 轮询检测单点会话
-	const sessionPolling = usePolling(() => {
-		checkSession().catch(async (err) => {
-			if (err.code === 403) {
-				// 多端登录
-				alert(err.message || '当前会话已失效，请重新登录')
-				await redirectToLogin()
-			} else if (err.code === 601) {
-				// 未登录停止轮询
-				sessionPolling.stop()
-			}
-		})
-	}, 1000)
+	// 轮询单点互踢
+	const sessionPolling = usePolling(
+		() => {
+			checkSession().catch(async (err) => {
+				if (err.code === 403) {
+					// 多端登录
+					alert(err.message || '当前会话已失效，请重新登录')
+					await redirectToLogin()
+				} else if (err.code === 601) {
+					// 未登录停止轮询
+					sessionPolling.stop()
+				}
+			})
+		},
+		60000,
+		{ immediate: true }
+	)
 
 	// 条件渲染侧边栏
 	const shouldShowSidebar = (path: string) => {
