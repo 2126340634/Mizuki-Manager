@@ -8,7 +8,8 @@ import { Button, Drawer, Grid } from 'antd'
 import { MenuUnfoldOutlined } from '@ant-design/icons'
 import Sider from 'antd/es/layout/Sider'
 import Support from './components/Support'
-import { checkSession, verifyToken } from './services/auth'
+import { checkSession } from './services/auth'
+import { refreshToken } from './utils/request'
 import { redirectToLogin } from './utils/util'
 import { usePolling } from './hooks/usePolling'
 
@@ -44,7 +45,7 @@ export default function App() {
 
 	useEffect(() => {
 		const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-		if (token) verifyToken({ token }) // 首次进入检查token是否过期
+		if (token) refreshToken() // 首屏刷新token，过期或cookie无效则跳转登录
 	}, [])
 
 	// 路由改变就重新启动轮询

@@ -191,7 +191,7 @@ class AuthManager {
 			)
 			return { code: 200, success: true, data: { token: newToken } }
 		} catch {
-			return { code: 401, success: false, message: '刷新凭证无效，请重新登录' }
+			return { code: 401, success: false, message: '登录凭证已失效，请重新登录' }
 		}
 	}
 	// 检查长token是否为当前用户的，单点互踢
