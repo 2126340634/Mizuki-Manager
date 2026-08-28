@@ -69,11 +69,12 @@ if (!isProd) {
 		if (process.platform === 'win32') {
 			if (server?.pid) exec(`taskkill /F /T /PID ${server.pid}`)
 			if (frontend?.pid) exec(`taskkill /F /T /PID ${frontend.pid}`)
+			process.exit(0)
 		} else {
 			server?.kill()
 			frontend?.kill()
+			setTimeout(() => process.exit(0), 1500)
 		}
-		setTimeout(() => process.exit(0), 500)
 	}
 	process.on('SIGINT', killAll)
 	process.on('SIGTERM', killAll)
