@@ -3,6 +3,7 @@ const router = express.Router()
 const { BuildManager } = require('../managers/index.js')
 const bm = new BuildManager()
 
+// 部署
 router.post('/deploy', async (req, res) => {
 	res.setHeader('Content-Type', 'text/event-stream')
 	res.setHeader('Cache-Control', 'no-cache')

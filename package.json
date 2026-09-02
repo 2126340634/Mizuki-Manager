@@ -1,11 +1,10 @@
 {
 	"name": "mizuki-manager",
 	"version": "1.0.0",
-	"description": "",
 	"license": "ISC",
 	"author": "heyCHEEMS",
 	"type": "commonjs",
-	"main": "index.js",
+	"main": "start.js",
 	"scripts": {
 		"start": "node ./start.js --prod",
 		"dev": "node ./start.js --dev",
